@@ -33,6 +33,80 @@
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer/>
+            <v-btn icon>
+                <v-menu
+                        bottom
+                        left
+                        content-class="dropdown-menu"
+                        offset-y
+                        transition="slide-y-transition">
+                    <router-link
+                            v-ripple
+                            slot="activator"
+                            class="toolbar-items"
+                            to=""
+                    >
+                        <v-badge
+                                color="error"
+                                overlap
+                        >
+                            <template slot="badge">
+                                {{ notifications.length }}
+                            </template>
+                            <v-icon color="white">mdi-bell</v-icon>
+                        </v-badge>
+                    </router-link>
+                    <v-card>
+                        <v-list dense>
+                            <v-list-tile
+                                    v-for="notification in notifications"
+                                    :key="notification"
+                                    @click=""
+                            >
+                                <v-list-tile-title
+                                        v-text="notification"
+                                />
+                            </v-list-tile>
+                        </v-list>
+                    </v-card>
+                </v-menu>
+            </v-btn>
+            <v-btn icon>
+                <v-menu
+                        bottom
+                        left
+                        content-class="dropdown-menu"
+                        offset-y
+                        transition="slide-y-transition">
+                    <router-link
+                            v-ripple
+                            slot="activator"
+                            class="toolbar-items"
+                            to=""
+                    >
+                        <v-badge>
+                            <v-icon color="white">mdi-account</v-icon>
+                        </v-badge>
+                    </router-link>
+                    <v-card>
+                        <v-list dense>
+                            <v-list-tile
+                                    @click=""
+                            >
+                                <v-list-tile-title>
+                                    Xem thông tin
+                                </v-list-tile-title>
+                            </v-list-tile>
+                            <v-list-tile
+                                    @click="">
+                                <v-list-tile-title>
+                                    Đăng xuất
+                                </v-list-tile-title>
+                            </v-list-tile>
+                        </v-list>
+                    </v-card>
+                </v-menu>
+            </v-btn>
         </v-toolbar>
         <v-content>
             <v-container fluid>
@@ -62,7 +136,6 @@
         props: {
             source: String
         },
-
         watch: {
             '$route'(val) {
                 this.title = val.name

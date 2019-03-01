@@ -176,6 +176,9 @@
         },
         created() {
             this.debouncedGetTasks = _.debounce(this.getTasks, 500);
+            console.log(this.$store.state.abc);
+            this.$store.commit('abc');
+            console.log(this.$store.state.abc);
         }
     }
 </script>
