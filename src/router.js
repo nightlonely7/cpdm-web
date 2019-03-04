@@ -13,12 +13,12 @@ export default new Router({
         {
             path: '/tasks',
             name: 'Quản lý tác vụ',
-            component: () => import('@/views/TaskPage.vue')
+            component: () => import('@/views/tasks/TaskPage.vue')
         },
         {
             path: '/tasks/:id',
             name: 'Quản lý tác vụ',
-            component: () => import('@/views/TaskDetailPage.vue')
+            component: () => import('@/views/tasks/TaskDetailPage.vue')
         }
     ]
 })

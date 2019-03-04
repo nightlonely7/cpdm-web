@@ -6,8 +6,8 @@
 </template>
 
 <script>
-    import TaskTable from "@/components/tasks/TaskTable.vue";
-    import TaskSearch from "@/components/tasks/TaskSearch";
+    import TaskTable from '@/components/tasks/TaskTable.vue';
+    import TaskSearch from '@/components/tasks/TaskSearch.vue';
 
     export default {
         name: "TaskPage",

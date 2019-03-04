@@ -9,7 +9,7 @@
 </template>
 
 <script>
-    import TaskDetail from "@/components/tasks/TaskDetail";
+    import TaskDetail from '@/components/tasks/TaskDetail';
 
     export default {
         name: "TaskDetailPage",

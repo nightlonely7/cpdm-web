@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <v-navigation-drawer v-model="drawer" fixed app>
+        <v-navigation-drawer fixed app v-model="drawer">
             <v-list>
                 <v-list-tile avatar>
                     <v-list-tile-avatar color="white">
@@ -29,7 +29,7 @@
                 </v-list-tile>
             </v-list>
         </v-navigation-drawer>
-        <v-toolbar color="indigo" dark fiexed app v-show="isLogged">
+        <v-toolbar color="indigo" dark fiexed app>
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer/>
@@ -133,7 +133,7 @@
                 'Another One'
             ],
             title: '',
-            drawer: false
+            drawer: true
         }),
         props: {
             source: String

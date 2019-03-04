@@ -75,7 +75,7 @@
             getTask: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}`,
                     {
-                        headers: {'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MTYxMTA5N30.uKQtiMqFMbG0NFaGkRmReHdKdj3OP8rK7J8KfUeDEGEqTu0JHop-ZBBir1067I57pV7eOzes8sY3w7pW6xe6Kg'}
+                        headers: {'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MjUzMTM1MH0.9xhabQG_oKgDuwmH-w8YSGyrDoUjPCGSVzeColLY4xG2zJl9EBUNeNQJrwlM0rIaydXH1RbIHYm2LPk7yfJDKw'}
                     }
                 ).then(response => {
                         this.$store.commit('SET_TASK', response.data);
@@ -85,7 +85,7 @@
             deleteTask: function () {
                 if (confirm('Xóa?')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}`, {
-                            headers: {'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MTYxMTA5N30.uKQtiMqFMbG0NFaGkRmReHdKdj3OP8rK7J8KfUeDEGEqTu0JHop-ZBBir1067I57pV7eOzes8sY3w7pW6xe6Kg'}
+                            headers: {'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MjUzMTM1MH0.9xhabQG_oKgDuwmH-w8YSGyrDoUjPCGSVzeColLY4xG2zJl9EBUNeNQJrwlM0rIaydXH1RbIHYm2LPk7yfJDKw'}
                         }
                     ).then(() => {
                             this.$router.push("/tasks");
