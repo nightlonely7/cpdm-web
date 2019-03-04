@@ -16,12 +16,12 @@
         name: "TaskSearch",
         computed: {
             titleSearchValue: {
-                get() {return this.$store.state.titleSearchValue},
-                set(val) {this.$store.commit('SET_TITLE_SEARCH_VALUE', val)}
+                get() {return this.$store.state.TASK_STORE.titleSearchValue},
+                set(val) {this.$store.commit('TASK_STORE/SET_TITLE_SEARCH_VALUE', val)}
             },
             summarySearchValue: {
-                get() {return this.$store.state.summarySearchValue},
-                set(val) {this.$store.commit('SET_SUMMARY_SEARCH_VALUE', val)}
+                get() {return this.$store.state.TASK_STORE.summarySearchValue},
+                set(val) {this.$store.commit('TASK_STORE/SET_SUMMARY_SEARCH_VALUE', val)}
             }
         }
     }

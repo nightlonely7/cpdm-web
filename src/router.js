@@ -1,12 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from './store'
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
     routes: [
         {
-            path: '/',
+            path: '/login',
             name: 'Đăng nhập',
             component: () => import('@/views/LoginPage.vue')
         },
@@ -17,8 +18,23 @@ export default new Router({
         },
         {
             path: '/tasks/:id',
-            name: 'Quản lý tác vụ',
+            name: 'Chi tiết tác vụ',
             component: () => import('@/views/tasks/TaskDetailPage.vue')
         }
     ]
-})
+});
+
+router.beforeEach((to, from, next) => {
+    if (to.path === '/login' || store.getters['AUTHENTICATION/isLoggedIn']) {
+        next();
+        return;
+    }
+    next('/login');
+
+});
+
+export default router;
+
+
+
+

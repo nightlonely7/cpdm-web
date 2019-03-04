@@ -20,7 +20,7 @@
             <v-progress-linear #progress color="blue" indeterminate></v-progress-linear>
 
             <template #items="props">
-                <tr @click="goDetail(props.item.id)"
+                <router-link tag="tr" :to="`tasks/${props.item.id}`"
                     onmouseover="this.style.cursor='pointer'"
                     onmouseout="this.style.cursor='none'"
                 >
@@ -33,7 +33,7 @@
                     <td class="text-xs-left">{{props.item.executor.displayName}}</td>
                     <td class="text-xs-left">{{props.item.priority}}</td>
                     <td class="text-xs-left">{{props.item.status}}</td>
-                </tr>
+                </router-link>
             </template>
         </v-data-table>
     </div>
@@ -74,7 +74,7 @@
             }
         },
         computed: {
-            ...mapState({
+            ...mapState('TASK_STORE', {
                 tasks: state => state.tasks,
                 titleSearchValue: state => state.titleSearchValue,
                 summarySearchValue: state => state.summarySearchValue,
@@ -82,19 +82,19 @@
 
         },
         mounted() {
-            this.$store.commit('SET_TASK_FORM', {id: 0, executor: {}})
+            this.$store.commit('TASK_STORE/SET_TASK_FORM', {id: 0, executor: {}})
 
         },
         methods: {
             showForm: function () {
-                this.$store.commit('SET_SHOW_FORM', true);
+                this.$store.commit('TASK_STORE/SET_SHOW_FORM', true);
             },
             refresh: function () {
                 this.pagination.page = 1;
                 this.pagination.sortBy = 'createdTime';
                 this.pagination.descending = true;
-                this.$store.commit('SET_TITLE_SEARCH_VALUE', '');
-                this.$store.commit('SET_SUMMARY_SEARCH_VALUE', '');
+                this.$store.commit('TASK_STORE/SET_TITLE_SEARCH_VALUE', '');
+                this.$store.commit('TASK_STORE/SET_SUMMARY_SEARCH_VALUE', '');
                 this.isSearching = false;
                 this.canLoadData = false;
                 this.getTasks();
@@ -112,27 +112,20 @@
                             sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
                             title: this.titleSearchValue == null ? '' : this.titleSearchValue,
                             summary: this.summarySearchValue == null ? '' : this.summarySearchValue
-                        },
-                        headers: {
-                            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MjUzMTM1MH0.9xhabQG_oKgDuwmH-w8YSGyrDoUjPCGSVzeColLY4xG2zJl9EBUNeNQJrwlM0rIaydXH1RbIHYm2LPk7yfJDKw'
                         }
                     }
                 ).then(response => {
                         if (response.status === 204) {
-                            this.$store.commit('SET_TASKS', [])
+                            this.$store.commit('TASK_STORE/SET_TASKS', [])
                         } else {
                             const data = response.data;
-                            this.$store.commit('SET_TASKS', response.data.content);
+                            this.$store.commit('TASK_STORE/SET_TASKS', response.data.content);
                             this.pagination.totalItems = data.totalElements;
                         }
                         this.table.loading = false;
                     }
                 );
             },
-            goDetail: function (id) {
-                this.$router.push(`/tasks/${id}`);
-            }
-
         },
         watch: {
             pagination: function () {

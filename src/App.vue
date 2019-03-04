@@ -19,7 +19,7 @@
                         <v-list-tile-title>Quản lý tác vụ</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile to="/document">
+                <v-list-tile to="/document" v-show="isManager">
                     <v-list-tile-action>
                         <v-icon>mdi-file-document</v-icon>
                     </v-list-tile-action>
@@ -98,7 +98,7 @@
                                 </v-list-tile-title>
                             </v-list-tile>
                             <v-list-tile
-                                    @click="">
+                                    @click="logout">
                                 <v-list-tile-title>
                                     Đăng xuất
                                 </v-list-tile-title>
@@ -139,9 +139,20 @@
             source: String
         },
         computed: {
-            ...mapState({
-                isLogged: state => state.isLogged
+            isManager: function () {
+                return this.authorities.indexOf('ROLE_MANAGER') > -1;
+            },
+            ...mapState('AUTHENTICATION', {
+                authorities: state => state.authorities
             })
+        },
+        methods: {
+            logout: function () {
+                this.$store.dispatch('AUTHENTICATION/LOGOUT')
+                    .then(() => {
+                        this.$router.push('/login')
+                    })
+            }
         },
         watch: {
             '$route'(val) {

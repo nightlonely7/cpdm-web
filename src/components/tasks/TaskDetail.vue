@@ -48,7 +48,7 @@
             id: Number
         },
         computed: {
-            ...mapState({
+            ...mapState('TASK_STORE', {
                 task: state => state.task
             })
         },
@@ -59,7 +59,7 @@
         },
         methods: {
             showForm: function () {
-                this.$store.commit('SET_SHOW_FORM', true);
+                this.$store.commit('TASK_STORE/SET_SHOW_FORM', true);
                 const taskForm = {
                     id: this.task.id,
                     title: this.task.title,
@@ -70,7 +70,7 @@
                     executor: this.task.executor,
                     priority: this.task.priority
                 };
-                this.$store.commit('SET_TASK_FORM', taskForm);
+                this.$store.commit('TASK_STORE/SET_TASK_FORM', taskForm);
             },
             getTask: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}`,
@@ -78,7 +78,7 @@
                         headers: {'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MjUzMTM1MH0.9xhabQG_oKgDuwmH-w8YSGyrDoUjPCGSVzeColLY4xG2zJl9EBUNeNQJrwlM0rIaydXH1RbIHYm2LPk7yfJDKw'}
                     }
                 ).then(response => {
-                        this.$store.commit('SET_TASK', response.data);
+                        this.$store.commit('TASK_STORE/SET_TASK', response.data);
                     }
                 )
             },

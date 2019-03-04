@@ -83,7 +83,7 @@
             }
         },
         computed: {
-            ...mapState({
+            ...mapState('TASK_STORE', {
                 showForm: state => state.showForm,
                 taskForm: state => state.taskForm
             })
@@ -98,10 +98,7 @@
                     {
                         url: url,
                         method: method,
-                        data: this.taskForm,
-                        headers: {
-                            'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MjUzMTM1MH0.9xhabQG_oKgDuwmH-w8YSGyrDoUjPCGSVzeColLY4xG2zJl9EBUNeNQJrwlM0rIaydXH1RbIHYm2LPk7yfJDKw'
-                        }
+                        data: this.taskForm
                     }
                 ).then(() => {
                         this.close();
@@ -115,17 +112,12 @@
                 );
             },
             close: function () {
-                this.$store.commit('SET_SHOW_FORM', false);
+                this.$store.commit('TASK_STORE/SET_SHOW_FORM', false);
             }
         },
         mounted() {
-            axios.get(`http://localhost:8080/users/findAllStaffDisplayNameByDepartmentOfCurrentLoggedManager`,
-                {
-                    headers: {
-                        'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MjUzMTM1MH0.9xhabQG_oKgDuwmH-w8YSGyrDoUjPCGSVzeColLY4xG2zJl9EBUNeNQJrwlM0rIaydXH1RbIHYm2LPk7yfJDKw'
-                    }
-                }
-            ).then(response => {
+            axios.get(`http://localhost:8080/users/findAllStaffDisplayNameByDepartmentOfCurrentLoggedManager`)
+                .then(response => {
                 this.executorOptions = response.data;
             });
         }
