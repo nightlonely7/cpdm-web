@@ -29,40 +29,28 @@
         <v-btn @click="deleteTask" color="error">
             Xóa
         </v-btn>
-        <v-btn @click="dialog = true">
+        <v-btn @click="showForm">
             Sửa
         </v-btn>
-        <TaskForm :activate="dialog" @close="dialog = false" @refresh="getTask" :current-task="task"></TaskForm>
+        <TaskForm @refresh="getTask"></TaskForm>
     </div>
 </template>
 
 <script>
     import axios from 'axios'
-    import TaskForm from "@/components/TaskForm";
+    import TaskForm from "@/components/tasks/TaskForm";
+    import {mapState} from 'vuex'
 
     export default {
         name: "TaskDetail",
         components: {TaskForm},
-        data() {
-            return {
-                dialog: false,
-                task: {
-                    id: 0,
-                    title: '',
-                    summary: '',
-                    description: '',
-                    creator: {id: 0, displayName: ''},
-                    executor: {id: 0, displayName: ''},
-                    createdTime: '',
-                    startTime: '',
-                    endTime: '',
-                    priority: 0,
-                    status: ''
-                }
-            }
-        },
         props: {
             id: Number
+        },
+        computed: {
+            ...mapState({
+                task: state => state.task
+            })
         },
         mounted() {
             this.$nextTick(function () {
@@ -70,22 +58,36 @@
             })
         },
         methods: {
+            showForm: function () {
+                this.$store.commit('SET_SHOW_FORM', true);
+                const taskForm = {
+                    id: this.task.id,
+                    title: this.task.title,
+                    summary: this.task.summary,
+                    description: this.task.description,
+                    startTime: this.task.startTime,
+                    endTime: this.task.endTime,
+                    executor: this.task.executor,
+                    priority: this.task.priority
+                };
+                this.$store.commit('SET_TASK_FORM', taskForm);
+            },
             getTask: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}`,
                     {
                         headers: {'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MTYxMTA5N30.uKQtiMqFMbG0NFaGkRmReHdKdj3OP8rK7J8KfUeDEGEqTu0JHop-ZBBir1067I57pV7eOzes8sY3w7pW6xe6Kg'}
                     }
                 ).then(response => {
-                    this.task = response.data
-                })
+                        this.$store.commit('SET_TASK', response.data);
+                    }
+                )
             },
             deleteTask: function () {
                 if (confirm('Xóa?')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}`, {
-                        headers: {'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MTYxMTA5N30.uKQtiMqFMbG0NFaGkRmReHdKdj3OP8rK7J8KfUeDEGEqTu0JHop-ZBBir1067I57pV7eOzes8sY3w7pW6xe6Kg'}
-                    }).then(
-                        response => {
-                            console.log(response.status);
+                            headers: {'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MTYxMTA5N30.uKQtiMqFMbG0NFaGkRmReHdKdj3OP8rK7J8KfUeDEGEqTu0JHop-ZBBir1067I57pV7eOzes8sY3w7pW6xe6Kg'}
+                        }
+                    ).then(() => {
                             this.$router.push("/tasks");
                         }
                     )

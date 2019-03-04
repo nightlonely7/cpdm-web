@@ -1,15 +1,17 @@
 <template>
     <div>
+        <TaskSearch></TaskSearch>
         <TaskTable></TaskTable>
     </div>
 </template>
 
 <script>
-    import TaskTable from "@/components/TaskTable.vue";
+    import TaskTable from "@/components/tasks/TaskTable.vue";
+    import TaskSearch from "@/components/tasks/TaskSearch";
 
     export default {
         name: "TaskPage",
-        components: {TaskTable}
+        components: {TaskSearch, TaskTable}
     }
 </script>
 

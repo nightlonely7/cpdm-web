@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="activate" persistent>
+    <v-dialog v-model="showForm" persistent>
         <v-card>
             <v-card-title>
                 <span class="headline">FORM</span>
@@ -73,49 +73,27 @@
 
 <script>
     import axios from 'axios';
+    import {mapState} from 'vuex'
 
     export default {
         name: "TaskForm",
         data() {
             return {
-                executorOptions: [{id: 0, displayName: ''}],
-                taskForm: {
-                    title: '',
-                    summary: '',
-                    description: '',
-                    startTime: '',
-                    endTime: '',
-                    executor: {id: 0},
-                    status: '',
-                    priority: 0
-                }
+                executorOptions: [],
             }
         },
-        props: {
-            activate: Boolean,
-            currentTask: {
-                type: Object,
-                default: function () {
-                    return {
-                        id: 0,
-                        title: '',
-                        summary: '',
-                        description: '',
-                        startTime: '',
-                        endTime: '',
-                        executor: {id: 0},
-                        status: '',
-                        priority: 0
-                    }
-                }
-            }
+        computed: {
+            ...mapState({
+                showForm: state => state.showForm,
+                taskForm: state => state.taskForm
+            })
         },
         methods: {
             save: function () {
-
                 console.log(this.taskForm);
-                const url = `http://localhost:8080/tasks/${this.currentTask.id === 0 ? '' : this.currentTask.id}`;
-                const method = `${this.currentTask.id === 0 ? 'POST' : 'PUT'}`;
+
+                const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
+                const method = `${this.taskForm.id === 0 ? 'POST' : 'PUT'}`;
                 axios.request(
                     {
                         url: url,
@@ -124,12 +102,12 @@
                         headers: {
                             'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MTYxMTA5N30.uKQtiMqFMbG0NFaGkRmReHdKdj3OP8rK7J8KfUeDEGEqTu0JHop-ZBBir1067I57pV7eOzes8sY3w7pW6xe6Kg'
                         }
-                    }).then(response => {
+                    }
+                ).then(() => {
                         this.close();
                         this.$emit('refresh');
                     }
-                ).catch(
-                    error => {
+                ).catch(error => {
                         if (error.response) {
                             console.log(error.response.data)
                         }
@@ -137,21 +115,10 @@
                 );
             },
             close: function () {
-                this.$emit('close');
+                this.$store.commit('SET_SHOW_FORM', false);
             }
         },
         mounted() {
-            setTimeout(() => {
-                this.taskForm.title = this.currentTask.title;
-                this.taskForm.summary = this.currentTask.summary;
-                this.taskForm.description = this.currentTask.description;
-                this.taskForm.startTime = this.currentTask.startTime;
-                this.taskForm.endTime = this.currentTask.endTime;
-                this.taskForm.executor = this.currentTask.executor;
-                this.taskForm.priority = this.currentTask.priority;
-                this.taskForm.status = this.currentTask.status;
-                console.log(this.currentTask.id)
-            }, 500);
             axios.get(`http://localhost:8080/users/findAllStaffDisplayNameByDepartmentOfCurrentLoggedManager`,
                 {
                     headers: {

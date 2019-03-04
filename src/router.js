@@ -6,6 +6,11 @@ Vue.use(Router);
 export default new Router({
     routes: [
         {
+            path: '/',
+            name: 'Đăng nhập',
+            component: () => import('@/views/LoginPage.vue')
+        },
+        {
             path: '/tasks',
             name: 'Quản lý tác vụ',
             component: () => import('@/views/TaskPage.vue')

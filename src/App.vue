@@ -29,7 +29,7 @@
                 </v-list-tile>
             </v-list>
         </v-navigation-drawer>
-        <v-toolbar color="indigo" dark fiexed app>
+        <v-toolbar color="indigo" dark fiexed app v-show="isLogged">
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer/>
@@ -120,6 +120,8 @@
 </template>
 
 <script>
+    import {mapState} from 'vuex'
+
     export default {
         data: () => ({
             logo: './assets/logo.png',
@@ -131,10 +133,15 @@
                 'Another One'
             ],
             title: '',
-            drawer: true
+            drawer: false
         }),
         props: {
             source: String
+        },
+        computed: {
+            ...mapState({
+                isLogged: state => state.isLogged
+            })
         },
         watch: {
             '$route'(val) {

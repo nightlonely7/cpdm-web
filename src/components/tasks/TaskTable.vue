@@ -1,60 +1,49 @@
 <template>
-    <div>
-        <v-text-field v-model="titleSearchValue"
-                      label="Tìm bởi tiêu đề"
-                      clearable
-        ></v-text-field>
-        <v-text-field v-model="summarySearchValue"
-                      label="Tìm bởi nội dung tổng quát"
-                      clearable
-        ></v-text-field>
-        <div class="elevation-5">
-            <v-toolbar flat color="white">
-                <v-toolbar-title>DACH SÁCH TÁC VỤ</v-toolbar-title>
-                <v-divider class="mx-2" inset vertical></v-divider>
-                <v-btn @click="refresh()">Làm mới</v-btn>
-                <v-spacer></v-spacer>
-                <v-btn @click="table.dialog = true">Tạo mới tác vụ</v-btn>
-                <TaskForm :activate="table.dialog" @close="table.dialog = false" @refresh="refresh" ></TaskForm>
-            </v-toolbar>
-            <v-data-table
-                    :headers="table.headers"
-                    :items="tasks"
-                    :loading="table.loading"
-                    :pagination.sync="pagination"
-                    :total-items="pagination.totalItems"
-                    rows-per-page-text="Số hàng mỗi trang"
-                    must-sort
-            >
-                <v-progress-linear #progress color="blue" indeterminate></v-progress-linear>
+    <div class="elevation-5">
+        <v-toolbar flat color="white">
+            <v-toolbar-title>DACH SÁCH TÁC VỤ</v-toolbar-title>
+            <v-divider class="mx-2" inset vertical></v-divider>
+            <v-btn @click="refresh()">Làm mới</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn @click="showForm">Tạo mới tác vụ</v-btn>
+            <TaskForm @refresh="refresh"></TaskForm>
+        </v-toolbar>
+        <v-data-table
+                :headers="table.headers"
+                :items="tasks"
+                :loading="table.loading"
+                :pagination.sync="pagination"
+                :total-items="pagination.totalItems"
+                rows-per-page-text="Số hàng mỗi trang"
+                must-sort
+        >
+            <v-progress-linear #progress color="blue" indeterminate></v-progress-linear>
 
-                <template #items="props">
-                    <tr @click="goDetail(props.item.id)"
-                        onmouseover="this.style.cursor='pointer'"
-                        onmouseout="this.style.cursor='none'"
-                    >
-                        <td class="text-xs-left">{{props.item.title}}</td>
-                        <td class="text-xs-left">{{props.item.summary}}</td>
-                        <td class="text-xs-left">{{props.item.createdTime}}</td>
-                        <td class="text-xs-left">{{props.item.startTime}}</td>
-                        <td class="text-xs-left">{{props.item.endTime}}</td>
-                        <td class="text-xs-left">{{props.item.creator.displayName}}</td>
-                        <td class="text-xs-left">{{props.item.executor.displayName}}</td>
-                        <td class="text-xs-left">{{props.item.priority}}</td>
-                        <td class="text-xs-left">{{props.item.status}}</td>
-                    </tr>
-
-                </template>
-            </v-data-table>
-        </div>
-
+            <template #items="props">
+                <tr @click="goDetail(props.item.id)"
+                    onmouseover="this.style.cursor='pointer'"
+                    onmouseout="this.style.cursor='none'"
+                >
+                    <td class="text-xs-left">{{props.item.title}}</td>
+                    <td class="text-xs-left">{{props.item.summary}}</td>
+                    <td class="text-xs-left">{{props.item.createdTime}}</td>
+                    <td class="text-xs-left">{{props.item.startTime}}</td>
+                    <td class="text-xs-left">{{props.item.endTime}}</td>
+                    <td class="text-xs-left">{{props.item.creator.displayName}}</td>
+                    <td class="text-xs-left">{{props.item.executor.displayName}}</td>
+                    <td class="text-xs-left">{{props.item.priority}}</td>
+                    <td class="text-xs-left">{{props.item.status}}</td>
+                </tr>
+            </template>
+        </v-data-table>
     </div>
 </template>
 
 <script>
     import axios from 'axios';
     import _ from 'lodash';
-    import TaskForm from "@/components/TaskForm";
+    import TaskForm from '@/components/tasks/TaskForm.vue';
+    import {mapState} from 'vuex'
 
     export default {
         name: "TaskTable",
@@ -62,8 +51,6 @@
         data() {
             return {
                 canLoadData: true,
-                titleSearchValue: '',
-                summarySearchValue: '',
                 isSearching: false,
                 pagination: {
                     sortBy: 'createdTime',
@@ -84,40 +71,34 @@
                         {text: 'Trạng thái', value: 'status'},
                     ]
                 },
-                tasks: [{
-                    id: 0,
-                    title: '',
-                    summary: '',
-                    createdTime: '',
-                    startTime: '',
-                    endTime: '',
-                    creator: {id: 0, displayName: ''},
-                    executor: {id: 0, displayName: ''},
-                    priority: 0,
-                    status: ''
-                }],
-                searchFieldOptions: [
-                    {text: 'Title', value: 'title'},
-                    {text: 'Summary', value: 'summary'}
-                ],
             }
         },
-        computed: {},
+        computed: {
+            ...mapState({
+                tasks: state => state.tasks,
+                titleSearchValue: state => state.titleSearchValue,
+                summarySearchValue: state => state.summarySearchValue,
+            }),
+
+        },
         mounted() {
 
 
         },
         methods: {
+            showForm: function () {
+                this.$store.commit('SET_SHOW_FORM', true);
+                this.$store.commit('SET_TASK_FORM', {id: 0, executor: {}})
+            },
             refresh: function () {
                 this.pagination.page = 1;
                 this.pagination.sortBy = 'createdTime';
                 this.pagination.descending = true;
-                this.titleSearchValue = '';
-                this.summarySearchValue = '';
+                this.$store.commit('SET_TITLE_SEARCH_VALUE', '');
+                this.$store.commit('SET_SUMMARY_SEARCH_VALUE', '');
                 this.isSearching = false;
                 this.canLoadData = false;
                 this.getTasks();
-                setTimeout(() => this.canLoadData = true, 500)
             },
             getTasks: function () {
                 this.table.loading = true;
@@ -139,10 +120,10 @@
                     }
                 ).then(response => {
                         if (response.status === 204) {
-                            this.tasks = []
+                            this.$store.commit('SET_TASKS', [])
                         } else {
                             const data = response.data;
-                            this.tasks = data.content;
+                            this.$store.commit('SET_TASKS', response.data.content);
                             this.pagination.totalItems = data.totalElements;
                         }
                         this.table.loading = false;
@@ -157,28 +138,27 @@
         watch: {
             pagination: function () {
                 this.isSearching = false;
-                if (this.canLoadData) {
-                    this.getTasks();
-                }
+                this.getTasks();
             },
             titleSearchValue: function () {
                 this.isSearching = true;
                 if (this.canLoadData) {
                     this.debouncedGetTasks();
+                } else {
+                    this.canLoadData = true;
                 }
             },
             summarySearchValue: function () {
                 this.isSearching = true;
                 if (this.canLoadData) {
                     this.debouncedGetTasks();
+                } else {
+                    this.canLoadData = true;
                 }
             }
         },
         created() {
             this.debouncedGetTasks = _.debounce(this.getTasks, 500);
-            console.log(this.$store.state.abc);
-            this.$store.commit('abc');
-            console.log(this.$store.state.abc);
         }
     }
 </script>
