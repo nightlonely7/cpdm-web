@@ -1,7 +1,7 @@
 <template>
     <div class="elevation-5">
         <v-toolbar flat color="white">
-            <v-toolbar-title>DACH SÁCH TÁC VỤ</v-toolbar-title>
+            <v-toolbar-title>QUẢN LÝ TÁC VỤ ĐÃ GIAO</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn @click="refresh()">Làm mới</v-btn>
             <v-spacer></v-spacer>
@@ -10,19 +10,20 @@
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
-                :items="tasks"
+                :items="creatorTasks"
                 :loading="table.loading"
                 :pagination.sync="pagination"
                 :total-items="pagination.totalItems"
                 rows-per-page-text="Số hàng mỗi trang"
+                :no-data-text="alert || 'Không có dữ liệu'"
+                :no-results-text="alert || 'Không tìm thấy dữ liệu tương ứng'"
                 must-sort
         >
             <v-progress-linear #progress color="blue" indeterminate></v-progress-linear>
-
             <template #items="props">
                 <router-link tag="tr" :to="`tasks/${props.item.id}`"
-                    onmouseover="this.style.cursor='pointer'"
-                    onmouseout="this.style.cursor='none'"
+                             onmouseover="this.style.cursor='pointer'"
+                             onmouseout="this.style.cursor='none'"
                 >
                     <td class="text-xs-left">{{props.item.title}}</td>
                     <td class="text-xs-left">{{props.item.summary}}</td>
@@ -46,19 +47,18 @@
     import {mapState} from 'vuex'
 
     export default {
-        name: "TaskTable",
+        name: "CreatorTaskTable",
         components: {TaskForm},
         data() {
             return {
                 canLoadData: true,
-                isSearching: false,
+                alert: '',
                 pagination: {
                     sortBy: 'createdTime',
                     descending: true
                 },
                 table: {
-                    dialog: false,
-                    loading: true,
+                    loading: false,
                     headers: [
                         {text: 'Tiêu đề', value: 'title'},
                         {text: 'Tổng quát', value: 'summary'},
@@ -75,11 +75,15 @@
         },
         computed: {
             ...mapState('TASK_STORE', {
-                tasks: state => state.tasks,
+                creatorTasks: state => state.creatorTasks,
                 titleSearchValue: state => state.titleSearchValue,
                 summarySearchValue: state => state.summarySearchValue,
             }),
-
+            ...mapState('AUTHENTICATION', {
+                isLoggedIn: state => state.isLoggedIn,
+                isStaff: state => state.isStaff,
+                isAdmin: state => state.isAdmin,
+            })
         },
         mounted() {
             this.$store.commit('TASK_STORE/SET_TASK_FORM', {id: 0, executor: {}})
@@ -95,15 +99,11 @@
                 this.pagination.descending = true;
                 this.$store.commit('TASK_STORE/SET_TITLE_SEARCH_VALUE', '');
                 this.$store.commit('TASK_STORE/SET_SUMMARY_SEARCH_VALUE', '');
-                this.isSearching = false;
                 this.canLoadData = false;
-                this.getTasks();
+                this.getExecutorTasks();
             },
-            getTasks: function () {
+            getExecutorTasks: function () {
                 this.table.loading = true;
-                if (this.isSearching) {
-                    this.pagination.page = 1;
-                }
                 axios.get(`http://localhost:8080/tasks/findByCurrentLoggedCreator`,
                     {
                         params: {
@@ -116,41 +116,48 @@
                     }
                 ).then(response => {
                         if (response.status === 204) {
-                            this.$store.commit('TASK_STORE/SET_TASKS', [])
+                            this.$store.commit('TASK_STORE/SET_CREATOR_TASKS', []);
+                            this.pagination.totalItems = 0;
                         } else {
                             const data = response.data;
-                            this.$store.commit('TASK_STORE/SET_TASKS', response.data.content);
+                            this.$store.commit('TASK_STORE/SET_CREATOR_TASKS', response.data.content);
                             this.pagination.totalItems = data.totalElements;
                         }
                         this.table.loading = false;
+                    }
+                ).catch(error => {
+                        this.table.loading = false;
+                        this.alert = 'Không thể truy cập';
+                        if (error.response) {
+                            console.log(error.response.data)
+                        }
                     }
                 );
             },
         },
         watch: {
             pagination: function () {
-                this.isSearching = false;
-                this.getTasks();
+                this.getExecutorTasks();
             },
             titleSearchValue: function () {
-                this.isSearching = true;
+                this.pagination.page = 1;
                 if (this.canLoadData) {
-                    this.debouncedGetTasks();
+                    this.debouncedGetCreatorTasks();
                 } else {
                     this.canLoadData = true;
                 }
             },
             summarySearchValue: function () {
-                this.isSearching = true;
+                this.pagination.page = 1;
                 if (this.canLoadData) {
-                    this.debouncedGetTasks();
+                    this.debouncedGetCreatorTasks();
                 } else {
                     this.canLoadData = true;
                 }
             }
         },
         created() {
-            this.debouncedGetTasks = _.debounce(this.getTasks, 500);
+            this.debouncedGetCreatorTasks = _.debounce(this.getExecutorTasks, 500);
         }
     }
 </script>

@@ -10,17 +10,15 @@ const AUTHENTICATION = {
         status: '',
         token: localStorage.getItem('cpdm_token') || '',
         displayName: '',
-        authorities: []
+        role: '',
     },
     mutations: {
         REQUEST(state) {
             state.status = 'loading';
         },
-        SUCCESS(state, {token, displayName, authorities}) {
+        SUCCESS(state, token) {
             state.status = 'success';
             state.token = token;
-            state.displayName = displayName;
-            state.authorities = authorities;
         },
         ERROR(state) {
             state.status = 'error';
@@ -28,10 +26,20 @@ const AUTHENTICATION = {
         LOGOUT(state) {
             state.status = '';
             state.token = '';
+            state.displayName = '';
+            state.role = '';
+        },
+        INIT(state, {displayName, role}) {
+            state.status = 'success';
+            state.displayName = displayName;
+            state.role = role;
         }
     },
     getters: {
-        isLoggedIn: state => !!state.token
+        isLoggedIn: state => !!state.token,
+        isAdmin: state => state.role === 'ADMIN',
+        isManager: state => state.role === 'MANAGER',
+        isStaff: state => state.role === 'STAFF',
     },
     actions: {
         LOGIN({commit}, user) {
@@ -40,11 +48,8 @@ const AUTHENTICATION = {
                 axios({url: 'http://localhost:8080/login', data: user, method: 'POST'})
                     .then(response => {
                         const token = response.data.token;
-                        const displayName = response.data.displayName;
-                        const authorities = response.data.authorities;
-                        console.log(response.data);
                         localStorage.setItem('cpdm_token', token);
-                        commit('SUCCESS', {token, displayName, authorities});
+                        commit('SUCCESS', token);
                         resolve(response);
                     })
                     .catch(error => {
@@ -60,13 +65,27 @@ const AUTHENTICATION = {
                 localStorage.removeItem('cpdm_token');
                 resolve()
             })
+        },
+        INIT({commit}) {
+            return new Promise((resolve, reject) => {
+                axios({url: 'http://localhost:8080/self', method: 'GET'})
+                    .then(response => {
+                        const displayName = response.data.displayName;
+                        const role = response.data.role.name.replace('ROLE_', '');
+                        commit('INIT', {displayName, role});
+                        resolve(response);
+                    })
+                    .catch(error => {
+                        commit('ERROR');
+                        reject(error);
+                    })
+            })
         }
     }
 };
 
-const TASK_STORE = {
-    namespaced: true,
-    state: {
+const taskStoreDefaultState = () => {
+    return {
         isLogged: false,
         showForm: false,
         titleSearchValue: '',
@@ -75,11 +94,17 @@ const TASK_STORE = {
             creator: {},
             executor: {},
         },
-        tasks: [],
+        creatorTasks: [],
+        executorTasks: [],
         taskForm: {
             executor: {},
         },
-    },
+    }
+};
+
+const TASK_STORE = {
+    namespaced: true,
+    state: taskStoreDefaultState(),
     mutations: {
         SET_IS_LOGGED(state, isLogged) {
             state.isLogged = isLogged
@@ -87,8 +112,11 @@ const TASK_STORE = {
         SET_TASK(state, task) {
             state.task = task
         },
-        SET_TASKS(state, tasks) {
-            state.tasks = tasks
+        SET_CREATOR_TASKS(state, creatorTasks) {
+            state.creatorTasks = creatorTasks
+        },
+        SET_EXECUTOR_TASKS(state, executorTasks) {
+            state.executorTasks = executorTasks
         },
         SET_TASK_FORM(state, taskForm) {
             state.taskForm = taskForm
@@ -101,6 +129,9 @@ const TASK_STORE = {
         },
         SET_SHOW_FORM(state, showForm) {
             state.showForm = showForm
+        },
+        RESET(state) {
+            state = Object.assign(state, taskStoreDefaultState());
         }
     },
     actions: {}

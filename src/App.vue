@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <v-navigation-drawer fixed app v-model="drawer">
+        <v-navigation-drawer fixed app v-model="drawer" v-if="isLoggedIn">
             <v-list>
                 <v-list-tile avatar>
                     <v-list-tile-avatar color="white">
@@ -11,7 +11,7 @@
                     </v-list-tile-title>
                 </v-list-tile>
                 <v-divider/>
-                <v-list-tile to="/tasks">
+                <v-list-tile to="/tasks" v-if="isStaff || isManager">
                     <v-list-tile-action>
                         <v-icon>account_circle</v-icon>
                     </v-list-tile-action>
@@ -19,33 +19,30 @@
                         <v-list-tile-title>Quản lý tác vụ</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile to="/document" v-show="isManager">
+                <v-list-tile to="/users" v-if="isManager">
                     <v-list-tile-action>
                         <v-icon>mdi-file-document</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                        <v-list-tile-title>Quản lý văn bản</v-list-tile-title>
+                        <v-list-tile-title>Quản lý nhân viên</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
             </v-list>
         </v-navigation-drawer>
-        <v-toolbar color="indigo" dark fiexed app>
+        <v-toolbar color="indigo" dark fiexed app v-if="isLoggedIn">
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer/>
-            <v-btn icon>
-                <v-menu
-                        bottom
-                        left
-                        content-class="dropdown-menu"
-                        offset-y
-                        transition="slide-y-transition">
-                    <router-link
-                            v-ripple
-                            slot="activator"
-                            class="toolbar-items"
-                            to=""
-                    >
+            <v-menu
+                    v-show="isLoggedIn"
+                    bottom
+                    left
+                    content-class="dropdown-menu"
+                    offset-y
+                    transition="slide-y-transition"
+            >
+
+                    <v-btn icon slot="activator">
                         <v-badge
                                 color="error"
                                 overlap
@@ -55,58 +52,56 @@
                             </template>
                             <v-icon color="white">mdi-bell</v-icon>
                         </v-badge>
-                    </router-link>
-                    <v-card>
-                        <v-list dense>
-                            <v-list-tile
-                                    v-for="notification in notifications"
-                                    :key="notification"
-                                    @click=""
-                            >
-                                <v-list-tile-title
-                                        v-text="notification"
-                                />
-                            </v-list-tile>
-                        </v-list>
-                    </v-card>
-                </v-menu>
-            </v-btn>
-            <v-btn icon>
-                <v-menu
-                        bottom
-                        left
-                        content-class="dropdown-menu"
-                        offset-y
-                        transition="slide-y-transition">
-                    <router-link
-                            v-ripple
-                            slot="activator"
-                            class="toolbar-items"
-                            to=""
-                    >
-                        <v-badge>
-                            <v-icon color="white">mdi-account</v-icon>
-                        </v-badge>
-                    </router-link>
-                    <v-card>
-                        <v-list dense>
-                            <v-list-tile
-                                    @click=""
-                            >
-                                <v-list-tile-title>
-                                    Xem thông tin
-                                </v-list-tile-title>
-                            </v-list-tile>
-                            <v-list-tile
-                                    @click="logout">
-                                <v-list-tile-title>
-                                    Đăng xuất
-                                </v-list-tile-title>
-                            </v-list-tile>
-                        </v-list>
-                    </v-card>
-                </v-menu>
-            </v-btn>
+                    </v-btn>
+                <v-card>
+                    <v-list dense>
+                        <v-list-tile
+                                v-for="notification in notifications"
+                                :key="notification"
+                                @click=""
+                        >
+                            <v-list-tile-title
+                                    v-text="notification"
+                            />
+                        </v-list-tile>
+                    </v-list>
+                </v-card>
+            </v-menu>
+            <v-menu
+                    v-show="isLoggedIn"
+                    bottom
+                    left
+                    class="ml-3"
+                    content-class="dropdown-menu"
+                    offset-y
+                    transition="slide-y-transition"
+            >
+                <v-btn
+                        icon
+                        slot="activator"
+                >
+                    <v-badge>
+                        <v-icon color="white">mdi-account</v-icon>
+                    </v-badge>
+                </v-btn>
+                <v-card>
+                    <v-list dense>
+                        <v-list-tile
+                                @click=""
+                        >
+                            <v-list-tile-title>
+                                Xem thông tin
+                            </v-list-tile-title>
+                        </v-list-tile>
+                        <v-list-tile
+                                @click="logout">
+                            <v-list-tile-title>
+                                Đăng xuất
+                            </v-list-tile-title>
+                        </v-list-tile>
+                    </v-list>
+                </v-card>
+            </v-menu>
         </v-toolbar>
         <v-content>
             <v-container fluid>
@@ -120,7 +115,8 @@
 </template>
 
 <script>
-    import {mapState} from 'vuex'
+    import {mapState} from 'vuex';
+    import {mapGetters} from 'vuex'
 
     export default {
         data: () => ({
@@ -138,20 +134,35 @@
         props: {
             source: String
         },
+        mounted() {
+            if (this.isLoggedIn) {
+                this.init();
+            }
+        },
         computed: {
-            isManager: function () {
-                return this.authorities.indexOf('ROLE_MANAGER') > -1;
-            },
             ...mapState('AUTHENTICATION', {
-                authorities: state => state.authorities
-            })
+                role: state => state.role,
+            }),
+            ...mapGetters('AUTHENTICATION', {
+                isLoggedIn: 'isLoggedIn',
+                isAdmin: 'isAdmin',
+                isManager: 'isManager',
+                isStaff: 'isStaff',
+            }),
         },
         methods: {
+            init: function () {
+                this.$store.dispatch('AUTHENTICATION/INIT')
+                    .catch(() => {
+                        this.$router.push('/login');
+                    });
+            },
             logout: function () {
                 this.$store.dispatch('AUTHENTICATION/LOGOUT')
                     .then(() => {
-                        this.$router.push('/login')
-                    })
+                        this.$store.commit('TASK_STORE/RESET');
+                        this.$router.push('/login');
+                    });
             }
         },
         watch: {

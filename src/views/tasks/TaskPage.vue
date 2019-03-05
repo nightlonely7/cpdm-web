@@ -1,17 +1,31 @@
 <template>
     <div>
         <TaskSearch></TaskSearch>
-        <TaskTable></TaskTable>
+        <v-divider></v-divider>
+        <br>
+        <CreatorTaskTable v-if="isAdmin || isManager"></CreatorTaskTable>
+        <v-divider></v-divider>
+        <br>
+        <ExecutorTaskTable v-if="isStaff || isManager"></ExecutorTaskTable>
     </div>
 </template>
 
 <script>
-    import TaskTable from '@/components/tasks/TaskTable.vue';
+    import CreatorTaskTable from '@/components/tasks/CreatorTaskTable.vue';
     import TaskSearch from '@/components/tasks/TaskSearch.vue';
+    import ExecutorTaskTable from "@/components/tasks/ExecutorTaskTable";
+    import {mapGetters} from 'vuex';
 
     export default {
         name: "TaskPage",
-        components: {TaskSearch, TaskTable}
+        components: {ExecutorTaskTable, TaskSearch, CreatorTaskTable},
+        computed: {
+            ...mapGetters('AUTHENTICATION', {
+                isAdmin: 'isAdmin',
+                isManager: 'isManager',
+                isStaff: 'isStaff',
+            })
+        }
     }
 </script>
 
