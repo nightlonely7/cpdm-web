@@ -54,7 +54,7 @@
         },
         mounted() {
             this.$nextTick(function () {
-                this.getTask();
+                this.getUser();
             })
         },
         methods: {
@@ -72,22 +72,17 @@
                 };
                 this.$store.commit('TASK_STORE/SET_TASK_FORM', taskForm);
             },
-            getTask: function () {
-                axios.get(`http://localhost:8080/tasks/${this.id}`,
-                    {
-                        headers: {'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MjUzMTM1MH0.9xhabQG_oKgDuwmH-w8YSGyrDoUjPCGSVzeColLY4xG2zJl9EBUNeNQJrwlM0rIaydXH1RbIHYm2LPk7yfJDKw'}
-                    }
-                ).then(response => {
+            getUser: function () {
+                axios.get(`http://localhost:8080/tasks/${this.id}`)
+                    .then(response => {
                         this.$store.commit('TASK_STORE/SET_TASK', response.data);
                     }
                 )
             },
             deleteTask: function () {
                 if (confirm('Xóa?')) {
-                    axios.delete(`http://localhost:8080/tasks/${this.id}`, {
-                            headers: {'Authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJraGFuaG5wQGdtYWlsLmNvbSIsImV4cCI6MTU1MjUzMTM1MH0.9xhabQG_oKgDuwmH-w8YSGyrDoUjPCGSVzeColLY4xG2zJl9EBUNeNQJrwlM0rIaydXH1RbIHYm2LPk7yfJDKw'}
-                        }
-                    ).then(() => {
+                    axios.delete(`http://localhost:8080/tasks/${this.id}`)
+                        .then(() => {
                             this.$router.push("/tasks");
                         }
                     )

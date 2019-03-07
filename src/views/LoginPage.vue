@@ -9,7 +9,7 @@
                     <v-alert v-model="alert" dismissible transition="scale-transition">Đăng nhập thất bại</v-alert>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn type="submit" color="primary">Đăng nhập</v-btn>
+                    <v-btn type="submit" color="primary" :loading="loading">Đăng nhập</v-btn>
                 </v-card-actions>
             </v-card>
         </v-form>
@@ -17,6 +17,8 @@
 </template>
 
 <script>
+    import {mapState} from 'vuex';
+
     export default {
         name: "LoginPage",
         data() {
@@ -26,6 +28,11 @@
                 alert: false
             }
         },
+        computed: {
+            ...mapState('AUTHENTICATION', {
+                loading: state => state.status === 'loading',
+            })
+        },
         methods: {
             login: function () {
                 this.alert = false;
@@ -34,8 +41,8 @@
                 this.$store.dispatch('AUTHENTICATION/LOGIN', {email, password})
                     .then(() => {
                         this.$store.dispatch('AUTHENTICATION/INIT')
+                            .then(() => this.$router.push('/tasks'))
                             .catch(() => this.$router.push('/login'));
-                        this.$router.push('/tasks');
                     })
                     .catch(() => this.alert = true);
             }

@@ -119,9 +119,8 @@
                             this.$store.commit('TASK_STORE/SET_CREATOR_TASKS', []);
                             this.pagination.totalItems = 0;
                         } else {
-                            const data = response.data;
                             this.$store.commit('TASK_STORE/SET_CREATOR_TASKS', response.data.content);
-                            this.pagination.totalItems = data.totalElements;
+                            this.pagination.totalItems = response.data.totalElements;
                         }
                         this.table.loading = false;
                     }

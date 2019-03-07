@@ -42,17 +42,17 @@
                     transition="slide-y-transition"
             >
 
-                    <v-btn icon slot="activator">
-                        <v-badge
-                                color="error"
-                                overlap
-                        >
-                            <template slot="badge">
-                                {{ notifications.length }}
-                            </template>
-                            <v-icon color="white">mdi-bell</v-icon>
-                        </v-badge>
-                    </v-btn>
+                <v-btn icon slot="activator">
+                    <v-badge
+                            color="error"
+                            overlap
+                    >
+                        <template slot="badge">
+                            {{ notifications.length }}
+                        </template>
+                        <v-icon color="white">mdi-bell</v-icon>
+                    </v-badge>
+                </v-btn>
                 <v-card>
                     <v-list dense>
                         <v-list-tile
@@ -155,7 +155,7 @@
                 this.$store.dispatch('AUTHENTICATION/INIT')
                     .catch(() => {
                         this.$router.push('/login');
-                    });
+                    })
             },
             logout: function () {
                 this.$store.dispatch('AUTHENTICATION/LOGOUT')

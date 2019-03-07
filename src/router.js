@@ -17,6 +17,11 @@ const router = new Router({
             component: () => import('@/views/tasks/TaskPage.vue')
         },
         {
+            path: '/users',
+            name: 'Quản lý nhân viên',
+            component: () => import('@/views/users/UserPage.vue')
+        },
+        {
             path: '/tasks/:id',
             name: 'Chi tiết tác vụ',
             component: () => import('@/views/tasks/TaskDetailPage.vue')
