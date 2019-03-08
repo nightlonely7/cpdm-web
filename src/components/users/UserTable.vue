@@ -3,10 +3,10 @@
         <v-toolbar flat color="white">
             <v-toolbar-title>QUẢN LÝ NHÂN VIÊN</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
-            <!--<v-btn @click="refresh">Làm mới</v-btn>-->
+            <v-btn @click="refresh">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <!--<v-btn @click="showForm">Tạo mới tác vụ</v-btn>-->
-            <!--<TaskForm @refresh="refresh"></TaskForm>-->
+            <v-btn @click="showForm">Tạo mới nhân viên</v-btn>
+            <UserForm @refresh="refresh"></UserForm>
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
@@ -26,6 +26,7 @@
                              onmouseout="this.style.cursor='none'"
                 >
                     <td class="text-xs-left">{{props.item.displayName}}</td>
+                    <td class="text-xs-left">{{props.item.createdTime}}</td>
                     <td class="text-xs-left">{{props.item.fullName}}</td>
                     <td class="text-xs-left">{{props.item.email}}</td>
                     <td class="text-xs-left">{{props.item.department.name}}</td>
@@ -38,9 +39,11 @@
 <script>
     import axios from 'axios';
     import {mapState} from 'vuex';
+    import UserForm from "@/components/users/UserForm";
 
     export default {
         name: "UserTable",
+        components: {UserForm},
         data() {
             return {
                 canLoadData: true,
@@ -53,6 +56,7 @@
                     loading: false,
                     headers: [
                         {text: 'Tên hiển thị', value: 'displayName'},
+                        {text: 'Ngày tạo', value: 'createdTime'},
                         {text: 'Tên đầy đủ', value: 'fullName'},
                         {text: 'Email', value: 'email'},
                         {text: 'Phòng ban', value: 'department.name'},
@@ -66,6 +70,16 @@
             })
         },
         methods: {
+            refresh() {
+                this.pagination.page = 1;
+                this.pagination.sortBy = 'displayName';
+                this.pagination.descending = true;
+                // this.canLoadData = false;
+                this.getUsers();
+            },
+            showForm: function () {
+                this.$store.commit('USER_STORE/SET_SHOW_FORM', true);
+            },
             getUsers() {
                 this.table.loading = true;
                 axios.get(`http://localhost:8080/users/findAllStaffSummaryByDepartmentOfCurrentLoggedManager`,
@@ -96,6 +110,9 @@
                     }
                 );
             },
+        },
+        mounted() {
+            this.$store.commit('USER_STORE/SET_USER_FORM', {id: 0});
         },
         watch: {
             pagination: function () {

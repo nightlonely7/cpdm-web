@@ -86,9 +86,7 @@
                 </v-btn>
                 <v-card>
                     <v-list dense>
-                        <v-list-tile
-                                @click=""
-                        >
+                        <v-list-tile to="/self">
                             <v-list-tile-title>
                                 Xem thông tin
                             </v-list-tile-title>

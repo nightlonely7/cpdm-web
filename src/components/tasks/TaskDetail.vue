@@ -79,7 +79,7 @@
                     }
                 )
             },
-            deleteTask: function () {
+            deleteUser: function () {
                 if (confirm('Xóa?')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}`)
                         .then(() => {
