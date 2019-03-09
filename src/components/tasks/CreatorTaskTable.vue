@@ -1,5 +1,5 @@
 <template>
-    <div class="elevation-5">
+    <div class="elevation-1">
         <v-toolbar flat color="white">
             <v-toolbar-title>QUẢN LÝ TÁC VỤ ĐÃ GIAO</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>

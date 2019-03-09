@@ -11,7 +11,7 @@
                     </v-list-tile-title>
                 </v-list-tile>
                 <v-divider/>
-                <v-list-tile to="/tasks" v-if="isStaff || isManager">
+                <v-list-tile to="/tasks">
                     <v-list-tile-action>
                         <v-icon>account_circle</v-icon>
                     </v-list-tile-action>
@@ -19,7 +19,7 @@
                         <v-list-tile-title>Quản lý tác vụ</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile to="/users" v-if="isManager">
+                <v-list-tile to="/users" v-if="isManager || isAdmin">
                     <v-list-tile-action>
                         <v-icon>mdi-file-document</v-icon>
                     </v-list-tile-action>

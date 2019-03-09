@@ -43,14 +43,14 @@
                                           :items="executorOptions"
                                           item-text="displayName"
                                           item-value="id"
-                                          label="Executor"
+                                          label="Người thực hiện"
                                           prepend-inner-icon="account_box"
                                 ></v-select>
                             </v-flex>
                             <v-flex>
                                 <v-text-field v-model="taskForm.priority"
                                               type="number"
-                                              label="Priority"
+                                              label="Mức độ ưu tiên"
                                 ></v-text-field>
                             </v-flex>
                         </v-layout>

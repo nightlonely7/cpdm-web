@@ -11,13 +11,14 @@
         <p>Số điện thoại: {{user.phone || 'Chưa xác định'}}</p>
         <p>Địa chỉ: {{user.address || 'Chưa xác định'}}</p>
         <p>Ngày sinh: {{user.birthday || 'Chưa xác định'}}</p>
+        <p>Giới tính: {{user.gender ? 'Nam' : 'Nữ' || 'Chưa xác định'}}</p>
         <p>Tuổi: {{user.age || 'Chưa xác định'}}</p>
         <p>Phòng ban: {{user.department.name}}</p>
         <p>Chức vụ: {{user.role.name}}</p>
         <br>
         <v-divider></v-divider>
-        <v-btn @click="showForm">Sửa email</v-btn>
-        <v-btn @click="deleteUser">Xóa nhân viên</v-btn>
+        <v-btn @click="showForm" color="primary">Sửa</v-btn>
+        <v-btn @click="deleteUser" color="error">Xóa</v-btn>
         <UserForm @refresh="getUser"></UserForm>
     </div>
 </template>
@@ -46,12 +47,16 @@
         },
         methods: {
             showForm: function () {
+                console.log(this.user);
                 this.$store.commit('USER_STORE/SET_SHOW_FORM', true);
                 const userForm = {
                     id: this.user.id,
                     email: this.user.email,
+                    department: this.user.department,
+                    role: this.user.role
                 };
-                this.$store.commit('TASK_STORE/SET_USER_FORM', userForm);
+                console.log(userForm);
+                this.$store.commit('USER_STORE/SET_USER_FORM', userForm);
             },
             getUser: function () {
                 axios.get(`http://localhost:8080/users/${this.id}`)

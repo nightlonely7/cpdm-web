@@ -15,9 +15,24 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12>
-                                <v-text-field v-model="userForm.password"
+                                <v-text-field v-if="!userForm.email"
+                                              v-model="userForm.password"
                                               label="Mật khẩu"
                                 ></v-text-field>
+                            </v-flex>
+                            <v-flex md6 v-if="isAdmin">
+                                <v-select v-model="userForm.department.id"
+                                          :items="departmentOptions"
+                                          item-text="name"
+                                          item-value="id"
+                                          label="Phòng ban"
+                                ></v-select>
+                            </v-flex>
+                            <v-flex md6 v-if="isAdmin">
+                                <v-select v-model="userForm.role.id"
+                                          :items="[{text: 'NHÂN VIÊN', value: 1},{text: 'QUẢN LÝ PHÒNG BAN', value: 2}]"
+                                          label="Chức vụ"
+                                ></v-select>
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -41,13 +56,22 @@
 <script>
     import axios from 'axios';
     import {mapState} from 'vuex'
+    import {mapGetters} from 'vuex'
 
     export default {
         name: "UserForm",
+        data() {
+            return {
+                departmentOptions: [],
+            }
+        },
         computed: {
             ...mapState('USER_STORE', {
                 showForm: state => state.showForm,
                 userForm: state => state.userForm
+            }),
+            ...mapGetters('AUTHENTICATION', {
+                isAdmin: 'isAdmin',
             })
         },
         methods: {
@@ -74,10 +98,17 @@
             },
             close: function () {
                 this.$store.commit('USER_STORE/SET_SHOW_FORM', false);
+            },
+            loadDepartmentOptions: function () {
+                axios.get(`http://localhost:8080/departments/search/all`)
+                    .then(response => {
+                        this.departmentOptions = response.data;
+                    })
             }
         },
         mounted() {
-
+            console.log(this.userForm);
+            this.loadDepartmentOptions();
         }
     }
 </script>
