@@ -6,67 +6,84 @@
             </v-card-title>
 
             <v-card-text>
-                <v-container grid-list-md>
-                    <v-layout wrap>
-                        <v-flex>
-                            <v-text-field v-model="user.displayName"
-                                          label="Tên hiển thị"
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex>
-                            <v-text-field v-model="user.email"
-                                          label="Email"
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex>
-                            <v-text-field v-model="user.fullName"
-                                          label="Tên đầy đủ"
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex>
-                            <v-text-field v-model="user.gender"
-                                          label="Giới tính"
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex>
-                            <v-text-field v-model="user.phone"
-                                          label="Số điện thoại"
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex>
-                            <v-text-field v-model="user.address"
-                                          label="Địa chỉ"
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex>
-                            <v-text-field v-model="user.birthday"
-                                          label="Ngày sinh"
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex>
-                            <v-text-field v-model="this.age || 'Không xác định'"
-                                          label="Tuổi"
-                                          readonly
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex>
-                            <v-text-field v-model="user.department.name"
-                                          label="Phòng ban"
-                                          readonly
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex>
-                            <v-text-field v-model="user.role.name"
-                                          label="Chức vụ"
-                                          readonly
-                            ></v-text-field>
-                        </v-flex>
-                    </v-layout>
-                </v-container>
+                <v-form ref="form">
+                    <v-container grid-list-md>
+                        <v-layout wrap>
+                            <v-flex md6>
+                                <v-text-field v-model="user.displayName"
+                                              label="Tên hiển thị"
+                                              :rules="displayNameRule"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex md6>
+                                <v-text-field v-model="user.email"
+                                              label="Email"
+                                              :rules="emailRule"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex md6>
+                                <v-text-field v-model="user.fullName"
+                                              label="Tên đầy đủ"
+                                              :rules="fullNameRule"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex md6>
+                                <v-radio-group v-model="user.gender" label="Giới tính" row>
+                                    <v-radio
+                                            label="Nam" value="TRUE" color="green"
+                                    ></v-radio>
+                                    <v-radio
+                                            label="Nữ" value="FALSE" color="green"
+                                    ></v-radio>
+                                </v-radio-group>
+                            </v-flex>
+                            <v-flex md6>
+                                <v-text-field v-model="user.phone"
+                                              label="Số điện thoại"
+                                              :rules="phoneRule"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex md6>
+                                <v-text-field v-model="user.address"
+                                              label="Địa chỉ"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex md6>
+                                <v-menu right offset-x id="birthDay-menu">
+                                    <v-text-field v-model="user.birthday"
+                                                  label="Ngày sinh" slot="activator"
+                                                  @change="formatDatePicker" @click="formatDatePicker"
+                                    ></v-text-field>
+                                    <v-date-picker v-model="datePicker" label="Ngày sinh" color="green"
+                                                   scrollable @change="formatDateText">
+                                    </v-date-picker>
+                                </v-menu>
+                            </v-flex>
+                            <v-flex md6>
+                                <v-text-field v-model="this.age || 'Không xác định'"
+                                              label="Tuổi"
+                                              readonly
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex md6>
+                                <v-text-field v-model="user.department.name"
+                                              label="Phòng ban"
+                                              readonly
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex md6>
+                                <v-text-field v-model="user.role.name"
+                                              label="Chức vụ"
+                                              readonly
+                                ></v-text-field>
+                            </v-flex>
+                        </v-layout>
+                    </v-container>
+                </v-form>
             </v-card-text>
 
             <v-card-actions>
-                <v-btn color="primary">
+                <v-btn color="primary" @click="saveUser">
                     <v-icon left>done</v-icon>
                     Lưu
                 </v-btn>
@@ -84,6 +101,36 @@
         data() {
             return {
                 user: {department: {}, role: {}},
+                displayNameRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
+                    val => (val && val.length >= 4 && val.length <= 30)
+                        || 'Cần phải điền từ 4 tới 30 ý tự!'
+                ],
+                fullNameRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
+                    val => (val && val.length >= 4 && val.length <= 50)
+                        || 'Cần phải điền từ 4 tới 50 ý tự!'
+                ],
+                passwordRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
+                    val => (val && val.length >= 8 && val.length <= 20)
+                        || 'Cần phải điền từ 8 tới 20 ý tự!'
+                ],
+                confirmPasswordRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
+                    val => (val && val.length >= 8 && val.length <= 20)
+                        || 'Cần phải điền từ 8 tới 20 ý tự!',
+                    val => (val === this.$store.state.user.user.password) || 'Nhập lại mật khẩu phải trùng với mật khẩu!'
+                ],
+                emailRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
+                    val => /.+@.+/.test(val) || 'Email không hợp lệ!',
+                ],
+                phoneRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
+                    val => /^0(\d{9})$/.test(val) || 'Số điện thoại không hợp lệ!'
+                ],
+                datePicker: ''
             }
         },
         computed: {
@@ -102,14 +149,38 @@
                         if (this.user.birthday && this.user.birthday.length) {
                             this.user.birthday = moment(this.user.birthday).format("DD-MM-YYYY")
                         }
-
                     })
                     .catch(error => console.log(error));
+            },
+            saveUser: function () {
+                if(!this.$refs.form.validate()){
+                    console.log("Validation failed!");
+                } else {
+                    console.log("Validation successful!")
+                }
+            },
+            formatDatePicker: function () {
+                if (this.user.birthday != null) {
+                    let time = this.user.birthday.split('-');
+                    if (time[2].length === 4) {
+                        this.datePicker = time[2] + '-' + time[1] + '-' + time[0];
+                    }
+                }
+            },
+            formatDateText: function () {
+                if (this.datePicker != null) {
+                    let time = this.datePicker.split('-');
+                    if (time[0].length === 4) {
+                        this.user.birthday = time[2] + '-' + time[1] + '-' + time[0];
+                    }
+                }
             }
         }
     }
 </script>
 
 <style scoped>
-
+    #birthDay-menu {
+        width: 100%
+    }
 </style>
