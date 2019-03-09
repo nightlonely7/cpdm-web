@@ -139,10 +139,10 @@
             }
         },
         mounted() {
-            this.getTask();
+            this.getUser();
         },
         methods: {
-            getTask: function () {
+            getUser: function () {
                 axios.get(`http://localhost:8080/self/full`)
                     .then(response => {
                         this.user = response.data;
