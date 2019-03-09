@@ -3,9 +3,9 @@
         <v-toolbar flat color="white">
             <v-toolbar-title>QUẢN LÝ NHÂN VIÊN</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
-            <v-btn @click="refresh">Làm mới</v-btn>
+            <v-btn color="primary" @click="refresh">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <v-btn @click="showForm">Tạo mới nhân viên</v-btn>
+            <v-btn color="primary" @click="showForm">Tạo mới nhân viên</v-btn>
             <UserForm @refresh="refresh"></UserForm>
         </v-toolbar>
         <v-data-table
@@ -30,7 +30,7 @@
                     <td class="text-xs-left">{{props.item.fullName}}</td>
                     <td class="text-xs-left">{{props.item.email}}</td>
                     <td class="text-xs-left">{{props.item.department.name}}</td>
-                    <td v-if="isAdmin" class="text-xs-left">{{props.item.role.name}}</td>
+                    <td class="text-xs-left">{{props.item.role.name}}</td>
                 </router-link>
             </template>
         </v-data-table>

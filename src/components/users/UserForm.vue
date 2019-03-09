@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-dialog v-model="showForm" persistent>
+        <v-dialog v-model="showForm" persistent max-width="500">
             <v-card>
                 <v-card-title>
                     <span class="headline">FORM NHÂN VIÊN</span>
@@ -15,8 +15,9 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12>
-                                <v-text-field v-if="!userForm.email"
+                                <v-text-field v-if="userForm.id === 0"
                                               v-model="userForm.password"
+                                              type="password"
                                               label="Mật khẩu"
                                 ></v-text-field>
                             </v-flex>

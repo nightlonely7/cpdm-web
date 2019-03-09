@@ -3,9 +3,9 @@
         <v-toolbar flat color="white">
             <v-toolbar-title>QUẢN LÝ TÁC VỤ ĐÃ GIAO</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
-            <v-btn @click="refresh()">Làm mới</v-btn>
+            <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <v-btn @click="showForm">Tạo mới tác vụ</v-btn>
+            <v-btn color="primary" @click="showForm">Tạo mới tác vụ</v-btn>
             <TaskForm @refresh="refresh"></TaskForm>
         </v-toolbar>
         <v-data-table

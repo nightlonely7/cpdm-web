@@ -1,10 +1,8 @@
 <template>
     <div>
         <TaskSearch></TaskSearch>
-        <v-divider></v-divider>
         <br>
         <CreatorTaskTable v-if="isAdmin || isManager"></CreatorTaskTable>
-        <v-divider></v-divider>
         <br>
         <ExecutorTaskTable v-if="isStaff || isManager"></ExecutorTaskTable>
     </div>
