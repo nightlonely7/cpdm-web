@@ -13,27 +13,30 @@
                                 <v-text-field v-model="user.displayName"
                                               label="Tên hiển thị"
                                               :rules="displayNameRule"
+                                              counter="30"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
                                 <v-text-field v-model="user.email"
                                               label="Email"
                                               :rules="emailRule"
+                                              counter="30"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
                                 <v-text-field v-model="user.fullName"
                                               label="Tên đầy đủ"
                                               :rules="fullNameRule"
+                                              counter="50"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
                                 <v-radio-group v-model="user.gender" label="Giới tính" row>
                                     <v-radio
-                                            label="Nam" value="TRUE" color="green"
+                                            label="Nam" value="TRUE" color="primary"
                                     ></v-radio>
                                     <v-radio
-                                            label="Nữ" value="FALSE" color="green"
+                                            label="Nữ" value="FALSE" color="error"
                                     ></v-radio>
                                 </v-radio-group>
                             </v-flex>
