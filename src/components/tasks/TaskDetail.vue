@@ -54,7 +54,7 @@
         },
         mounted() {
             this.$nextTick(function () {
-                this.getUser();
+                this.getTask();
             })
         },
         methods: {
@@ -72,14 +72,14 @@
                 };
                 this.$store.commit('TASK_STORE/SET_TASK_FORM', taskForm);
             },
-            getUser: function () {
+            getTask: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}`)
                     .then(response => {
                         this.$store.commit('TASK_STORE/SET_TASK', response.data);
                     }
                 )
             },
-            deleteUser: function () {
+            deleteTask: function () {
                 if (confirm('Xóa?')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}`)
                         .then(() => {
