@@ -17,7 +17,11 @@
                     </template>
                 </v-card-text>
             </v-card>
-            <v-divider></v-divider>
+        </div>
+        <v-divider></v-divider>
+        <br>
+        <div>
+
             <v-card>
                 <v-card-title>TẢI LÊN TỆP TIN</v-card-title>
                 <v-card-text>
