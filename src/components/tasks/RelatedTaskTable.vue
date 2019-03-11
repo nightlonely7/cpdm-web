@@ -1,16 +1,14 @@
 <template>
     <div class="elevation-1">
         <v-toolbar flat color="white">
-            <v-toolbar-title class="animated bounce delay-2s">{{title}}</v-toolbar-title>
+            <v-toolbar-title>TÁC VỤ ĐƯỢC THEO DÕI</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="showForm">Tạo mới tác vụ</v-btn>
-            <TaskForm @refresh="refresh"></TaskForm>
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
-                :items="creatorTasks"
+                :items="executorTasks"
                 :loading="table.loading"
                 :pagination.sync="pagination"
                 :total-items="pagination.totalItems"
@@ -43,18 +41,12 @@
 <script>
     import axios from 'axios';
     import _ from 'lodash';
-    import TaskForm from '@/components/tasks/TaskForm.vue';
     import {mapState} from 'vuex'
 
     export default {
-        name: "CreatorTaskTable",
-        components: {TaskForm},
-        props: {
-            type: String
-        },
+        name: "ExecutorTaskTable",
         data() {
             return {
-                title: '',
                 canLoadData: true,
                 alert: '',
                 pagination: {
@@ -79,7 +71,7 @@
         },
         computed: {
             ...mapState('TASK_STORE', {
-                creatorTasks: state => state.creatorTasks,
+                executorTasks: state => state.executorTasks,
                 titleSearchValue: state => state.titleSearchValue,
                 summarySearchValue: state => state.summarySearchValue,
             }),
@@ -90,18 +82,8 @@
             })
         },
         mounted() {
-            this.$store.commit('TASK_STORE/SET_TASK_FORM', {id: 0, executor: {}});
-            switch (this.type) {
-                case 'creator':
-                    this.title = 'QUẢN LÝ TÁC VỤ ĐÃ GIAO';
-                    break;
-                case 'executor':
-                    this.title = 'QUẢN LÝ TÁC VỤ ĐƯỢC GIAO';
-                    break;
-                case 'related':
-                    this.title = 'TÁC VỤ ĐƯỢC THEO DÕI';
-                    break;
-            }
+            this.$store.commit('TASK_STORE/SET_TASK_FORM', {id: 0, executor: {}})
+
         },
         methods: {
             showForm: function () {
@@ -114,11 +96,11 @@
                 this.$store.commit('TASK_STORE/SET_TITLE_SEARCH_VALUE', '');
                 this.$store.commit('TASK_STORE/SET_SUMMARY_SEARCH_VALUE', '');
                 this.canLoadData = false;
-                this.getTasks();
+                this.getExecutorTasks();
             },
-            getTasks: function () {
+            getExecutorTasks: function () {
                 this.table.loading = true;
-                axios.get(`http://localhost:8080/tasks/findByCurrentLoggedCreator`,
+                axios.get(`http://localhost:8080/tasks/findByCurrentLoggedExecutor`,
                     {
                         params: {
                             page: this.pagination.page - 1,
@@ -130,10 +112,10 @@
                     }
                 ).then(response => {
                         if (response.status === 204) {
-                            this.$store.commit('TASK_STORE/SET_CREATOR_TASKS', []);
+                            this.$store.commit('TASK_STORE/SET_EXECUTOR_TASKS', []);
                             this.pagination.totalItems = 0;
                         } else {
-                            this.$store.commit('TASK_STORE/SET_CREATOR_TASKS', response.data.content);
+                            this.$store.commit('TASK_STORE/SET_EXECUTOR_TASKS', response.data.content);
                             this.pagination.totalItems = response.data.totalElements;
                         }
                         this.table.loading = false;
@@ -150,12 +132,12 @@
         },
         watch: {
             pagination: function () {
-                this.getTasks();
+                this.getExecutorTasks();
             },
             titleSearchValue: function () {
                 this.pagination.page = 1;
                 if (this.canLoadData) {
-                    this.debouncedGetTasks();
+                    this.debouncedGetExecutorTasks();
                 } else {
                     this.canLoadData = true;
                 }
@@ -163,14 +145,14 @@
             summarySearchValue: function () {
                 this.pagination.page = 1;
                 if (this.canLoadData) {
-                    this.debouncedGetTasks();
+                    this.debouncedGetExecutorTasks();
                 } else {
                     this.canLoadData = true;
                 }
             }
         },
         created() {
-            this.debouncedGetTasks = _.debounce(this.getTasks, 500);
+            this.debouncedGetExecutorTasks = _.debounce(this.getExecutorTasks, 500);
         }
     }
 </script>
