@@ -1,7 +1,7 @@
 <template>
     <div class="elevation-1">
         <v-toolbar flat color="white">
-            <v-toolbar-title class="animated bounce delay-2s">{{title}}</v-toolbar-title>
+            <v-toolbar-title class="animated bounce delay-1s">{{title}}</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
             <v-spacer></v-spacer>
@@ -10,7 +10,7 @@
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
-                :items="creatorTasks"
+                :items="tasks"
                 :loading="table.loading"
                 :pagination.sync="pagination"
                 :total-items="pagination.totalItems"
@@ -54,6 +54,8 @@
         },
         data() {
             return {
+                getTasksURL: '',
+                tasks: [],
                 title: '',
                 canLoadData: true,
                 alert: '',
@@ -79,7 +81,6 @@
         },
         computed: {
             ...mapState('TASK_STORE', {
-                creatorTasks: state => state.creatorTasks,
                 titleSearchValue: state => state.titleSearchValue,
                 summarySearchValue: state => state.summarySearchValue,
             }),
@@ -91,15 +92,19 @@
         },
         mounted() {
             this.$store.commit('TASK_STORE/SET_TASK_FORM', {id: 0, executor: {}});
+            console.log(this.type);
             switch (this.type) {
                 case 'creator':
-                    this.title = 'QUẢN LÝ TÁC VỤ ĐÃ GIAO';
+                    this.title = 'TÁC VỤ ĐÃ GIAO';
+                    this.getTasksURL = 'creates';
                     break;
                 case 'executor':
-                    this.title = 'QUẢN LÝ TÁC VỤ ĐƯỢC GIAO';
+                    this.title = 'TÁC VỤ ĐƯỢC GIAO';
+                    this.getTasksURL = 'executes';
                     break;
                 case 'related':
-                    this.title = 'TÁC VỤ ĐƯỢC THEO DÕI';
+                    this.title = 'TÁC VỤ LIÊN QUAN';
+                    this.getTasksURL = 'relatives';
                     break;
             }
         },
@@ -117,8 +122,9 @@
                 this.getTasks();
             },
             getTasks: function () {
+                console.log('load');
                 this.table.loading = true;
-                axios.get(`http://localhost:8080/tasks/findByCurrentLoggedCreator`,
+                axios.get(`http://localhost:8080/tasks/search/${this.getTasksURL}`,
                     {
                         params: {
                             page: this.pagination.page - 1,
@@ -130,10 +136,10 @@
                     }
                 ).then(response => {
                         if (response.status === 204) {
-                            this.$store.commit('TASK_STORE/SET_CREATOR_TASKS', []);
+                            this.tasks = [];
                             this.pagination.totalItems = 0;
                         } else {
-                            this.$store.commit('TASK_STORE/SET_CREATOR_TASKS', response.data.content);
+                            this.tasks = response.data.content;
                             this.pagination.totalItems = response.data.totalElements;
                         }
                         this.table.loading = false;

@@ -9,6 +9,11 @@
 
         <p>Trạng thái:
             <v-chip>{{task.status}}</v-chip>
+            <br>
+            <span>Tỉ lệ hoàn thành:&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</span>
+            <v-progress-circular :value="completionRate * 100" size="64" rotate="180" width="12" color="primary">
+                <span style="color: black">{{completionRate * 100}}%</span>
+            </v-progress-circular>
         </p>
         <p>Độ ưu tiên: {{task.priority}}</p>
         <p>Người tạo: {{task.creator.displayName}}</p>
@@ -24,6 +29,52 @@
                 {{task.description}}
             </v-card-text>
         </v-card>
+        <br>
+
+        <v-expansion-panel>
+            <v-expansion-panel-content>
+
+                <template slot="header">
+                    Danh sách người theo dõi
+                </template>
+
+                <v-list>
+                    <v-list-tile-content>
+                        <template v-for="user in task.relatives">
+                            <v-list-tile>
+                                {{user.displayName}} - {{user.fullName}} - {{user.email}} -
+                                Phòng ban: {{user.department.name || ''}} -
+                                Chức vụ: {{user.role.name || ''}}
+                            </v-list-tile>
+                        </template>
+                    </v-list-tile-content>
+                </v-list>
+
+
+            </v-expansion-panel-content>
+        </v-expansion-panel>
+
+        <v-expansion-panel>
+            <v-expansion-panel-content>
+
+                <template slot="header">
+                    Danh sách vấn đề
+                </template>
+
+                <v-list>
+                    <v-list-tile-content>
+                        <template v-for="issue in task.issues">
+                            <v-list-tile>
+                                {{issue.summary}} - {{issue.detail}} - {{issue.weight}}
+                            </v-list-tile>
+                        </template>
+                    </v-list-tile-content>
+                </v-list>
+
+
+            </v-expansion-panel-content>
+        </v-expansion-panel>
+
         <br>
         <v-divider></v-divider>
         <v-btn @click="deleteTask" color="error">
@@ -47,10 +98,29 @@
         props: {
             id: Number
         },
+        data() {
+            return {
+                task: {
+                    creator: {},
+                    executor: {},
+                },
+            }
+        },
         computed: {
-            ...mapState('TASK_STORE', {
-                task: state => state.task
-            })
+            completionRate: function () {
+                let totalWeight = 0;
+                let totalComplete = 0;
+                if (this.task.issues) {
+                    this.task.issues.forEach(function (issue) {
+                        console.log(issue);
+                        totalWeight += issue.weight;
+                        if (issue.status === 'completed') {
+                            totalComplete += issue.weight;
+                        }
+                    });
+                }
+                return totalComplete === 0 ? 0 : totalComplete / totalWeight;
+            }
         },
         mounted() {
             this.$nextTick(function () {
@@ -75,17 +145,17 @@
             getTask: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}`)
                     .then(response => {
-                        this.$store.commit('TASK_STORE/SET_TASK', response.data);
-                    }
-                )
+                            this.task = response.data;
+                        }
+                    )
             },
             deleteTask: function () {
                 if (confirm('Xóa?')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}`)
                         .then(() => {
-                            this.$router.push("/tasks");
-                        }
-                    )
+                                this.$router.push("/tasks");
+                            }
+                        )
                 }
             }
         }

@@ -40,11 +40,27 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
-    if (to.path === '/login' || store.getters['AUTHENTICATION/isLoggedIn']) {
+    if (to.path === '/login') {
+        if (store.getters['AUTHENTICATION/isLoggedIn']) {
+            store.dispatch('AUTHENTICATION/INIT')
+                .then(() => next('/tasks'))
+                .catch(() => next('/login'));
+            return;
+        }
         next();
         return;
     }
-    next('/login');
+    if (!store.getters['AUTHENTICATION/isLoggedIn']) {
+        next('/login');
+        return;
+    }
+    if (!store.getters['AUTHENTICATION/isInit']) {
+        store.dispatch('AUTHENTICATION/INIT')
+            .then(() => next())
+            .catch(() => next('/login'));
+        return;
+    }
+    next();
 });
 
 export default router;

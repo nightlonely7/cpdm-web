@@ -3,12 +3,6 @@ const taskStoreDefaultState = () => {
         showForm: false,
         titleSearchValue: '',
         summarySearchValue: '',
-        task: {
-            creator: {},
-            executor: {},
-        },
-        creatorTasks: [],
-        executorTasks: [],
         taskForm: {
             executor: {},
         },
@@ -19,15 +13,6 @@ export default {
     namespaced: true,
     state: taskStoreDefaultState(),
     mutations: {
-        SET_TASK(state, task) {
-            state.task = task
-        },
-        SET_CREATOR_TASKS(state, creatorTasks) {
-            state.creatorTasks = creatorTasks
-        },
-        SET_EXECUTOR_TASKS(state, executorTasks) {
-            state.executorTasks = executorTasks
-        },
         SET_TASK_FORM(state, taskForm) {
             state.taskForm = taskForm
         },
