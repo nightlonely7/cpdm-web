@@ -18,26 +18,19 @@
                     </template>
                     <br>
                     <p>TẢI LÊN TỆP TIN</p>
-                            <UploadButton
-                                    :fileChangedCallback="handleFileUpload" @click="uploadFile" title="Chọn tệp tin"
-                            ></UploadButton>
-                            <span>Tệp tin sẽ tải: {{file.name || 'Chưa xác định'}}</span>
-                            <v-btn v-if="!!file.name" color="primary" @click="uploadFile" :loading="loading">Tải lên</v-btn>
-                            <span v-if="!!file.status"> | </span>
-                            <b>{{file.status || ''}}</b>
+                    <UploadButton
+                            :fileChangedCallback="handleFileUpload" @click="uploadFile" title="Chọn tệp tin"
+                    ></UploadButton>
+                    <span>Tệp tin sẽ tải: {{file.name || 'Chưa xác định'}}</span>
+                    <v-btn v-if="!!file.name" color="primary" @click="uploadFile" :loading="loading">Tải lên</v-btn>
+                    <span v-if="!!file.status"> | </span>
+                    <b>{{file.status || ''}}</b>
                 </v-card-text>
             </v-card>
         </div>
         <v-divider></v-divider>
         <br>
-
-
-
-
-
-
     </div>
-
 </template>
 
 <script>
@@ -101,6 +94,7 @@
         },
         mounted() {
             this.id = Number.parseInt(this.$route.params.id);
+            this.$store.commit('TASK_STORE/SET_TASK_ID', this.id);
             this.loadFilenames();
         }
     }

@@ -64,7 +64,6 @@
                                                 label="Người liên quan"
                                                 clearable
                                                 hide-no-data
-                                                @select="console.log('aaa')"
                                 >
 
                                     <template slot="item" slot-scope="data">
@@ -117,7 +116,7 @@
         },
         methods: {
             save: function () {
-
+                console.log(this.relatives);
                 const data = {
                     ...this.taskForm,
                     relatives: this.relatives.map(value => {
@@ -170,7 +169,7 @@
                     }).finally(() => {
                         this.viewerOptionsLoading = false;
                     });
-                }, 1000);
+                }, 500);
             },
         },
         mounted() {
@@ -190,8 +189,6 @@
             },
             relatives: function (val) {
                 this.viewerOptionsSearch = '';
-                console.log(this.relatives);
-
             }
         }
     }
