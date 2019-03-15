@@ -187,7 +187,7 @@
                     this.debouncedGetViewerOptions(val);
                 }
             },
-            relatives: function (val) {
+            relatives: function () {
                 this.viewerOptionsSearch = '';
             }
         }

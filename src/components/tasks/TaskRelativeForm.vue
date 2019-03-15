@@ -121,7 +121,7 @@
                     }).finally(() => {
                         this.viewerOptionsLoading = false;
                     });
-                }, 1000);
+                }, 500);
             },
         },
         created() {
@@ -133,7 +133,7 @@
                     this.debouncedGetViewerOptions(val);
                 }
             },
-            relatives: function (val) {
+            relatives: function () {
                 this.viewerOptionsSearch = '';
             }
         }

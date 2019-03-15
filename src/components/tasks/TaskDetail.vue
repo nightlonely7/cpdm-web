@@ -47,6 +47,7 @@
                             {{user.displayName}} - {{user.fullName}} - {{user.email}} -
                             Phòng ban: {{user.department.name || ''}} -
                             Chức vụ: {{user.role.name || ''}}
+                            <v-btn @click="deleteRelative(user.id)">Xóa</v-btn>
                         </v-list-tile>
                     </v-list-tile-content>
                 </v-list>
@@ -195,6 +196,21 @@
                     axios.delete(`http://localhost:8080/taskIssues/${id}`)
                         .then(() => {
                             this.refreshIssues();
+                        })
+                        .catch(error => {
+                            if (error.response) {
+                                console.log(error.response.data);
+                            } else {
+                                console.log(error.response);
+                            }
+                        })
+                }
+            },
+            deleteRelative: function (userId) {
+                if (confirm('Bạn muốn xóa Người liên quan này chứ')) {
+                    axios.delete(`http://localhost:8080/tasks/${this.id}/relatives/${userId}`)
+                        .then(() => {
+                            this.refreshRelatives();
                         })
                         .catch(error => {
                             if (error.response) {
