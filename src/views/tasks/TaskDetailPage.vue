@@ -4,7 +4,9 @@
         <br>
         <br>
         <TaskDetail :id="id"></TaskDetail>
+
         <br>
+
         <div>
             <v-card>
                 <v-card-title>DANH SÁCH TỆP TIN</v-card-title>
@@ -14,27 +16,20 @@
                         <a @click.prevent="downloadFile(taskFile.filename)">{{taskFile.filename}}</a>
                         <br>
                     </template>
+                    <br>
+                    <p>TẢI LÊN TỆP TIN</p>
+                    <UploadButton
+                            :fileChangedCallback="handleFileUpload" @click="uploadFile" title="Chọn tệp tin"
+                    ></UploadButton>
+                    <span>Tệp tin sẽ tải: {{file.name || 'Chưa xác định'}}</span>
+                    <v-btn v-if="!!file.name" color="primary" @click="uploadFile" :loading="loading">Tải lên</v-btn>
+                    <span v-if="!!file.status"> | </span>
+                    <b>{{file.status || ''}}</b>
                 </v-card-text>
             </v-card>
         </div>
         <v-divider></v-divider>
         <br>
-        <div>
-            <v-card>
-                <v-card-title>TẢI LÊN TỆP TIN</v-card-title>
-                <v-card-text>
-                    <UploadButton
-                            :fileChangedCallback="handleFileUpload" @click="uploadFile" title="Chọn tệp tin"
-                    ></UploadButton>
-                    <span>Tệp tin sẽ tải: {{file.name || 'Chưa xác định'}}</span>
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn v-if="!!file.name" color="primary" @click="uploadFile" :loading="loading">Tải lên</v-btn>
-                    <span v-if="!!file.status">  </span>
-                    <b color="red">{{file.status || ''}}</b>
-                </v-card-actions>
-            </v-card>
-        </div>
     </div>
 </template>
 
@@ -64,7 +59,7 @@
                 this.loading = true;
                 const formData = new FormData();
                 formData.append('file', this.file);
-                axios.post(`http://localhost:8080/tasks/${this.id}/uploadFile`, formData, {
+                axios.post(`http://localhost:8080/tasks/${this.id}/files`, formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     }
@@ -99,6 +94,7 @@
         },
         mounted() {
             this.id = Number.parseInt(this.$route.params.id);
+            this.$store.commit('TASK_STORE/SET_TASK_ID', this.id);
             this.loadFilenames();
         }
     }

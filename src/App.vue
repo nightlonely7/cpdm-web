@@ -1,6 +1,6 @@
 <template>
     <v-app>
-        <v-navigation-drawer fixed app v-model="drawer" v-if="isLoggedIn">
+        <v-navigation-drawer fixed app v-model="drawer" v-if="isLoggedIn && isInit">
             <v-list>
                 <v-list-tile avatar>
                     <v-list-tile-avatar color="white">
@@ -29,7 +29,7 @@
                 </v-list-tile>
             </v-list>
         </v-navigation-drawer>
-        <v-toolbar color="indigo" dark fiexed app v-if="isLoggedIn">
+        <v-toolbar color="indigo" dark fiexed app v-if="isLoggedIn && isInit">
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer/>
@@ -133,15 +133,14 @@
             source: String
         },
         mounted() {
-            if (this.isLoggedIn) {
-                this.init();
-            }
+
         },
         computed: {
             ...mapState('AUTHENTICATION', {
                 role: state => state.role,
             }),
             ...mapGetters('AUTHENTICATION', {
+                isInit: 'isInit',
                 isLoggedIn: 'isLoggedIn',
                 isAdmin: 'isAdmin',
                 isManager: 'isManager',
@@ -149,12 +148,6 @@
             }),
         },
         methods: {
-            init: function () {
-                this.$store.dispatch('AUTHENTICATION/INIT')
-                    .catch(() => {
-                        this.$router.push('/login');
-                    })
-            },
             logout: function () {
                 this.$store.dispatch('AUTHENTICATION/LOGOUT')
                     .then(() => {

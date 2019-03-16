@@ -9,6 +9,11 @@
 
         <p>Trạng thái:
             <v-chip>{{task.status}}</v-chip>
+            <br>
+            <span>Tỉ lệ hoàn thành:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <v-progress-circular :value="completionRate * 100" size="96" rotate="270" width="16" color="primary">
+                <span style="color: black">{{(completionRate * 100).toFixed(2)}}%</span>
+            </v-progress-circular>
         </p>
         <p>Độ ưu tiên: {{task.priority}}</p>
         <p>Người tạo: {{task.creator.displayName}}</p>
@@ -25,35 +30,107 @@
             </v-card-text>
         </v-card>
         <br>
+
+        <v-expansion-panel>
+            <v-expansion-panel-content>
+
+                <template slot="header">
+                    Danh sách người theo dõi
+                </template>
+
+                <v-list>
+                    <v-list-tile-content>
+                        <v-list-tile>
+                            <v-btn @click="showRelativeForm">Thêm người liên quan</v-btn>
+                        </v-list-tile>
+                        <v-list-tile v-for="user in taskRelatives" :key="user.id">
+                            {{user.displayName}} - {{user.fullName}} - {{user.email}} -
+                            Phòng ban: {{user.department.name || ''}} -
+                            Chức vụ: {{user.role.name || ''}}
+                            <v-btn @click="deleteRelative(user.id)">Xóa</v-btn>
+                        </v-list-tile>
+                    </v-list-tile-content>
+                </v-list>
+
+
+            </v-expansion-panel-content>
+        </v-expansion-panel>
+
+        <v-expansion-panel>
+            <v-expansion-panel-content>
+
+                <template slot="header">
+                    Danh sách vấn đề
+                </template>
+
+                <v-list>
+                    <v-list-tile-content>
+                        <v-list-tile>
+                            <v-btn @click="showIssueForm">Thêm vấn đề</v-btn>
+
+                        </v-list-tile>
+                        <v-list-tile v-for="issue in taskIssues" :key="issue.id">
+                            {{issue.summary}} - {{issue.detail}} - {{issue.weight}}
+                            <v-btn @click="editIssue(issue)">Sửa</v-btn>
+                            <v-btn @click="deleteIssue(issue.id)">Xóa</v-btn>
+                        </v-list-tile>
+                    </v-list-tile-content>
+                </v-list>
+
+
+            </v-expansion-panel-content>
+        </v-expansion-panel>
+
+        <br>
         <v-divider></v-divider>
         <v-btn @click="deleteTask" color="error">
             Xóa
         </v-btn>
-        <v-btn @click="showForm" color="info">
+        <v-btn @click="showForm">
             Sửa
         </v-btn>
-        <v-btn @click="changeStatus(id)" color="success">
-            Hoàn thành công việc
-        </v-btn>
         <TaskForm @refresh="getTask"></TaskForm>
+        <TaskIssueForm @refresh="refreshIssues"></TaskIssueForm>
+        <TaskRelativeForm @refresh="refreshRelatives"></TaskRelativeForm>
     </div>
 </template>
 
 <script>
     import axios from 'axios'
     import TaskForm from "@/components/tasks/TaskForm";
-    import {mapState} from 'vuex'
+    import TaskIssueForm from "@/components/tasks/TaskIssueForm";
+    import TaskRelativeForm from "@/components/tasks/TaskRelativeForm";
 
     export default {
         name: "TaskDetail",
-        components: {TaskForm},
+        components: {TaskRelativeForm, TaskIssueForm, TaskForm},
         props: {
             id: Number
         },
+        data() {
+            return {
+                task: {
+                    creator: {},
+                    executor: {},
+                },
+                taskIssues: [],
+                taskRelatives: [],
+            }
+        },
         computed: {
-            ...mapState('TASK_STORE', {
-                task: state => state.task
-            })
+            completionRate: function () {
+                let totalWeight = 0;
+                let totalComplete = 0;
+                if (this.taskIssues) {
+                    this.taskIssues.forEach(function (issue) {
+                        totalWeight += issue.weight;
+                        if (issue.status === 'completed') {
+                            totalComplete += issue.weight;
+                        }
+                    });
+                }
+                return totalComplete === 0 ? 0 : totalComplete / totalWeight;
+            },
         },
         mounted() {
             this.$nextTick(function () {
@@ -61,6 +138,12 @@
             })
         },
         methods: {
+            refreshIssues: function () {
+                this.getTaskIssues();
+            },
+            refreshRelatives: function () {
+                this.getTaskRelatives();
+            },
             showForm: function () {
                 this.$store.commit('TASK_STORE/SET_SHOW_FORM', true);
                 const taskForm = {
@@ -78,26 +161,72 @@
             getTask: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}`)
                     .then(response => {
-                        this.$store.commit('TASK_STORE/SET_TASK', response.data);
-                    }
-                )
+                        Object.assign(this.task, response.data);
+                        this.getTaskIssues();
+                        this.getTaskRelatives();
+                    })
+            },
+            getTaskIssues: function () {
+                axios.get(`http://localhost:8080/tasks/${this.id}/issues`)
+                    .then(response => {
+                        this.taskIssues = response.data;
+                    })
+            },
+            getTaskRelatives: function () {
+                axios.get(`http://localhost:8080/tasks/${this.id}/relatives`)
+                    .then(response => {
+                        this.taskRelatives = response.data;
+                    })
             },
             deleteTask: function () {
                 if (confirm('Xóa?')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}`)
                         .then(() => {
-                            this.$router.push("/tasks");
-                        }
-                    )
+                                this.$router.push("/tasks");
+                            }
+                        )
                 }
             },
-            changeStatus: function (id) {
-                axios.patch(`http://localhost:8080/tasks/${id}/done`, {})
-                    .then(
-                        () => {
-                            this.$router.push('/tasks');
-                        }
-                    )
+            editIssue: function (issue) {
+                this.$store.commit('TASK_STORE/SET_TASK_ISSUE_FORM', issue);
+                this.$store.commit('TASK_STORE/SET_SHOW_ISSUE_FORM', true);
+            },
+            deleteIssue: function (id) {
+                if (confirm('Bạn muốn xóa Vấn đề này chứ')) {
+                    axios.delete(`http://localhost:8080/taskIssues/${id}`)
+                        .then(() => {
+                            this.refreshIssues();
+                        })
+                        .catch(error => {
+                            if (error.response) {
+                                console.log(error.response.data);
+                            } else {
+                                console.log(error.response);
+                            }
+                        })
+                }
+            },
+            deleteRelative: function (userId) {
+                if (confirm('Bạn muốn xóa Người liên quan này chứ')) {
+                    axios.delete(`http://localhost:8080/tasks/${this.id}/relatives/${userId}`)
+                        .then(() => {
+                            this.refreshRelatives();
+                        })
+                        .catch(error => {
+                            if (error.response) {
+                                console.log(error.response.data);
+                            } else {
+                                console.log(error.response);
+                            }
+                        })
+                }
+            },
+            showIssueForm: function () {
+                this.$store.commit('TASK_STORE/SET_TASK_ISSUE_FORM', {id: 0});
+                this.$store.commit('TASK_STORE/SET_SHOW_ISSUE_FORM', true);
+            },
+            showRelativeForm: function () {
+                this.$store.commit('TASK_STORE/SET_SHOW_RELATIVE_FORM', true);
             }
         }
     }

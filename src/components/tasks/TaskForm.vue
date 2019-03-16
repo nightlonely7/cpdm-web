@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-dialog v-model="showForm" persistent>
+        <v-dialog v-model="showForm" fullscreen persistent>
             <v-card>
                 <v-card-title>
                     <span class="headline">FORM</span>
@@ -66,6 +66,26 @@
                                               label="Mức độ ưu tiên"
                                 ></v-text-field>
                             </v-flex>
+                            <v-flex md12>
+                                <v-autocomplete chips deletable-chips cache-items multiple
+                                                v-model="relatives"
+                                                :items="viewerOptions"
+                                                item-text="email"
+                                                item-value="id"
+                                                :loading="viewerOptionsLoading"
+                                                :search-input.sync="viewerOptionsSearch"
+                                                label="Người liên quan"
+                                                clearable
+                                                hide-no-data
+                                >
+
+                                    <template slot="item" slot-scope="data">
+
+                                        {{data.item.email}} - {{data.item.fullName}} - Phòng ban:
+                                        {{data.item.department.name}}
+                                    </template>
+                                </v-autocomplete>
+                            </v-flex>
                         </v-layout>
                     </v-container>
                 </v-card-text>
@@ -88,12 +108,17 @@
 <script>
     import axios from 'axios';
     import {mapState} from 'vuex'
+    import _ from 'lodash';
 
     export default {
         name: "TaskForm",
         data() {
             return {
+                relatives: [],
                 executorOptions: [],
+                viewerOptions: [],
+                viewerOptionsLoading: false,
+                viewerOptionsSearch: null,
                 titleRule: [
                     val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
                     val => (val && val.length >= 4 && val.length <= 50)
@@ -111,19 +136,22 @@
         },
         methods: {
             save: function () {
-                const taskForm = {...this.taskForm};
-                taskForm.startTime = this.startDatePicker + " " + new Date().toLocaleTimeString().split(' ')[0];
-                taskForm.endTime = this.endDatePicker + " " + new Date().toLocaleTimeString().split(' ')[0];
-                console.log(taskForm.startTime);
-                console.log(taskForm);
+                console.log(this.relatives);
+                const data = {
+                    ...this.taskForm,
+                    relatives: this.relatives.map(value => {
+                        return {id: value};
+                    }),
+                };
+                console.log(data);
 
-                const url = `http://localhost:8080/tasks/${taskForm.id === 0 ? '' : taskForm.id}`;
-                const method = `${taskForm.id === 0 ? 'POST' : 'PUT'}`;
+                const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
+                const method = `${this.taskForm.id === 0 ? 'POST' : 'PUT'}`;
                 axios.request(
                     {
                         url: url,
                         method: method,
-                        data: taskForm
+                        data: data
                     }
                 ).then(() => {
                         this.close();
@@ -134,33 +162,54 @@
                             console.log(error.response.data)
                         }
                     }
-                );
+                )
             },
             close: function () {
                 this.$store.commit('TASK_STORE/SET_SHOW_FORM', false);
             },
-            formatStartDateText: function () {
-                if (this.startDatePicker != null) {
-                    let time = this.startDatePicker.split('-');
-                    if (time[0].length === 4) {
-                        this.taskForm.startTime = time[2] + '-' + time[1] + '-' + time[0];
-                    }
-                }
+            getViewerOptions: function (email) {
+                this.viewerOptionsLoading = true;
+                setTimeout(() => {
+                    axios.get(`http://localhost:8080/users/search/findAllForSelectByEmailContaining`, {
+                        params: {
+                            email: email,
+                        }
+                    }).then(response => {
+                        if (response.status === 204) {
+                            this.viewerOptions = [];
+                            return;
+                        }
+                        this.viewerOptions = response.data;
+                    }).catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data);
+                        } else {
+                            console.log(error.response);
+                        }
+                    }).finally(() => {
+                        this.viewerOptionsLoading = false;
+                    });
+                }, 500);
             },
-            formatEndDateText: function () {
-                if (this.endDatePicker != null) {
-                    let time = this.endDatePicker.split('-');
-                    if (time[0].length === 4) {
-                        this.taskForm.endTime = time[2] + '-' + time[1] + '-' + time[0];
-                    }
-                }
-            }
         },
         mounted() {
             axios.get(`http://localhost:8080/users/findAllStaffDisplayNameByDepartmentOfCurrentLoggedManager`)
                 .then(response => {
                     this.executorOptions = response.data;
                 });
+        },
+        created() {
+            this.debouncedGetViewerOptions = _.debounce(this.getViewerOptions, 500);
+        },
+        watch: {
+            viewerOptionsSearch: function (val) {
+                if (val && !!val.length) {
+                    this.debouncedGetViewerOptions(val);
+                }
+            },
+            relatives: function () {
+                this.viewerOptionsSearch = '';
+            }
         }
     }
 </script>
