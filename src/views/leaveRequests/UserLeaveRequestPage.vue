@@ -1,17 +1,16 @@
 <template>
     <div>
-        <UserLeaveRequestTable v-if="isAdmin || isManager"></UserLeaveRequestTable>
-        <v-divider></v-divider>
-        <br>
-        <ApproverLeaveRequestTable v-if="isStaff || isManager"></ApproverLeaveRequestTable>
+        <UserLeaveRequestTable v-if="!isStaff"></UserLeaveRequestTable>
     </div>
 </template>
 
 <script>
     import {mapGetters} from 'vuex';
+    import UserLeaveRequestTable from "../../components/leaveRequests/UserLeaveRequestTable";
 
     export default {
         name: "LeaveRequestPage",
+        components: {UserLeaveRequestTable},
         computed: {
             ...mapGetters('AUTHENTICATION', {
                 isAdmin: 'isAdmin',

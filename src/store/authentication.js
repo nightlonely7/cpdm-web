@@ -33,6 +33,7 @@ export default {
     },
     getters: {
         isLoggedIn: state => !!state.token,
+        isInit: state => !!state.displayName && !!state.role,
         isAdmin: state => state.role === 'ADMIN',
         isManager: state => state.role === 'MANAGER',
         isStaff: state => state.role === 'STAFF',

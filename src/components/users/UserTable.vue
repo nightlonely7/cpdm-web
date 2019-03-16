@@ -3,9 +3,9 @@
         <v-toolbar flat color="white">
             <v-toolbar-title>QUẢN LÝ NHÂN VIÊN</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
-            <v-btn @click="refresh">Làm mới</v-btn>
+            <v-btn color="primary" @click="refresh">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <v-btn @click="showForm">Tạo mới nhân viên</v-btn>
+            <v-btn color="primary" @click="showForm">Tạo mới nhân viên</v-btn>
             <UserForm @refresh="refresh"></UserForm>
         </v-toolbar>
         <v-data-table
@@ -30,6 +30,7 @@
                     <td class="text-xs-left">{{props.item.fullName}}</td>
                     <td class="text-xs-left">{{props.item.email}}</td>
                     <td class="text-xs-left">{{props.item.department.name}}</td>
+                    <td class="text-xs-left">{{props.item.role.name}}</td>
                 </router-link>
             </template>
         </v-data-table>
@@ -39,6 +40,7 @@
 <script>
     import axios from 'axios';
     import {mapState} from 'vuex';
+    import {mapGetters} from 'vuex';
     import UserForm from "@/components/users/UserForm";
 
     export default {
@@ -46,7 +48,7 @@
         components: {UserForm},
         data() {
             return {
-                canLoadData: true,
+                canLoadData: false,
                 alert: '',
                 pagination: {
                     sortBy: 'displayName',
@@ -60,6 +62,7 @@
                         {text: 'Tên đầy đủ', value: 'fullName'},
                         {text: 'Email', value: 'email'},
                         {text: 'Phòng ban', value: 'department.name'},
+                        {text: 'Chức vụ', value: 'role.name'},
                     ]
                 },
             }
@@ -67,6 +70,9 @@
         computed: {
             ...mapState('USER_STORE', {
                 users: 'users'
+            }),
+            ...mapGetters('AUTHENTICATION', {
+                isAdmin: 'isAdmin'
             })
         },
         methods: {
@@ -74,15 +80,25 @@
                 this.pagination.page = 1;
                 this.pagination.sortBy = 'displayName';
                 this.pagination.descending = true;
-                // this.canLoadData = false;
+                //this.canLoadData = false;
                 this.getUsers();
             },
             showForm: function () {
+                this.$store.commit('USER_STORE/SET_USER_FORM', {id: 0, department: {}, role: {}});
                 this.$store.commit('USER_STORE/SET_SHOW_FORM', true);
             },
             getUsers() {
+                if (!this.canLoadData) {
+                    this.canLoadData = true;
+                    return;
+                }
+                console.log(this.isAdmin)
                 this.table.loading = true;
-                axios.get(`http://localhost:8080/users/findAllStaffSummaryByDepartmentOfCurrentLoggedManager`,
+                const url = this.isAdmin ?
+                    `http://localhost:8080/users/search/all` :
+                    `http://localhost:8080/users/findAllStaffSummaryByDepartmentOfCurrentLoggedManager`;
+
+                axios.get(url,
                     {
                         params: {
                             page: this.pagination.page - 1,
@@ -112,7 +128,10 @@
             },
         },
         mounted() {
-            this.$store.commit('USER_STORE/SET_USER_FORM', {id: 0});
+            this.$nextTick(() => {
+                this.getUsers();
+
+            })
         },
         watch: {
             pagination: function () {
