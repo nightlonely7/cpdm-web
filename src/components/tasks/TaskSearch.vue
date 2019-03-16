@@ -19,12 +19,14 @@
 </template>
 
 <script>
+    import axios from 'axios'
+
     export default {
         name: "TaskSearch",
         data() {
             return {
                 showing: true,
-                showBtnText: 'Ẩn',
+                showBtnText: 'Ẩn'
             }
         },
         computed: {
@@ -53,6 +55,7 @@
                 this.$store.commit('TASK_STORE/SET_SUMMARY_SEARCH_VALUE', '');
             }
         },
+
     }
 </script>
 

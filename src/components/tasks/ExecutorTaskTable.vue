@@ -64,7 +64,7 @@
                         {text: 'Người tạo', value: 'creator.displayName'},
                         {text: 'Người thực hiện', value: 'executor.displayName'},
                         {text: 'Độ ưu tiên', value: 'priority'},
-                        {text: 'Trạng thái', value: 'status'},
+                        {text: 'Trạng thái', value: 'status'}
                     ]
                 },
             }
@@ -83,7 +83,6 @@
         },
         mounted() {
             this.$store.commit('TASK_STORE/SET_TASK_FORM', {id: 0, executor: {}})
-
         },
         methods: {
             showForm: function () {
@@ -128,7 +127,7 @@
                         }
                     }
                 );
-            },
+            }
         },
         watch: {
             pagination: function () {
@@ -152,7 +151,7 @@
             }
         },
         created() {
-            this.debouncedGetExecutorTasks = _.debounce(this.getExecutorTasks, 500);
+            this.debouncedGetExecutorTasks = _.debounce(this.getExecutorTasks, 5000);
         }
     }
 </script>

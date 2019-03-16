@@ -21,6 +21,7 @@
                                               label="Email"
                                               :rules="emailRule"
                                               counter="30"
+                                              name="email"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
@@ -33,12 +34,26 @@
                             <v-flex md6>
                                 <v-radio-group v-model="user.gender" label="Giới tính" row>
                                     <v-radio
-                                            label="Nam" value="TRUE" color="primary"
+                                            label="Nam" :value="true" color="primary"
                                     ></v-radio>
                                     <v-radio
-                                            label="Nữ" value="FALSE" color="error"
+                                            label="Nữ" :value="false" color="error"
                                     ></v-radio>
                                 </v-radio-group>
+                            </v-flex>
+                            <v-flex md6>
+                                <v-text-field v-model="user.password"
+                                              label="Mật khẩu"
+                                              :rules="passwordRule"
+                                              :type="'password'"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex md6>
+                                <v-text-field v-model="user.confirmPassword"
+                                              label="Xác nhận mật khẩu"
+                                              :rules="confirmPasswordRule"
+                                              :type="'password'"
+                                ></v-text-field>
                             </v-flex>
                             <v-flex md6>
                                 <v-text-field v-model="user.phone"
@@ -80,6 +95,11 @@
                                               readonly
                                 ></v-text-field>
                             </v-flex>
+                            <v-flex md12>
+                                <p style="color: red" v-if="serverValidate">
+                                    Lưu thông tin cá nhân thất bại!
+                                </p>
+                            </v-flex>
                         </v-layout>
                     </v-container>
                 </v-form>
@@ -98,6 +118,7 @@
 <script>
     import axios from 'axios';
     import moment from 'moment';
+    import {Validator} from 'vee-validate';
 
     export default {
         name: "UserPersonal",
@@ -123,7 +144,7 @@
                     val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
                     val => (val && val.length >= 8 && val.length <= 20)
                         || 'Cần phải điền từ 8 tới 20 ý tự!',
-                    val => (val === this.$store.state.user.user.password) || 'Nhập lại mật khẩu phải trùng với mật khẩu!'
+                    val => (val === this.user.password) || 'Nhập lại mật khẩu phải trùng với mật khẩu!'
                 ],
                 emailRule: [
                     val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
@@ -133,7 +154,10 @@
                     val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
                     val => /^0(\d{9})$/.test(val) || 'Số điện thoại không hợp lệ!'
                 ],
-                datePicker: ''
+                datePicker: '',
+                serverValidate: false,
+                isEmailExisted: false,
+                confirmPassword: ''
             }
         },
         computed: {
@@ -156,10 +180,26 @@
                     .catch(error => console.log(error));
             },
             saveUser: function () {
-                if(!this.$refs.form.validate()){
-                    console.log("Validation failed!");
+                if (!this.$refs.form.validate()) {
+
                 } else {
-                    console.log("Validation successful!")
+                    const user = {...this.user};
+                    console.log(user.birthDay);
+                    user.birthDay = this.datePicker;
+                    console.log(user.birthDay);
+                    axios.put(`http://localhost:8080/users/${user.id}`, user)
+                        .then(
+                            response => {
+                                this.user = response.data;
+                                this.$router.push('/tasks');
+                            }
+                        )
+                        .catch(
+                            error => {
+                                console.log(error);
+                                this.serverValidate = true;
+                            }
+                        )
                 }
             },
             formatDatePicker: function () {

@@ -87,7 +87,6 @@
         },
         mounted() {
             this.$store.commit('TASK_STORE/SET_TASK_FORM', {id: 0, executor: {}})
-
         },
         methods: {
             showForm: function () {

@@ -29,8 +29,11 @@
         <v-btn @click="deleteTask" color="error">
             Xóa
         </v-btn>
-        <v-btn @click="showForm">
+        <v-btn @click="showForm" color="info">
             Sửa
+        </v-btn>
+        <v-btn @click="changeStatus(id)" color="success">
+            Hoàn thành công việc
         </v-btn>
         <TaskForm @refresh="getTask"></TaskForm>
     </div>
@@ -87,6 +90,14 @@
                         }
                     )
                 }
+            },
+            changeStatus: function (id) {
+                axios.patch(`http://localhost:8080/tasks/${id}/done`, {})
+                    .then(
+                        () => {
+                            this.$router.push('/tasks');
+                        }
+                    )
             }
         }
     }

@@ -4,9 +4,7 @@
         <br>
         <br>
         <TaskDetail :id="id"></TaskDetail>
-
         <br>
-
         <div>
             <v-card>
                 <v-card-title>DANH SÁCH TỆP TIN</v-card-title>
@@ -22,7 +20,6 @@
         <v-divider></v-divider>
         <br>
         <div>
-
             <v-card>
                 <v-card-title>TẢI LÊN TỆP TIN</v-card-title>
                 <v-card-text>
@@ -33,15 +30,12 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-btn v-if="!!file.name" color="primary" @click="uploadFile" :loading="loading">Tải lên</v-btn>
-                    <span v-if="!!file.status"> | </span>
-                    <b>{{file.status || ''}}</b>
+                    <span v-if="!!file.status">  </span>
+                    <b color="red">{{file.status || ''}}</b>
                 </v-card-actions>
             </v-card>
         </div>
-
-
     </div>
-
 </template>
 
 <script>

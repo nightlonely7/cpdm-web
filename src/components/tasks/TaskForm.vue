@@ -11,25 +11,38 @@
                         <v-layout wrap>
                             <v-flex md12>
                                 <v-text-field v-model="taskForm.title"
-                                              label="Title"
+                                              label="Tên công việc"
+                                              :rules="titleRule"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12>
                                 <v-text-field v-model="taskForm.summary"
-                                              label="Summary"
+                                              label="Tóm tắt"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex>
-                                <v-text-field v-model="taskForm.startTime"
-                                              label="Start Time"
-                                              prepend-inner-icon="event"
-                                ></v-text-field>
+                                <v-menu right offset-x class="date-menu">
+                                    <v-text-field v-model="taskForm.startTime"
+                                                  label="Ngày bắt đầu"
+                                                  prepend-inner-icon="event"
+                                                  slot="activator"
+                                    ></v-text-field>
+                                    <v-date-picker v-model="startDatePicker" label="Ngày bắt đầu" color="green"
+                                                   scrollable @change="formatStartDateText">
+                                    </v-date-picker>
+                                </v-menu>
                             </v-flex>
                             <v-flex>
-                                <v-text-field v-model="taskForm.endTime"
-                                              label="End Time"
-                                              prepend-inner-icon="event"
-                                ></v-text-field>
+                                <v-menu bottom offset-y class="date-menu">
+                                    <v-text-field v-model="taskForm.endTime"
+                                                  label="Ngày kết thúc"
+                                                  prepend-inner-icon="event"
+                                                  slot="activator"
+                                    ></v-text-field>
+                                    <v-date-picker v-model="endDatePicker" label="Ngày kết thúc" color="green"
+                                                   scrollable @change="formatEndDateText">
+                                    </v-date-picker>
+                                </v-menu>
                             </v-flex>
                             <v-flex md12>
                                 <v-textarea v-model="taskForm.description"
@@ -81,6 +94,13 @@
         data() {
             return {
                 executorOptions: [],
+                titleRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
+                    val => (val && val.length >= 4 && val.length <= 50)
+                        || 'Cần phải điền từ 4 tới 50 ý tự!'
+                ],
+                startDatePicker: '',
+                endDatePicker: ''
             }
         },
         computed: {
@@ -91,15 +111,19 @@
         },
         methods: {
             save: function () {
-                console.log(this.taskForm);
+                const taskForm = {...this.taskForm};
+                taskForm.startTime = this.startDatePicker + " " + new Date().toLocaleTimeString().split(' ')[0];
+                taskForm.endTime = this.endDatePicker + " " + new Date().toLocaleTimeString().split(' ')[0];
+                console.log(taskForm.startTime);
+                console.log(taskForm);
 
-                const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
-                const method = `${this.taskForm.id === 0 ? 'POST' : 'PUT'}`;
+                const url = `http://localhost:8080/tasks/${taskForm.id === 0 ? '' : taskForm.id}`;
+                const method = `${taskForm.id === 0 ? 'POST' : 'PUT'}`;
                 axios.request(
                     {
                         url: url,
                         method: method,
-                        data: this.taskForm
+                        data: taskForm
                     }
                 ).then(() => {
                         this.close();
@@ -114,6 +138,22 @@
             },
             close: function () {
                 this.$store.commit('TASK_STORE/SET_SHOW_FORM', false);
+            },
+            formatStartDateText: function () {
+                if (this.startDatePicker != null) {
+                    let time = this.startDatePicker.split('-');
+                    if (time[0].length === 4) {
+                        this.taskForm.startTime = time[2] + '-' + time[1] + '-' + time[0];
+                    }
+                }
+            },
+            formatEndDateText: function () {
+                if (this.endDatePicker != null) {
+                    let time = this.endDatePicker.split('-');
+                    if (time[0].length === 4) {
+                        this.taskForm.endTime = time[2] + '-' + time[1] + '-' + time[0];
+                    }
+                }
             }
         },
         mounted() {
@@ -126,5 +166,7 @@
 </script>
 
 <style scoped>
-
+    .date-menu {
+        width: 100%
+    }
 </style>

@@ -8,6 +8,10 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
+import VeeValidate from 'vee-validate';
+import './views/validator/validateEmail';
+
+Vue.use(VeeValidate);
 
 Vue.config.productionTip = false;
 Vue.use(Vuetify, {

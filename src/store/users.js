@@ -11,7 +11,6 @@ const userStoreDefaultState = () => {
     }
 };
 
-
 export default {
     namespaced: true,
     state: userStoreDefaultState(),

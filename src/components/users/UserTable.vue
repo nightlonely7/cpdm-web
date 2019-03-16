@@ -92,7 +92,7 @@
                     this.canLoadData = true;
                     return;
                 }
-                console.log(this.isAdmin)
+                console.log(this.isAdmin);
                 this.table.loading = true;
                 const url = this.isAdmin ?
                     `http://localhost:8080/users/search/all` :
