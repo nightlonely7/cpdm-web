@@ -36,6 +36,11 @@ const router = new Router({
             name: 'Quản lý thông tin cá nhân',
             component: () => import('@/views/users/UserPersonal.vue')
         },
+        {
+            path: '/leaveRequests',
+            name: 'Quản lý đơn xin nghỉ phép',
+            component: () => import('@/views/leaveRequests/LeaveRequestPage.vue')
+        },
     ]
 });
 

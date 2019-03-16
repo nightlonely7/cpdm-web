@@ -27,6 +27,14 @@
                         <v-list-tile-title>Quản lý nhân viên</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
+                <v-list-tile to="/leaveRequests">
+                    <v-list-tile-action>
+                        <v-icon>mdi-calendar-blank</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Quản lý nghỉ phép</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
             </v-list>
         </v-navigation-drawer>
         <v-toolbar color="indigo" dark fiexed app v-if="isLoggedIn">

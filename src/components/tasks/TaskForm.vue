@@ -86,8 +86,8 @@
         computed: {
             ...mapState('TASK_STORE', {
                 showForm: state => state.showForm,
-                taskForm: state => state.taskForm
-            })
+                taskForm: state => state.taskForm,
+            }),
         },
         methods: {
             save: function () {

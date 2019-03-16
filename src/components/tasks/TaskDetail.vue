@@ -33,6 +33,7 @@
             Sửa
         </v-btn>
         <TaskForm @refresh="getTask"></TaskForm>
+        <TaskComment :taskId="id"></TaskComment>
     </div>
 </template>
 
@@ -40,10 +41,11 @@
     import axios from 'axios'
     import TaskForm from "@/components/tasks/TaskForm";
     import {mapState} from 'vuex'
+    import TaskComment from "./TaskComment";
 
     export default {
         name: "TaskDetail",
-        components: {TaskForm},
+        components: {TaskComment, TaskForm},
         props: {
             id: Number
         },
@@ -54,7 +56,7 @@
         },
         mounted() {
             this.$nextTick(function () {
-                this.getUser();
+                this.getTask();
             })
         },
         methods: {
@@ -68,18 +70,19 @@
                     startTime: this.task.startTime,
                     endTime: this.task.endTime,
                     executor: this.task.executor,
-                    priority: this.task.priority
+                    priority: this.task.priority,
+                    comments: this.task.comments,
                 };
                 this.$store.commit('TASK_STORE/SET_TASK_FORM', taskForm);
             },
-            getUser: function () {
+            getTask: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}`)
                     .then(response => {
-                        this.$store.commit('TASK_STORE/SET_TASK', response.data);
-                    }
-                )
+                            this.$store.commit('TASK_STORE/SET_TASK', response.data);
+                        }
+                    )
             },
-            deleteUser: function () {
+            deleteTask: function () {
                 if (confirm('Xóa?')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}`)
                         .then(() => {
