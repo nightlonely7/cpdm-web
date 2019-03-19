@@ -6,6 +6,7 @@ const taskStoreDefaultState = () => {
         titleSearchValue: '',
         summarySearchValue: '',
         taskForm: {
+            project: {},
             executor: {},
         },
         taskIssueForm: {},
@@ -18,7 +19,7 @@ export default {
     state: taskStoreDefaultState(),
     mutations: {
         SET_TASK_FORM(state, taskForm) {
-            state.taskForm = taskForm
+            Object.assign(state.taskForm, taskForm);
         },
         SET_TASK_ISSUE_FORM(state, taskIssueForm) {
             state.taskIssueForm = taskIssueForm

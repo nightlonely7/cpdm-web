@@ -39,6 +39,21 @@
                                 ></v-textarea>
                             </v-flex>
                             <v-flex>
+                                <v-select v-model="taskForm.project.id"
+                                          :items="projectOptions"
+                                          item-value="id"
+                                          label="Thuộc dự án"
+                                          prepend-inner-icon="build"
+                                >
+                                    <template #item="{item}">
+                                        {{item.name || ''}}{{item.id === 1 ? '' : ' - '}}{{item.alias || ''}}
+                                    </template>
+                                    <template #selection="{item}">
+                                        {{item.name || ''}}{{item.id === 1 ? '' : ' - '}}{{item.alias || ''}}
+                                    </template>
+                                </v-select>
+                            </v-flex>
+                            <v-flex>
                                 <v-select v-model="taskForm.executor.id"
                                           :items="executorOptions"
                                           item-text="displayName"
@@ -66,10 +81,10 @@
                                                 hide-no-data
                                 >
 
-                                    <template slot="item" slot-scope="data">
+                                    <template #item="{item}">
 
-                                        {{data.item.email}} - {{data.item.fullName}} - Phòng ban:
-                                        {{data.item.department.name}}
+                                        {{item.email}} - {{item.fullName}} - Phòng ban:
+                                        {{item.department.name}}
                                     </template>
                                 </v-autocomplete>
                             </v-flex>
@@ -78,14 +93,20 @@
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn color="secondary" @click="close">
-                        <v-icon left>clear</v-icon>
-                        Cancel
-                    </v-btn>
-                    <v-btn color="primary" @click="save">
-                        <v-icon left>done</v-icon>
-                        Save
-                    </v-btn>
+                    <v-layout row justify-space-around>
+                        <v-flex md2>
+                            <v-btn color="secondary" @click="close" block>
+                                <v-icon left>clear</v-icon>
+                                Cancel
+                            </v-btn>
+                        </v-flex>
+                        <v-flex md2>
+                            <v-btn color="primary" @click="save" block>
+                                <v-icon left>done</v-icon>
+                                Save
+                            </v-btn>
+                        </v-flex>
+                    </v-layout>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -103,6 +124,7 @@
             return {
                 relatives: [],
                 executorOptions: [],
+                projectOptions: [{id: 0, name: 'Không dự án'}],
                 viewerOptions: [],
                 viewerOptionsLoading: false,
                 viewerOptionsSearch: null,
@@ -125,24 +147,24 @@
                 };
                 console.log(data);
 
-                const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
-                const method = `${this.taskForm.id === 0 ? 'POST' : 'PUT'}`;
-                axios.request(
-                    {
-                        url: url,
-                        method: method,
-                        data: data
-                    }
-                ).then(() => {
-                        this.close();
-                        this.$emit('refresh');
-                    }
-                ).catch(error => {
-                        if (error.response) {
-                            console.log(error.response.data)
-                        }
-                    }
-                )
+                // const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
+                // const method = `${this.taskForm.id === 0 ? 'POST' : 'PUT'}`;
+                // axios.request(
+                //     {
+                //         url: url,
+                //         method: method,
+                //         data: data
+                //     }
+                // ).then(() => {
+                //         this.close();
+                //         this.$emit('refresh');
+                //     }
+                // ).catch(error => {
+                //         if (error.response) {
+                //             console.log(error.response.data)
+                //         }
+                //     }
+                // )
             },
             close: function () {
                 this.$store.commit('TASK_STORE/SET_SHOW_FORM', false);
@@ -171,12 +193,41 @@
                     });
                 }, 500);
             },
+            getExecutorOptions: function () {
+                axios.get(`http://localhost:8080/users/findAllStaffDisplayNameByDepartmentOfCurrentLoggedManager`)
+                    .then(response => {
+                        this.executorOptions = response.data;
+                    })
+                    .catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data);
+                        } else {
+                            console.log(error.response);
+                        }
+                    });
+            },
+            getProjectOptions: function () {
+                axios.get(`http://localhost:8080/projects`)
+                    .then(response => {
+                        this.projectOptions = response.data;
+                        console.log(this.projectOptions)
+                    })
+                    .catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data);
+                        } else {
+                            console.log(error.response);
+                        }
+                    });
+            }
         },
         mounted() {
-            axios.get(`http://localhost:8080/users/findAllStaffDisplayNameByDepartmentOfCurrentLoggedManager`)
-                .then(response => {
-                    this.executorOptions = response.data;
-                });
+            this.$nextTick(() => {
+                this.getExecutorOptions();
+                this.getProjectOptions();
+                console.log(this.taskForm)
+            });
+
         },
         created() {
             this.debouncedGetViewerOptions = _.debounce(this.getViewerOptions, 500);

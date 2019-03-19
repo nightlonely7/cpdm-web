@@ -1,9 +1,6 @@
 <template>
     <div>
         <v-card>
-            <v-card-title>Tìm kiếm
-                <v-btn @click="show" color="primary">{{showBtnText}}</v-btn>
-            </v-card-title>
             <v-card-text v-if="showing">
                 <v-text-field v-model="titleSearchValue"
                               label="Tìm bởi tiêu đề"
