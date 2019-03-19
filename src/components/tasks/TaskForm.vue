@@ -147,24 +147,24 @@
                 };
                 console.log(data);
 
-                // const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
-                // const method = `${this.taskForm.id === 0 ? 'POST' : 'PUT'}`;
-                // axios.request(
-                //     {
-                //         url: url,
-                //         method: method,
-                //         data: data
-                //     }
-                // ).then(() => {
-                //         this.close();
-                //         this.$emit('refresh');
-                //     }
-                // ).catch(error => {
-                //         if (error.response) {
-                //             console.log(error.response.data)
-                //         }
-                //     }
-                // )
+                const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
+                const method = `${this.taskForm.id === 0 ? 'POST' : 'PUT'}`;
+                axios.request(
+                    {
+                        url: url,
+                        method: method,
+                        data: data
+                    }
+                ).then(() => {
+                        this.close();
+                        this.$emit('refresh');
+                    }
+                ).catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data)
+                        }
+                    }
+                )
             },
             close: function () {
                 this.$store.commit('TASK_STORE/SET_SHOW_FORM', false);

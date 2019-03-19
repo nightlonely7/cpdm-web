@@ -5,8 +5,8 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="showForm">Tạo mới tác vụ</v-btn>
-            <TaskForm @refresh="refresh"></TaskForm>
+            <v-btn v-if="type === 'creator'" color="primary" @click="showForm">Tạo mới tác vụ</v-btn>
+            <TaskForm v-if="type === 'creator'" @refresh="refresh"></TaskForm>
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
@@ -27,6 +27,7 @@
                 >
                     <td class="text-xs-left">{{props.item.title}}</td>
                     <td class="text-xs-left">{{props.item.summary}}</td>
+                    <td class="text-xs-left">{{props.item.project.name}}</td>
                     <td class="text-xs-left">{{props.item.createdTime}}</td>
                     <td class="text-xs-left">{{props.item.startTime}}</td>
                     <td class="text-xs-left">{{props.item.endTime}}</td>
@@ -68,6 +69,7 @@
                     headers: [
                         {text: 'Tiêu đề', value: 'title'},
                         {text: 'Tổng quát', value: 'summary'},
+                        {text: 'Dự án', value: 'project.name'},
                         {text: 'Thời gian tạo', value: 'createdTime'},
                         {text: 'Thời gian bắt đầu', value: 'startTime'},
                         {text: 'Thời gian kết thúc', value: 'endTime'},
@@ -122,8 +124,9 @@
                 this.getTasks();
             },
             getTasks: function () {
-                console.log('load');
                 this.table.loading = true;
+                console.log('load');
+                console.log(this.type);
                 axios.get(`http://localhost:8080/tasks/search/${this.getTasksURL}`,
                     {
                         params: {
@@ -131,7 +134,7 @@
                             size: this.pagination.rowsPerPage,
                             sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
                             title: this.titleSearchValue == null ? '' : this.titleSearchValue,
-                            summary: this.summarySearchValue == null ? '' : this.summarySearchValue
+                            summary: this.summarySearchValue == null ? '' : this.summarySearchValue,
                         }
                     }
                 ).then(response => {
