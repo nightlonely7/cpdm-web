@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <v-app>
         <v-navigation-drawer fixed app v-model="drawer" v-if="isLoggedIn && isInit">
             <v-list>
@@ -27,14 +27,43 @@
                         <v-list-tile-title>Quản lý nhân viên</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile to="/leaveRequests">
-                    <v-list-tile-action>
-                        <v-icon>mdi-calendar-blank</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>Quản lý nghỉ phép</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
+                <v-list-group>
+                    <template v-slot:activator>
+                        <v-list-tile>
+                            <v-list-tile-action>
+                                <v-icon>mdi-calendar-blank</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Quản lí nghỉ phép</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </template>
+
+                    <v-list-tile v-if="isAdmin" to="/viewLeaves">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Lịch nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile v-if="!isStaff" to="/approverLeaveRequests">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Duyệt nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile v-if="!isAdmin" to="/userLeaveRequests">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Xin nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list-group>
             </v-list>
         </v-navigation-drawer>
         <v-toolbar color="indigo" dark fiexed app v-if="isLoggedIn && isInit">

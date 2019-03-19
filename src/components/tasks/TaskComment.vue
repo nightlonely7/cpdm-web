@@ -96,7 +96,19 @@
             </v-list>
         </v-flex>
 
-        <!--View old comment version diablog model-->
+        <!--Snack bar-->
+        <v-snackbar v-model="snackbar" right>
+            {{snackBarText}}
+            <v-btn
+                    color="pink"
+                    flat
+                    @click="snackbar = false"
+            >
+                Close
+            </v-btn>
+        </v-snackbar>
+
+        <!--View old comment version dialog model-->
         <v-dialog class="v-dialog--scrollable" v-model="this.oldVersions" v-if="this.showDialog">
             <v-list>
                 <v-subheader class="display-1">Bình luận cũ</v-subheader>
@@ -117,7 +129,7 @@
                 </template>
                 <v-card-actions>
                     <v-spacer/>
-                    <v-btn color="primary" @click="closeDiablog()">Close</v-btn>
+                    <v-btn color="primary" @click="closedialog()">Close</v-btn>
                 </v-card-actions>
             </v-list>
         </v-dialog>
@@ -146,6 +158,8 @@
             return {
                 showDialog: false,
                 disable: true,
+                snackbar: false,
+                snackBarText: '',
                 comments: {},
                 newCommentModel: {
                     content: '',
@@ -209,11 +223,15 @@
                 ).then(() => {
                         this.clear();
                         this.getComment();
+                        this.snackBarText = 'Thành công';
+                        this.snackbar = true;
                     }
                 ).catch(error => {
                         if (error.response) {
                             console.log(error.response.data)
                         }
+                        this.snackBarText = 'Thất bại';
+                        this.snackbar = true;
                     }
                 );
             },
@@ -232,11 +250,16 @@
                     }
                 ).then(() => {
                         this.getComment();
+                        this.snackBarText = 'Thành công';
+                        this.snackbar = true;
+
                     }
                 ).catch(error => {
                         if (error.response) {
                             console.log(error.response.data)
                         }
+                        this.snackBarText = 'Thất bại';
+                        this.snackbar = true;
                     }
                 );
             },
@@ -295,7 +318,7 @@
                     }
                 );
             },
-            closeDiablog() {
+            closeDialog() {
                 this.showDialog = false;
             },
             checkInput(input) {

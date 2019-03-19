@@ -37,9 +37,19 @@ const router = new Router({
             component: () => import('@/views/users/UserPersonal.vue')
         },
         {
-            path: '/leaveRequests',
+            path: '/userLeaveRequests',
             name: 'Quản lý đơn xin nghỉ phép',
-            component: () => import('@/views/leaveRequests/LeaveRequestPage.vue')
+            component: () => import('@/views/leaveRequests/UserLeaveRequestPage.vue')
+        },
+        {
+            path: '/approverLeaveRequests',
+            name: 'Xét duyệt đơn xin nghỉ phép',
+            component: () => import('@/views/leaveRequests/ApproverLeaveRequestPage.vue')
+        },
+        {
+            path: '/viewLeaves',
+            name: 'Lịch nghỉ phép',
+            component: () => import('@/views/leaveRequests/viewLeavePage.vue')
         },
     ]
 });

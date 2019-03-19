@@ -30,6 +30,8 @@
         </div>
         <v-divider></v-divider>
         <br>
+
+        <TaskComment :taskId="id"></TaskComment>
     </div>
 </template>
 
@@ -39,10 +41,11 @@
     import download from 'downloadjs';
 
     import axios from 'axios';
+    import TaskComment from "../../components/tasks/TaskComment";
 
     export default {
         name: "TaskDetailPage",
-        components: {TaskDetail, UploadButton},
+        components: {TaskComment, TaskDetail, UploadButton},
         data() {
             return {
                 id: 0,
