@@ -28,7 +28,7 @@
                                                   slot="activator"
                                     ></v-text-field>
                                     <v-date-picker v-model="startDatePicker" label="Ngày bắt đầu" color="green"
-                                                   scrollable @change="formatStartDateText">
+                                                   scrollable>
                                     </v-date-picker>
                                 </v-menu>
                             </v-flex>
@@ -40,7 +40,7 @@
                                                   slot="activator"
                                     ></v-text-field>
                                     <v-date-picker v-model="endDatePicker" label="Ngày kết thúc" color="green"
-                                                   scrollable @change="formatEndDateText">
+                                                   scrollable>
                                     </v-date-picker>
                                 </v-menu>
                             </v-flex>
