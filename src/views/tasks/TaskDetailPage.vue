@@ -3,10 +3,7 @@
         <v-btn @click="goBack" color="primary">Trở về</v-btn>
         <br>
         <br>
-        <TaskDetail :id="id"></TaskDetail>
-
-        <br>
-
+        <TaskDetail :id="id"></TaskDetail><br>
         <div>
             <v-card>
                 <v-card-title>DANH SÁCH TỆP TIN</v-card-title>

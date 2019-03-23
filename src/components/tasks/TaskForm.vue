@@ -94,10 +94,10 @@
                                                 hide-no-data
                                 >
 
-                                    <template #item="{item}">
+                                    <template slot="item" slot-scope="data">
 
-                                        {{item.email}} - {{item.fullName}} - Phòng ban:
-                                        {{item.department.name}}
+                                        {{data.item.email}} - {{data.item.fullName}} - Phòng ban:
+                                        {{data.item.department.name}}
                                     </template>
                                 </v-autocomplete>
                             </v-flex>
@@ -106,20 +106,14 @@
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-layout row justify-space-around>
-                        <v-flex md2>
-                            <v-btn color="secondary" @click="close" block>
-                                <v-icon left>clear</v-icon>
-                                Cancel
-                            </v-btn>
-                        </v-flex>
-                        <v-flex md2>
-                            <v-btn color="primary" @click="save" block>
-                                <v-icon left>done</v-icon>
-                                Save
-                            </v-btn>
-                        </v-flex>
-                    </v-layout>
+                    <v-btn color="secondary" @click="close">
+                        <v-icon left>clear</v-icon>
+                        Cancel
+                    </v-btn>
+                    <v-btn color="primary" @click="save">
+                        <v-icon left>done</v-icon>
+                        Save
+                    </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -130,6 +124,7 @@
     import axios from 'axios';
     import {mapState} from 'vuex'
     import _ from 'lodash';
+    import 'moment'
 
     export default {
         name: "TaskForm",
@@ -137,7 +132,6 @@
             return {
                 relatives: [],
                 executorOptions: [],
-                projectOptions: [{id: 0, name: 'Không dự án'}],
                 viewerOptions: [],
                 viewerOptionsLoading: false,
                 viewerOptionsSearch: null,
@@ -165,32 +159,30 @@
                         return {id: value};
                     }),
                 };
+
+                moment.format();
                 console.log(data);
 
                 const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
                 const method = `${this.taskForm.id === 0 ? 'POST' : 'PUT'}`;
-                axios.request(
-                    {
-                        url: url,
-                        method: method,
-                        data: data
-                    }
-                ).then(() => {
+                axios({url, method, data})
+                    .then(() => {
                         this.close();
                         this.$emit('refresh');
-                    }
-                ).catch(error => {
-                        if (error.response) {
-                            console.log(error.response.data)
+                    })
+                    .catch(error => {
+                            if (error.response) {
+                                console.log(error.response.data)
+                            }
                         }
-                    }
-                )
+                    )
             },
             close: function () {
                 this.$store.commit('TASK_STORE/SET_SHOW_FORM', false);
             },
             getViewerOptions: function (email) {
                 this.viewerOptionsLoading = true;
+
                 setTimeout(() => {
                     axios.get(`http://localhost:8080/users/search/findAllForSelectByEmailContaining`, {
                         params: {

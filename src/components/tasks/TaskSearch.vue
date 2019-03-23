@@ -51,8 +51,7 @@
                 this.$store.commit('TASK_STORE/SET_TITLE_SEARCH_VALUE', '');
                 this.$store.commit('TASK_STORE/SET_SUMMARY_SEARCH_VALUE', '');
             }
-        },
-
+        }
     }
 </script>
 

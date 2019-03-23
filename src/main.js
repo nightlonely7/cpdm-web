@@ -11,7 +11,10 @@ import 'vuetify/dist/vuetify.min.css'
 import 'animate.css'
 import VeeValidate from 'vee-validate';
 import './views/validator/validateEmail';
+import './views/validator/validateDepName';
+import DatetimePicker from 'vuetify-datetime-picker';
 
+Vue.use(DatetimePicker);
 Vue.use(VeeValidate);
 
 Vue.config.productionTip = false;

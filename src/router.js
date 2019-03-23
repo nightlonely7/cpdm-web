@@ -36,6 +36,16 @@ const router = new Router({
             name: 'Quản lý thông tin cá nhân',
             component: () => import('@/views/users/UserPersonal.vue')
         },
+        {
+            path: '/departments',
+            name: 'Quản lý phòng ban',
+            component: () => import('@/views/departments/DepartmentPage.vue')
+        },
+        {
+            path: '/departments/:id',
+            name: 'Quản lý thông tin phòng ban',
+            component: () => import('@/views/departments/DepartmentDetailPage.vue')
+        },
     ]
 });
 

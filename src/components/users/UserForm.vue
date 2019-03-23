@@ -12,7 +12,10 @@
                             <v-flex md12>
                                 <v-text-field v-model="userForm.email"
                                               label="Email"
+                                              name="email"
+                                              v-validate="{emailValidator: true}"
                                 ></v-text-field>
+                                <span style="color: red">{{errors.all()}}</span>
                             </v-flex>
                             <v-flex md12>
                                 <v-text-field v-if="userForm.id === 0"
@@ -35,6 +38,8 @@
                                           label="Chức vụ"
                                 ></v-select>
                             </v-flex>
+                            <v-flex md12>
+                            </v-flex>
                         </v-layout>
                     </v-container>
                 </v-card-text>
@@ -51,6 +56,13 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-snackbar v-model="snackbar" :top="true">
+            {{serverErrorText}}
+            <v-btn color="info" @click="snackbar = false">
+                Đóng
+            </v-btn>
+        </v-snackbar>
     </div>
 </template>
 
@@ -64,6 +76,8 @@
         data() {
             return {
                 departmentOptions: [],
+                snackbar: false,
+                serverErrorText: 'Lưu thông tin thất bại!'
             }
         },
         computed: {
@@ -85,17 +99,17 @@
                     url: url,
                     method: method,
                     data: this.userForm
-                })
-                    .then(() => {
-                        this.close();
-                        this.$emit('refresh');
-                    })
-                    .catch(error => {
-                            if (error.response) {
-                                console.log(error.response.data)
-                            }
+                }).then(() => {
+                    this.close();
+                    this.$emit('refresh');
+                }).catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data);
+                            this.snackbar = true;
+                            this.serverErrorText = 'Lưu thông tin thất bại!';
                         }
-                    );
+                    }
+                );
             },
             close: function () {
                 this.$store.commit('USER_STORE/SET_SHOW_FORM', false);

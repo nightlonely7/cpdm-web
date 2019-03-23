@@ -7,14 +7,14 @@
         <br>
         <h4>Email: <span style="color: red">{{user.email}}</span></h4>
         <br>
-        <p>Ngày tạo: {{user.createdTime}}</p>
-        <p>Số điện thoại: {{user.phone || 'Chưa xác định'}}</p>
-        <p>Địa chỉ: {{user.address || 'Chưa xác định'}}</p>
-        <p>Ngày sinh: {{user.birthday || 'Chưa xác định'}}</p>
-        <p>Giới tính: {{user.gender ? 'Nam' : 'Nữ' || 'Chưa xác định'}}</p>
-        <p>Tuổi: {{user.age || 'Chưa xác định'}}</p>
-        <p>Phòng ban: {{user.department.name}}</p>
-        <p>Chức vụ: {{user.role.name}}</p>
+        <p style="color: blue">Ngày tạo: {{user.createdTime}}</p>
+        <p style="color: blue">Số điện thoại: {{user.phone || 'Chưa xác định'}}</p>
+        <p style="color: blue">Địa chỉ: {{user.address || 'Chưa xác định'}}</p>
+        <p style="color: blue">Ngày sinh: {{user.birthday || 'Chưa xác định'}}</p>
+        <p style="color: blue">Giới tính: {{user.gender ? 'Nam' : 'Nữ' || 'Chưa xác định'}}</p>
+        <p style="color: blue">Tuổi: {{user.age || 'Chưa xác định'}}</p>
+        <p style="color: blue">Phòng ban: {{user.department.name}}</p>
+        <p style="color: blue">Chức vụ: {{user.role.name}}</p>
         <br>
         <v-divider></v-divider>
         <v-btn @click="showForm" color="primary">Sửa</v-btn>

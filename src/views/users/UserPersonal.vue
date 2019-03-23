@@ -84,9 +84,18 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
+                                <v-select v-model="user.department.name"
+                                            v-if="isAdmin"
+                                            label="Phòng ban"
+                                            :items="departments"
+                                            item-text="name"
+                                            item-value="name"
+                                >
+                                </v-select>
                                 <v-text-field v-model="user.department.name"
                                               label="Phòng ban"
                                               readonly
+                                              v-else
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
@@ -119,6 +128,7 @@
     import axios from 'axios';
     import moment from 'moment';
     import {Validator} from 'vee-validate';
+    import {mapGetters} from 'vuex';
 
     export default {
         name: "UserPersonal",
@@ -163,6 +173,17 @@
         computed: {
             age: function () {
                 return moment().diff(moment(this.user.birthday, 'DD-MM-YYYY'), 'years');
+            },
+            ...mapGetters('AUTHENTICATION', {
+                isAdmin: 'isAdmin',
+            }),
+            departments: {
+                get(){
+                    return this.$store.state.DEPARTMENT_STORE.departments;
+                },
+                set(value){
+                    this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENTS', value);
+                }
             }
         },
         mounted() {
@@ -174,7 +195,7 @@
                     .then(response => {
                         this.user = response.data;
                         if (this.user.birthday && this.user.birthday.length) {
-                            this.user.birthday = moment(this.user.birthday).format("DD-MM-YYYY")
+                            this.user.birthday = moment(this.user.birthday).format("DD-MM-YYYY");
                         }
                     })
                     .catch(error => console.log(error));
@@ -184,9 +205,7 @@
 
                 } else {
                     const user = {...this.user};
-                    console.log(user.birthDay);
-                    user.birthDay = this.datePicker;
-                    console.log(user.birthDay);
+                    user.isEnabled = true;
                     axios.put(`http://localhost:8080/users/${user.id}`, user)
                         .then(
                             response => {

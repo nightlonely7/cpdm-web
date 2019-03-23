@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import AUTHENTICATION from '@/store/authentication.js';
 import TASK_STORE from '@/store/tasks.js';
 import USER_STORE from '@/store/users.js';
+import DEPARTMENT_STORE from '@/store/departments.js';
 
 Vue.use(Vuex);
 
@@ -10,6 +11,7 @@ export default new Vuex.Store({
     modules: {
         TASK_STORE,
         AUTHENTICATION,
-        USER_STORE
+        USER_STORE,
+        DEPARTMENT_STORE
     }
 })

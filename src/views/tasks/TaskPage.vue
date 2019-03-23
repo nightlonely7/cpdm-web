@@ -2,7 +2,6 @@
     <div>
 
         <div class="elevation-1">
-
             <v-expansion-panel focusable class="elevation-0">
                 <v-expansion-panel-content>
                     <template slot="header">
@@ -13,7 +12,6 @@
             </v-expansion-panel>
             <v-toolbar tabs fixed-tabs class="elevation-0">
                 <v-toolbar-title>QUẢN LÝ TÁC VỤ</v-toolbar-title>
-
 
                 <template slot="extension">
                     <v-tabs
@@ -31,6 +29,9 @@
                         <v-tab>
                             TÁC VỤ LIÊN QUAN
                         </v-tab>
+                        <v-tab>
+                            DANH SÁCH PHÒNG BAN
+                        </v-tab>
                     </v-tabs>
                 </template>
             </v-toolbar>
@@ -45,6 +46,9 @@
                 <v-tab-item>
                     <CreatorTaskTable type="related"></CreatorTaskTable>
                 </v-tab-item>
+                <v-tab-item>
+                    <DepartmentTable></DepartmentTable>
+                </v-tab-item>
             </v-tabs-items>
         </div>
     </div>
@@ -54,10 +58,11 @@
     import TaskTable from '@/components/tasks/TaskTable.vue';
     import TaskSearch from '@/components/tasks/TaskSearch.vue';
     import {mapGetters} from 'vuex';
+    import DepartmentTable from "../../components/departments/DepartmentTable";
 
     export default {
         name: "TaskPage",
-        components: {TaskSearch, CreatorTaskTable: TaskTable},
+        components: {TaskSearch, CreatorTaskTable: TaskTable, DepartmentTable: DepartmentTable},
         data() {
             return {
                 tabs: null,
