@@ -18,12 +18,6 @@
                                           label="Nội dung chi tiết"
                             ></v-text-field>
                         </v-flex>
-                        <v-flex md12>
-                            <v-text-field v-model="taskIssueForm.weight"
-                                          label="Trọng số"
-                                          type="number"
-                            ></v-text-field>
-                        </v-flex>
                     </v-layout>
                 </v-container>
             </v-card-text>

@@ -10,6 +10,8 @@
         <p>Trạng thái:
             <v-chip>{{task.status}}</v-chip>
             <br>
+            <span>Số vấn đề hoàn tất: {{totalComplete}} / {{totalIssues}}</span>
+            <br>
             <span>Tỉ lệ hoàn thành:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
             <v-progress-circular :value="completionRate * 100" size="96" rotate="270" width="16" color="primary">
                 <span style="color: black">{{(completionRate * 100).toFixed(2)}}%</span>
@@ -70,7 +72,7 @@
 
                         </v-list-tile>
                         <v-list-tile v-for="issue in taskIssues" :key="issue.id">
-                            {{issue.summary}} - {{issue.detail}} - {{issue.weight}}
+                            {{issue.summary}} - {{issue.detail}}
                             <v-btn @click="editIssue(issue)">Sửa</v-btn>
                             <v-btn @click="deleteIssue(issue.id)">Xóa</v-btn>
                         </v-list-tile>
@@ -118,18 +120,22 @@
             }
         },
         computed: {
-            completionRate: function () {
-                let totalWeight = 0;
+            totalIssues: function () {
+                return this.taskIssues ? this.taskIssues.length : 0;
+            },
+            totalComplete: function () {
                 let totalComplete = 0;
                 if (this.taskIssues) {
                     this.taskIssues.forEach(function (issue) {
-                        totalWeight += issue.weight;
                         if (issue.status === 'completed') {
-                            totalComplete += issue.weight;
+                            totalComplete++;
                         }
                     });
                 }
-                return totalComplete === 0 ? 0 : totalComplete / totalWeight;
+                return totalComplete;
+            },
+            completionRate: function () {
+                return this.totalComplete === 0 ? 0 : this.totalComplete / this.totalIssues;
             },
         },
         mounted() {
