@@ -11,6 +11,14 @@
                     </v-list-tile-title>
                 </v-list-tile>
                 <v-divider/>
+                <v-list-tile to="/documents">
+                    <v-list-tile-action>
+                        <v-icon>account_circle</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Quản lý tài liệu</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
                 <v-list-tile to="/tasks">
                     <v-list-tile-action>
                         <v-icon>account_circle</v-icon>
