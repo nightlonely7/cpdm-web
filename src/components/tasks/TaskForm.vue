@@ -21,15 +21,14 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex>
-                                <v-menu right offset-x class="date-menu">
+                                <v-menu bottom offset-y class="date-menu">
                                     <v-text-field v-model="taskForm.startTime"
                                                   label="Ngày bắt đầu"
                                                   prepend-inner-icon="event"
                                                   slot="activator"
                                     ></v-text-field>
-                                    <v-date-picker v-model="startDatePicker" label="Ngày bắt đầu" color="green"
-                                                   scrollable>
-                                    </v-date-picker>
+                                    <v-datetime-picker label="Ngày bắt đầu" v-model="taskForm.startTime">
+                                    </v-datetime-picker>
                                 </v-menu>
                             </v-flex>
                             <v-flex>
@@ -39,9 +38,8 @@
                                                   prepend-inner-icon="event"
                                                   slot="activator"
                                     ></v-text-field>
-                                    <v-date-picker v-model="endDatePicker" label="Ngày kết thúc" color="green"
-                                                   scrollable>
-                                    </v-date-picker>
+                                    <v-datetime-picker label="Ngày kết thúc" v-model="taskForm.endTime">
+                                    </v-datetime-picker>
                                 </v-menu>
                             </v-flex>
                             <v-flex md12>
@@ -50,21 +48,6 @@
                                             height="500"
                                             outline
                                 ></v-textarea>
-                            </v-flex>
-                            <v-flex>
-                                <v-select v-model="taskForm.project.id"
-                                          :items="projectOptions"
-                                          item-value="id"
-                                          label="Thuộc dự án"
-                                          prepend-inner-icon="build"
-                                >
-                                    <template #item="{item}">
-                                        {{item.name || ''}}{{item.id === 1 ? '' : ' - '}}{{item.alias || ''}}
-                                    </template>
-                                    <template #selection="{item}">
-                                        {{item.name || ''}}{{item.id === 1 ? '' : ' - '}}{{item.alias || ''}}
-                                    </template>
-                                </v-select>
                             </v-flex>
                             <v-flex>
                                 <v-select v-model="taskForm.executor.id"
@@ -93,9 +76,7 @@
                                                 clearable
                                                 hide-no-data
                                 >
-
                                     <template slot="item" slot-scope="data">
-
                                         {{data.item.email}} - {{data.item.fullName}} - Phòng ban:
                                         {{data.item.department.name}}
                                     </template>
@@ -124,7 +105,6 @@
     import axios from 'axios';
     import {mapState} from 'vuex'
     import _ from 'lodash';
-    import 'moment'
 
     export default {
         name: "TaskForm",
@@ -159,8 +139,6 @@
                         return {id: value};
                     }),
                 };
-
-                moment.format();
                 console.log(data);
 
                 const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
@@ -182,7 +160,6 @@
             },
             getViewerOptions: function (email) {
                 this.viewerOptionsLoading = true;
-
                 setTimeout(() => {
                     axios.get(`http://localhost:8080/users/search/findAllForSelectByEmailContaining`, {
                         params: {
@@ -205,41 +182,12 @@
                     });
                 }, 500);
             },
-            getExecutorOptions: function () {
-                axios.get(`http://localhost:8080/users/findAllStaffDisplayNameByDepartmentOfCurrentLoggedManager`)
-                    .then(response => {
-                        this.executorOptions = response.data;
-                    })
-                    .catch(error => {
-                        if (error.response) {
-                            console.log(error.response.data);
-                        } else {
-                            console.log(error.response);
-                        }
-                    });
-            },
-            getProjectOptions: function () {
-                axios.get(`http://localhost:8080/projects`)
-                    .then(response => {
-                        this.projectOptions = response.data;
-                        console.log(this.projectOptions)
-                    })
-                    .catch(error => {
-                        if (error.response) {
-                            console.log(error.response.data);
-                        } else {
-                            console.log(error.response);
-                        }
-                    });
-            }
         },
         mounted() {
-            this.$nextTick(() => {
-                this.getExecutorOptions();
-                this.getProjectOptions();
-                console.log(this.taskForm)
-            });
-
+            axios.get(`http://localhost:8080/users/findAllStaffDisplayNameByDepartmentOfCurrentLoggedManager`)
+                .then(response => {
+                    this.executorOptions = response.data;
+                });
         },
         created() {
             this.debouncedGetViewerOptions = _.debounce(this.getViewerOptions, 500);
