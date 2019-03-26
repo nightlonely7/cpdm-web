@@ -24,6 +24,13 @@ const router = new Router({
         {
             path: '/tasks/:id',
             name: 'Chi tiết tác vụ',
+            props: (route) => {
+                const id = Number.parseInt(route.params.id);
+                if (Number.isNaN(id)) {
+                    return 0;
+                }
+                return {id};
+            },
             component: () => import('@/views/tasks/TaskDetailPage.vue')
         },
         {
@@ -45,6 +52,7 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
+
     if (to.path === '/login') {
         if (store.getters['AUTHENTICATION/isLoggedIn']) {
             store.dispatch('AUTHENTICATION/INIT')
@@ -65,6 +73,7 @@ router.beforeEach((to, from, next) => {
             .catch(() => next('/login'));
         return;
     }
+    console.log('router');
     next();
 });
 

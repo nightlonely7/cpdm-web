@@ -98,7 +98,7 @@
                 const url = `http://localhost:8080/documents`;
                 axios({url, method, data})
                     .then(() => {
-                        this.dialog = false;
+                        this.close();
                         this.$emit('refresh');
                     })
                     .catch(error => {

@@ -28,7 +28,7 @@
                         <v-tab v-if="isAdmin || isManager">
                             TÁC VỤ ĐÃ GIAO
                         </v-tab>
-                        <v-tab>
+                        <v-tab v-if="isManager || isStaff">
                             TÁC VỤ LIÊN QUAN
                         </v-tab>
                     </v-tabs>
@@ -36,14 +36,14 @@
             </v-toolbar>
 
             <v-tabs-items v-model="tabs">
-                <v-tab-item v-if="!isAdmin">
-                    <CreatorTaskTable type="executor"></CreatorTaskTable>
+                <v-tab-item v-if="isManager || isStaff">
+                    <TaskTable title="TÁC VỤ ĐƯỢC GIAO" getTasksURL="search/executes"></TaskTable>
                 </v-tab-item>
-                <v-tab-item v-if="!isStaff">
-                    <CreatorTaskTable type="creator"></CreatorTaskTable>
+                <v-tab-item v-if="isManager || isAdmin">
+                    <TaskTable title="TÁC VỤ ĐÃ GIAO" getTasksURL="search/creates"></TaskTable>
                 </v-tab-item>
-                <v-tab-item>
-                    <CreatorTaskTable type="related"></CreatorTaskTable>
+                <v-tab-item v-if="isManager || isStaff">
+                    <TaskTable title="TÁC VỤ THEO DÕI" getTasksURL="search/relatives"></TaskTable>
                 </v-tab-item>
             </v-tabs-items>
         </div>
@@ -57,7 +57,7 @@
 
     export default {
         name: "TaskPage",
-        components: {TaskSearch, CreatorTaskTable: TaskTable},
+        components: {TaskSearch, TaskTable},
         data() {
             return {
                 tabs: null,

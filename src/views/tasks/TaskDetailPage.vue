@@ -45,13 +45,19 @@
         components: {TaskDetail, UploadButton},
         data() {
             return {
-                id: 0,
                 file: {},
                 loading: false,
                 taskFiles: [],
             }
         },
+        props: {
+            id: Number,
+        },
         methods: {
+            init() {
+                this.$store.commit('TASK_STORE/SET_TASK_ID', this.id);
+                this.loadFilenames();
+            },
             goBack: function () {
                 this.$router.push("/tasks");
             },
@@ -93,10 +99,8 @@
             }
         },
         mounted() {
-            this.id = Number.parseInt(this.$route.params.id);
-            this.$store.commit('TASK_STORE/SET_TASK_ID', this.id);
-            this.loadFilenames();
-        }
+            this.init();
+        },
     }
 </script>
 

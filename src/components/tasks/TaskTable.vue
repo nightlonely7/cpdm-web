@@ -5,8 +5,11 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <v-btn v-if="type === 'creator'" color="primary" @click="showForm">Tạo mới tác vụ</v-btn>
-            <TaskForm v-if="type === 'creator'" @refresh="refresh"></TaskForm>
+            <TaskForm v-if="getTasksURL === 'search/creates'" @refresh="refresh" relative>
+                <template #activator="{on}">
+                    <v-btn v-on="on" color="primary">Tạo mới tác vụ</v-btn>
+                </template>
+            </TaskForm>
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
@@ -21,7 +24,7 @@
         >
             <v-progress-linear #progress color="blue" indeterminate></v-progress-linear>
             <template #items="props">
-                <router-link tag="tr" :to="`tasks/${props.item.id}`"
+                <router-link tag="tr" :to="`/tasks/${props.item.id}`"
                              onmouseover="this.style.cursor='pointer'"
                              onmouseout="this.style.cursor='none'"
                 >
@@ -48,16 +51,15 @@
     import {mapState} from 'vuex'
 
     export default {
-        name: "CreatorTaskTable",
+        name: "TaskTable",
         components: {TaskForm},
         props: {
-            type: String
+            title: String,
+            getTasksURL: String,
         },
         data() {
             return {
-                getTasksURL: '',
                 tasks: [],
-                title: '',
                 canLoadData: true,
                 alert: '',
                 pagination: {
@@ -94,26 +96,9 @@
         },
         mounted() {
             this.$store.commit('TASK_STORE/SET_TASK_FORM', {id: 0, executor: {}});
-            console.log(this.type);
-            switch (this.type) {
-                case 'creator':
-                    this.title = 'TÁC VỤ ĐÃ GIAO';
-                    this.getTasksURL = 'creates';
-                    break;
-                case 'executor':
-                    this.title = 'TÁC VỤ ĐƯỢC GIAO';
-                    this.getTasksURL = 'executes';
-                    break;
-                case 'related':
-                    this.title = 'TÁC VỤ LIÊN QUAN';
-                    this.getTasksURL = 'relatives';
-                    break;
-            }
+
         },
         methods: {
-            showForm: function () {
-                this.$store.commit('TASK_STORE/SET_SHOW_FORM', true);
-            },
             refresh: function () {
                 this.pagination.page = 1;
                 this.pagination.sortBy = 'createdTime';
@@ -126,8 +111,7 @@
             getTasks: function () {
                 this.table.loading = true;
                 console.log('load');
-                console.log(this.type);
-                axios.get(`http://localhost:8080/tasks/search/${this.getTasksURL}`,
+                axios.get(`http://localhost:8080/tasks/${this.getTasksURL}`,
                     {
                         params: {
                             page: this.pagination.page - 1,

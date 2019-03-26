@@ -6,6 +6,8 @@
         <h4>Nội dung tổng quát: </h4>
         <p>{{task.summary}}</p>
         <br>
+        <p>Thuộc dự án: {{task.project.name || ''}}</p>
+        <br>
 
         <p>Trạng thái:
             <v-chip>{{task.status}}</v-chip>
@@ -32,6 +34,17 @@
             </v-card-text>
         </v-card>
         <br>
+
+        <v-expansion-panel v-if="isAdmin && !isChild">
+            <v-expansion-panel-content>
+
+                <template slot="header">
+                    Danh sách tác vụ phân nhỏ
+                </template>
+
+                <TaskTable title="TÁC VỤ PHÂN NHỎ" :getTasksURL="`${this.id}/childs`"></TaskTable>
+            </v-expansion-panel-content>
+        </v-expansion-panel>
 
         <v-expansion-panel>
             <v-expansion-panel-content>
@@ -85,13 +98,16 @@
 
         <br>
         <v-divider></v-divider>
-        <v-btn @click="deleteTask" color="error">
-            Xóa
-        </v-btn>
-        <v-btn @click="showForm">
-            Sửa
-        </v-btn>
-        <TaskForm @refresh="getTask"></TaskForm>
+        <v-layout row v-if="(isManager && isChild) || (isAdmin && !isChild)">
+            <v-btn @click="deleteTask" color="error">
+                Xóa
+            </v-btn>
+            <TaskForm v-if="isAdmin || isManager" @refresh="getTask" :form="form">
+                <template #activator="{on}">
+                    <v-btn v-on="on" color="primary">Chỉnh sửa</v-btn>
+                </template>
+            </TaskForm>
+        </v-layout>
         <TaskIssueForm @refresh="refreshIssues"></TaskIssueForm>
         <TaskRelativeForm @refresh="refreshRelatives"></TaskRelativeForm>
     </div>
@@ -102,10 +118,12 @@
     import TaskForm from "@/components/tasks/TaskForm";
     import TaskIssueForm from "@/components/tasks/TaskIssueForm";
     import TaskRelativeForm from "@/components/tasks/TaskRelativeForm";
+    import {mapGetters} from 'vuex';
+    import TaskTable from "./TaskTable";
 
     export default {
         name: "TaskDetail",
-        components: {TaskRelativeForm, TaskIssueForm, TaskForm},
+        components: {TaskTable, TaskRelativeForm, TaskIssueForm, TaskForm},
         props: {
             id: Number
         },
@@ -114,12 +132,17 @@
                 task: {
                     creator: {},
                     executor: {},
+                    project: {},
+                    parentTask: {},
                 },
                 taskIssues: [],
                 taskRelatives: [],
             }
         },
         computed: {
+            isChild: function () {
+                return !!this.task.parentTask;
+            },
             totalIssues: function () {
                 return this.taskIssues ? this.taskIssues.length : 0;
             },
@@ -137,6 +160,14 @@
             completionRate: function () {
                 return this.totalComplete === 0 ? 0 : this.totalComplete / this.totalIssues;
             },
+            form: function () {
+                return {...this.task};
+            },
+            ...mapGetters('AUTHENTICATION', {
+                isAdmin: 'isAdmin',
+                isManager: 'isManager',
+                isStaff: 'isStaff',
+            })
         },
         mounted() {
             this.$nextTick(function () {
@@ -150,21 +181,8 @@
             refreshRelatives: function () {
                 this.getTaskRelatives();
             },
-            showForm: function () {
-                this.$store.commit('TASK_STORE/SET_SHOW_FORM', true);
-                const taskForm = {
-                    id: this.task.id,
-                    title: this.task.title,
-                    summary: this.task.summary,
-                    description: this.task.description,
-                    startTime: this.task.startTime,
-                    endTime: this.task.endTime,
-                    executor: this.task.executor,
-                    priority: this.task.priority
-                };
-                this.$store.commit('TASK_STORE/SET_TASK_FORM', taskForm);
-            },
             getTask: function () {
+                console.log('taskDetail');
                 axios.get(`http://localhost:8080/tasks/${this.id}`)
                     .then(response => {
                         Object.assign(this.task, response.data);
@@ -234,7 +252,12 @@
             showRelativeForm: function () {
                 this.$store.commit('TASK_STORE/SET_SHOW_RELATIVE_FORM', true);
             }
-        }
+        },
+        // watch: {
+        //     id: function () {
+        //         this.$router.go();
+        //     }
+        // }
     }
 </script>
 

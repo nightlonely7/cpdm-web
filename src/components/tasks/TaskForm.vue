@@ -1,6 +1,9 @@
 <template>
     <div>
-        <v-dialog v-model="showForm" fullscreen persistent>
+        <v-dialog v-model="dialog" fullscreen persistent>
+            <template #activator="{on}">
+                <slot name="activator" :on="on"></slot>
+            </template>
             <v-card>
                 <v-card-title>
                     <span class="headline">FORM</span>
@@ -9,36 +12,36 @@
                 <v-card-text>
                     <v-container grid-list-md>
                         <v-layout wrap>
-                            <v-flex md12>
+                            <v-flex md12 sm12>
                                 <v-text-field v-model="taskForm.title"
                                               label="Title"
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex md12>
+                            <v-flex md12 sm12>
                                 <v-text-field v-model="taskForm.summary"
                                               label="Summary"
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex>
+                            <v-flex md6 sm12>
                                 <v-text-field v-model="taskForm.startTime"
                                               label="Start Time"
                                               prepend-inner-icon="event"
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex>
+                            <v-flex md6 sm12>
                                 <v-text-field v-model="taskForm.endTime"
                                               label="End Time"
                                               prepend-inner-icon="event"
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex md12>
+                            <v-flex md12 sm12>
                                 <v-textarea v-model="taskForm.description"
                                             label="Nội dung chi tiết"
                                             height="500"
                                             outline
                                 ></v-textarea>
                             </v-flex>
-                            <v-flex>
+                            <v-flex md6 sm12>
                                 <v-select v-model="taskForm.project.id"
                                           :items="projectOptions"
                                           item-value="id"
@@ -53,7 +56,7 @@
                                     </template>
                                 </v-select>
                             </v-flex>
-                            <v-flex>
+                            <v-flex md6 sm12>
                                 <v-select v-model="taskForm.executor.id"
                                           :items="executorOptions"
                                           item-text="displayName"
@@ -62,13 +65,13 @@
                                           prepend-inner-icon="account_box"
                                 ></v-select>
                             </v-flex>
-                            <v-flex>
+                            <v-flex md12 sm12>
                                 <v-text-field v-model="taskForm.priority"
                                               type="number"
                                               label="Mức độ ưu tiên"
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex md12>
+                            <v-flex md12 sm12 v-if="relative">
                                 <v-autocomplete chips deletable-chips cache-items multiple
                                                 v-model="relatives"
                                                 :items="viewerOptions"
@@ -115,13 +118,15 @@
 
 <script>
     import axios from 'axios';
-    import {mapState} from 'vuex'
     import _ from 'lodash';
+    import moment from 'moment';
+    import {mapGetters} from "vuex";
 
     export default {
         name: "TaskForm",
         data() {
             return {
+                dialog: false,
                 relatives: [],
                 executorOptions: [],
                 projectOptions: [{id: 0, name: 'Không dự án'}],
@@ -131,10 +136,25 @@
             }
         },
         computed: {
-            ...mapState('TASK_STORE', {
-                showForm: state => state.showForm,
-                taskForm: state => state.taskForm
-            })
+            taskForm: function () {
+                return {...this.form};
+            },
+            ...mapGetters('AUTHENTICATION', {
+                isAdmin: 'isAdmin'
+            }),
+        },
+        props: {
+            form: {
+                type: Object,
+                default: function () {
+                    return {
+                        id: 0,
+                        project: {id: 1},
+                        executor: {},
+                    };
+                }
+            },
+            relative: Boolean,
         },
         methods: {
             save: function () {
@@ -145,6 +165,8 @@
                         return {id: value};
                     }),
                 };
+                data.startTime = moment(data.startTime, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+                data.endTime = moment(data.endTime, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
                 console.log(data);
 
                 const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
@@ -167,7 +189,7 @@
                 )
             },
             close: function () {
-                this.$store.commit('TASK_STORE/SET_SHOW_FORM', false);
+                this.dialog = false;
             },
             getViewerOptions: function (email) {
                 this.viewerOptionsLoading = true;
@@ -194,7 +216,11 @@
                 }, 500);
             },
             getExecutorOptions: function () {
-                axios.get(`http://localhost:8080/users/findAllStaffDisplayNameByDepartmentOfCurrentLoggedManager`)
+
+                const url = this.isAdmin ?
+                    `http://localhost:8080/users/search/findAllManagerSummary` :
+                    `http://localhost:8080/users/findAllStaffDisplayNameByDepartmentOfCurrentLoggedManager`;
+                axios.get(url)
                     .then(response => {
                         this.executorOptions = response.data;
                     })
