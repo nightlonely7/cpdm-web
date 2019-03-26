@@ -12,6 +12,11 @@ const router = new Router({
             component: () => import('@/views/LoginPage.vue')
         },
         {
+            path: '/documents',
+            name: 'Quản lý tài liệu',
+            component: () => import('@/views/documents/DocumentPage.vue')
+        },
+        {
             path: '/tasks',
             name: 'Quản lý tác vụ',
             component: () => import('@/views/tasks/TaskPage.vue')
