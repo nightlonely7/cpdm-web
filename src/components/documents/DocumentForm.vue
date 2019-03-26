@@ -14,12 +14,12 @@
                         <v-layout wrap>
                             <v-flex md12>
                                 <v-text-field v-model="documentForm.title"
-                                              label="Title"
+                                              label="Tiêu đề"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12>
                                 <v-text-field v-model="documentForm.summary"
-                                              label="Summary"
+                                              label="Nội dung tổng quát"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12>

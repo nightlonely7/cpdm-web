@@ -5,6 +5,7 @@ const taskStoreDefaultState = () => {
         showRelativeForm: false,
         titleSearchValue: '',
         summarySearchValue: '',
+        projectSelected: 1,
         taskForm: {
             project: {},
             executor: {},
@@ -18,9 +19,6 @@ export default {
     namespaced: true,
     state: taskStoreDefaultState(),
     mutations: {
-        SET_TASK_FORM(state, taskForm) {
-            Object.assign(state.taskForm, taskForm);
-        },
         SET_TASK_ISSUE_FORM(state, taskIssueForm) {
             state.taskIssueForm = taskIssueForm
         },
@@ -29,6 +27,14 @@ export default {
         },
         SET_SUMMARY_SEARCH_VALUE(state, summarySearchValue) {
             state.summarySearchValue = summarySearchValue
+        },
+        SET_PROJECT_SELECTED(state, projectSelected) {
+            state.projectSelected = projectSelected
+        },
+        RESET_SEARCH(state) {
+            state.titleSearchValue = '';
+            state.summarySearchValue = '';
+            state.projectSelected = 1;
         },
         SET_SHOW_FORM(state, showForm) {
             state.showForm = showForm

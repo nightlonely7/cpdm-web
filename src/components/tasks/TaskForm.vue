@@ -14,23 +14,23 @@
                         <v-layout wrap>
                             <v-flex md12 sm12>
                                 <v-text-field v-model="taskForm.title"
-                                              label="Title"
+                                              label="Tiêu đề"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12 sm12>
                                 <v-text-field v-model="taskForm.summary"
-                                              label="Summary"
+                                              label="Nội dung tổng quát"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6 sm12>
                                 <v-text-field v-model="taskForm.startTime"
-                                              label="Start Time"
+                                              label="Thời gian bắt đầu"
                                               prepend-inner-icon="event"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6 sm12>
                                 <v-text-field v-model="taskForm.endTime"
-                                              label="End Time"
+                                              label="Thời gian kết thúc"
                                               prepend-inner-icon="event"
                                 ></v-text-field>
                             </v-flex>
@@ -47,12 +47,15 @@
                                           item-value="id"
                                           label="Thuộc dự án"
                                           prepend-inner-icon="build"
+                                          append-outer-icon="cached"
+                                          @click:append-outer="getProjectOptions"
+                                          :loading="projectOptionsLoading"
                                 >
                                     <template #item="{item}">
-                                        {{item.name || ''}}{{item.id === 1 ? '' : ' - '}}{{item.alias || ''}}
+                                        {{item.name || ''}} - {{item.alias || ''}}
                                     </template>
                                     <template #selection="{item}">
-                                        {{item.name || ''}}{{item.id === 1 ? '' : ' - '}}{{item.alias || ''}}
+                                        {{item.name || ''}} - {{item.alias || ''}}
                                     </template>
                                 </v-select>
                             </v-flex>
@@ -100,13 +103,13 @@
                         <v-flex md2>
                             <v-btn color="secondary" @click="close" block>
                                 <v-icon left>clear</v-icon>
-                                Cancel
+                                <span>Hủy</span>
                             </v-btn>
                         </v-flex>
                         <v-flex md2>
                             <v-btn color="primary" @click="save" block>
                                 <v-icon left>done</v-icon>
-                                Save
+                                <span>Lưu</span>
                             </v-btn>
                         </v-flex>
                     </v-layout>
@@ -129,7 +132,8 @@
                 dialog: false,
                 relatives: [],
                 executorOptions: [],
-                projectOptions: [{id: 0, name: 'Không dự án'}],
+                projectOptions: [],
+                projectOptionsLoading: false,
                 viewerOptions: [],
                 viewerOptionsLoading: false,
                 viewerOptionsSearch: null,
@@ -171,17 +175,12 @@
 
                 const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
                 const method = `${this.taskForm.id === 0 ? 'POST' : 'PUT'}`;
-                axios.request(
-                    {
-                        url: url,
-                        method: method,
-                        data: data
-                    }
-                ).then(() => {
-                        this.close();
-                        this.$emit('refresh');
-                    }
-                ).catch(error => {
+                axios({url, method, data})
+                    .then(() => {
+                            this.close();
+                            this.$emit('refresh');
+                        }
+                    ).catch(error => {
                         if (error.response) {
                             console.log(error.response.data)
                         }
@@ -233,25 +232,30 @@
                     });
             },
             getProjectOptions: function () {
-                axios.get(`http://localhost:8080/projects`)
-                    .then(response => {
-                        this.projectOptions = response.data;
-                        console.log(this.projectOptions)
-                    })
-                    .catch(error => {
-                        if (error.response) {
-                            console.log(error.response.data);
-                        } else {
-                            console.log(error.response);
-                        }
-                    });
+                this.projectOptionsLoading = true;
+                setTimeout(() => {
+                    axios.get(`http://localhost:8080/projects`)
+                        .then(response => {
+                            this.projectOptions = response.data;
+                            this.taskForm.project.id = 1;
+                        })
+                        .catch(error => {
+                            if (error.response) {
+                                console.log(error.response.data);
+                            } else {
+                                console.log(error.response);
+                            }
+                        })
+                        .finally(() => {
+                            this.projectOptionsLoading = false;
+                        });
+                }, 500);
             }
         },
         mounted() {
             this.$nextTick(() => {
                 this.getExecutorOptions();
                 this.getProjectOptions();
-                console.log(this.taskForm)
             });
 
         },

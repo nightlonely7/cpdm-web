@@ -3,7 +3,10 @@
         <v-toolbar flat color="white">
             <v-toolbar-title class="animated bounce delay-1s">{{title}}</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
-            <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
+            <v-btn color="primary" @click="refresh()">
+                <v-icon left>cached</v-icon>
+                <span>Làm mới</span>
+            </v-btn>
             <v-spacer></v-spacer>
             <TaskForm v-if="getTasksURL === 'search/creates'" @refresh="refresh" relative>
                 <template #activator="{on}">
@@ -17,12 +20,15 @@
                 :loading="table.loading"
                 :pagination.sync="pagination"
                 :total-items="pagination.totalItems"
-                rows-per-page-text="Số hàng mỗi trang"
+                :rows-per-page-text="'Số hàng mỗi trang'"
+                :rows-per-page-items="[5, 10, 25, 50, {text: 'Tất cả', value: -1}]"
                 :no-data-text="alert || 'Không có dữ liệu'"
                 :no-results-text="alert || 'Không tìm thấy dữ liệu tương ứng'"
                 must-sort
         >
-            <v-progress-linear #progress color="blue" indeterminate></v-progress-linear>
+            <template #pageText="{pageStart, pageStop, itemsLength}">
+                {{pageStart}} - {{pageStop}} của tổng cộng {{itemsLength}}
+            </template>
             <template #items="props">
                 <router-link tag="tr" :to="`/tasks/${props.item.id}`"
                              onmouseover="this.style.cursor='pointer'"
@@ -60,7 +66,6 @@
         data() {
             return {
                 tasks: [],
-                canLoadData: true,
                 alert: '',
                 pagination: {
                     sortBy: 'createdTime',
@@ -87,6 +92,7 @@
             ...mapState('TASK_STORE', {
                 titleSearchValue: state => state.titleSearchValue,
                 summarySearchValue: state => state.summarySearchValue,
+                projectSelected: state => state.projectSelected,
             }),
             ...mapState('AUTHENTICATION', {
                 isLoggedIn: state => state.isLoggedIn,
@@ -96,16 +102,12 @@
         },
         mounted() {
             this.$store.commit('TASK_STORE/SET_TASK_FORM', {id: 0, executor: {}});
-
         },
         methods: {
             refresh: function () {
                 this.pagination.page = 1;
                 this.pagination.sortBy = 'createdTime';
                 this.pagination.descending = true;
-                this.$store.commit('TASK_STORE/SET_TITLE_SEARCH_VALUE', '');
-                this.$store.commit('TASK_STORE/SET_SUMMARY_SEARCH_VALUE', '');
-                this.canLoadData = false;
                 this.getTasks();
             },
             getTasks: function () {
@@ -119,6 +121,7 @@
                             sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
                             title: this.titleSearchValue == null ? '' : this.titleSearchValue,
                             summary: this.summarySearchValue == null ? '' : this.summarySearchValue,
+                            projectId: this.projectSelected == null ? '' : this.projectSelected,
                         }
                     }
                 ).then(response => {
@@ -147,19 +150,15 @@
             },
             titleSearchValue: function () {
                 this.pagination.page = 1;
-                if (this.canLoadData) {
-                    this.debouncedGetTasks();
-                } else {
-                    this.canLoadData = true;
-                }
+                this.debouncedGetTasks();
             },
             summarySearchValue: function () {
                 this.pagination.page = 1;
-                if (this.canLoadData) {
-                    this.debouncedGetTasks();
-                } else {
-                    this.canLoadData = true;
-                }
+                this.debouncedGetTasks();
+            },
+            projectSelected: function () {
+                this.pagination.page = 1;
+                this.getTasks();
             }
         },
         created() {

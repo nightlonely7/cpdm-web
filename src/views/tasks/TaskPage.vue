@@ -6,7 +6,8 @@
             <v-expansion-panel focusable class="elevation-0">
                 <v-expansion-panel-content>
                     <template slot="header">
-                        <div>Tìm kiếm</div>
+
+                        <span><v-icon left>search</v-icon>Tìm kiếm</span>
                     </template>
                     <TaskSearch></TaskSearch>
                 </v-expansion-panel-content>
