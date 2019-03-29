@@ -50,6 +50,7 @@
                                           append-outer-icon="cached"
                                           @click:append-outer="getProjectOptions"
                                           :loading="projectOptionsLoading"
+                                          @change="getParentTaskOptions(taskForm.project.id)"
                                 >
                                     <template #item="{item}">
                                         {{item.name || ''}} - {{item.alias || ''}}
@@ -58,6 +59,18 @@
                                         {{item.name || ''}} - {{item.alias || ''}}
                                     </template>
                                 </v-select>
+                            </v-flex>
+                            <v-flex md6 sm12 v-if="isManager">
+                                <v-select v-model="taskForm.parentTask.id"
+                                          :items="parentTaskOptions"
+                                          item-text="title"
+                                          item-value="id"
+                                          label="Tác vụ tổng"
+                                          prepend-inner-icon="build"
+                                          append-outer-icon="cached"
+                                          @click:append-outer="!!taskForm.project.id && getParentTaskOptions(taskForm.project.id)"
+                                          :loading="parentTaskOptionsLoading"
+                                ></v-select>
                             </v-flex>
                             <v-flex md6 sm12>
                                 <v-select v-model="taskForm.executor.id"
@@ -68,7 +81,7 @@
                                           prepend-inner-icon="account_box"
                                 ></v-select>
                             </v-flex>
-                            <v-flex md12 sm12>
+                            <v-flex md6 sm12>
                                 <v-text-field v-model="taskForm.priority"
                                               type="number"
                                               label="Mức độ ưu tiên"
@@ -100,13 +113,13 @@
 
                 <v-card-actions>
                     <v-layout row justify-space-around>
-                        <v-flex md2>
+                        <v-flex md2 sm4>
                             <v-btn color="secondary" @click="close" block>
                                 <v-icon left>clear</v-icon>
                                 <span>Hủy</span>
                             </v-btn>
                         </v-flex>
-                        <v-flex md2>
+                        <v-flex md2 sm4>
                             <v-btn color="primary" @click="save" block>
                                 <v-icon left>done</v-icon>
                                 <span>Lưu</span>
@@ -134,6 +147,8 @@
                 executorOptions: [],
                 projectOptions: [],
                 projectOptionsLoading: false,
+                parentTaskOptionsLoading: false,
+                parentTaskOptions: [],
                 viewerOptions: [],
                 viewerOptionsLoading: false,
                 viewerOptionsSearch: null,
@@ -144,7 +159,8 @@
                 return {...this.form};
             },
             ...mapGetters('AUTHENTICATION', {
-                isAdmin: 'isAdmin'
+                isAdmin: 'isAdmin',
+                isManager: 'isManager'
             }),
         },
         props: {
@@ -153,8 +169,9 @@
                 default: function () {
                     return {
                         id: 0,
-                        project: {id: 1},
+                        project: {},
                         executor: {},
+                        parentTask: {},
                     };
                 }
             },
@@ -237,7 +254,6 @@
                     axios.get(`http://localhost:8080/projects`)
                         .then(response => {
                             this.projectOptions = response.data;
-                            this.taskForm.project.id = 1;
                         })
                         .catch(error => {
                             if (error.response) {
@@ -248,6 +264,29 @@
                         })
                         .finally(() => {
                             this.projectOptionsLoading = false;
+                        });
+                }, 500);
+            },
+            getParentTaskOptions: function (projectId) {
+                this.parentTaskOptionsLoading = true;
+                setTimeout(() => {
+                    axios.get(`http://localhost:8080/tasks/search/basicByExecutes`, {
+                        params: {
+                            projectId
+                        }
+                    })
+                        .then(response => {
+                            this.parentTaskOptions = response.data;
+                        })
+                        .catch(error => {
+                            if (error.response) {
+                                console.log(error.response.data);
+                            } else {
+                                console.log(error.response);
+                            }
+                        })
+                        .finally(() => {
+                            this.parentTaskOptionsLoading = false;
                         });
                 }, 500);
             }
