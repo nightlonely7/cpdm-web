@@ -3,10 +3,16 @@
         <v-toolbar flat color="white">
             <v-toolbar-title class="animated bounce delay-1s">{{title}}</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
-            <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
+            <v-btn color="primary" @click="refresh()">
+                <v-icon left>cached</v-icon>
+                <span>Làm mới</span>
+            </v-btn>
             <v-spacer></v-spacer>
-            <v-btn v-if="type === 'creator'" color="primary" @click="showForm">Tạo mới tác vụ</v-btn>
-            <TaskForm v-if="type === 'creator'" @refresh="refresh"></TaskForm>
+            <TaskForm v-if="getTasksURL === 'search/creates'" @refresh="refresh" relative>
+                <template #activator="{on}">
+                    <v-btn v-on="on" color="primary">Tạo mới tác vụ</v-btn>
+                </template>
+            </TaskForm>
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
@@ -14,14 +20,17 @@
                 :loading="table.loading"
                 :pagination.sync="pagination"
                 :total-items="pagination.totalItems"
-                rows-per-page-text="Số hàng mỗi trang"
+                :rows-per-page-text="'Số hàng mỗi trang'"
+                :rows-per-page-items="[5, 10, 25, 50, {text: 'Tất cả', value: -1}]"
                 :no-data-text="alert || 'Không có dữ liệu'"
                 :no-results-text="alert || 'Không tìm thấy dữ liệu tương ứng'"
                 must-sort
         >
-            <v-progress-linear #progress color="blue" indeterminate></v-progress-linear>
+            <template #pageText="{pageStart, pageStop, itemsLength}">
+                {{pageStart}} - {{pageStop}} của tổng cộng {{itemsLength}}
+            </template>
             <template #items="props">
-                <router-link tag="tr" :to="`tasks/${props.item.id}`"
+                <router-link tag="tr" :to="`/tasks/${props.item.id}`"
                              onmouseover="this.style.cursor='pointer'"
                              onmouseout="this.style.cursor='none'"
                 >
@@ -48,17 +57,15 @@
     import {mapState} from 'vuex'
 
     export default {
-        name: "CreatorTaskTable",
+        name: "TaskTable",
         components: {TaskForm},
         props: {
-            type: String
+            title: String,
+            getTasksURL: String,
         },
         data() {
             return {
-                getTasksURL: '',
                 tasks: [],
-                title: '',
-                canLoadData: true,
                 alert: '',
                 pagination: {
                     sortBy: 'createdTime',
@@ -85,6 +92,7 @@
             ...mapState('TASK_STORE', {
                 titleSearchValue: state => state.titleSearchValue,
                 summarySearchValue: state => state.summarySearchValue,
+                projectSelected: state => state.projectSelected,
             }),
             ...mapState('AUTHENTICATION', {
                 isLoggedIn: state => state.isLoggedIn,
@@ -94,21 +102,6 @@
         },
         mounted() {
             this.$store.commit('TASK_STORE/SET_TASK_FORM', {id: 0, executor: {}});
-            console.log(this.type);
-            switch (this.type) {
-                case 'creator':
-                    this.title = 'TÁC VỤ ĐÃ GIAO';
-                    this.getTasksURL = 'creates';
-                    break;
-                case 'executor':
-                    this.title = 'TÁC VỤ ĐƯỢC GIAO';
-                    this.getTasksURL = 'executes';
-                    break;
-                case 'related':
-                    this.title = 'TÁC VỤ LIÊN QUAN';
-                    this.getTasksURL = 'relatives';
-                    break;
-            }
         },
         methods: {
             showForm: function () {
@@ -126,8 +119,7 @@
             getTasks: function () {
                 this.table.loading = true;
                 console.log('load');
-                console.log(this.type);
-                axios.get(`http://localhost:8080/tasks/search/${this.getTasksURL}`,
+                axios.get(`http://localhost:8080/tasks/${this.getTasksURL}`,
                     {
                         params: {
                             page: this.pagination.page - 1,
@@ -135,6 +127,7 @@
                             sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
                             title: this.titleSearchValue == null ? '' : this.titleSearchValue,
                             summary: this.summarySearchValue == null ? '' : this.summarySearchValue,
+                            projectId: this.projectSelected == null ? '' : this.projectSelected,
                         }
                     }
                 ).then(response => {
@@ -163,19 +156,15 @@
             },
             titleSearchValue: function () {
                 this.pagination.page = 1;
-                if (this.canLoadData) {
-                    this.debouncedGetTasks();
-                } else {
-                    this.canLoadData = true;
-                }
+                this.debouncedGetTasks();
             },
             summarySearchValue: function () {
                 this.pagination.page = 1;
-                if (this.canLoadData) {
-                    this.debouncedGetTasks();
-                } else {
-                    this.canLoadData = true;
-                }
+                this.debouncedGetTasks();
+            },
+            projectSelected: function () {
+                this.pagination.page = 1;
+                this.getTasks();
             }
         },
         created() {

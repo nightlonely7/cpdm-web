@@ -1,32 +1,43 @@
 <template>
     <div>
-        <v-btn @click="goBack" color="primary">Trở về</v-btn>
-        <br>
-        <br>
-        <TaskDetail :id="id"></TaskDetail><br>
-        <div>
-            <v-card>
-                <v-card-title>DANH SÁCH TỆP TIN</v-card-title>
-                <v-card-text>
-                    <p v-if="!taskFiles.length">Chưa có tệp tin</p>
-                    <template v-for="taskFile in taskFiles">
-                        <a @click.prevent="downloadFile(taskFile.filename)">{{taskFile.filename}}</a>
+        <v-progress-circular v-if="loading"></v-progress-circular>
+        <div v-if="!loading">
+            <v-btn @click="goBack" color="primary">Trở về</v-btn>
+            <br>
+            <br>
+            <TaskDetail :id="id"></TaskDetail>
+
+            <br>
+
+            <div>
+                <v-card>
+                    <v-card-title>DANH SÁCH TỆP TIN</v-card-title>
+                    <v-card-text>
+                        <p v-if="!taskFiles.length">Chưa có tệp tin</p>
+                        <template v-for="taskFile in taskFiles">
+                            <a @click.prevent="downloadFile(taskFile.filename)"
+                               :key="taskFile.id">
+                                {{taskFile.filename}}</a>
+                            <br :key="taskFile.id">
+                        </template>
                         <br>
-                    </template>
-                    <br>
-                    <p>TẢI LÊN TỆP TIN</p>
-                    <UploadButton
-                            :fileChangedCallback="handleFileUpload" @click="uploadFile" title="Chọn tệp tin"
-                    ></UploadButton>
-                    <span>Tệp tin sẽ tải: {{file.name || 'Chưa xác định'}}</span>
-                    <v-btn v-if="!!file.name" color="primary" @click="uploadFile" :loading="loading">Tải lên</v-btn>
-                    <span v-if="!!file.status"> | </span>
-                    <b>{{file.status || ''}}</b>
-                </v-card-text>
-            </v-card>
+                        <p>TẢI LÊN TỆP TIN</p>
+                        <UploadButton
+                                :fileChangedCallback="handleFileUpload" @click="uploadFile" title="Chọn tệp tin"
+                        ></UploadButton>
+                        <span>Tệp tin sẽ tải: {{file.name || 'Chưa xác định'}}</span>
+                        <v-btn v-if="!!file.name" color="primary" @click="uploadFile" :loading="uploadFileLoading">Tải
+                            lên
+                        </v-btn>
+                        <span v-if="!!file.status"> | </span>
+                        <b>{{file.status || ''}}</b>
+                    </v-card-text>
+                </v-card>
+            </div>
+            <v-divider></v-divider>
+            <br>
+            <TaskComment :taskId="id"></TaskComment>
         </div>
-        <v-divider></v-divider>
-        <br>
     </div>
 </template>
 
@@ -36,24 +47,33 @@
     import download from 'downloadjs';
 
     import axios from 'axios';
+    import TaskComment from "../../components/tasks/TaskComment";
 
     export default {
         name: "TaskDetailPage",
-        components: {TaskDetail, UploadButton},
+        components: {TaskComment, TaskDetail, UploadButton},
         data() {
             return {
-                id: 0,
-                file: {},
                 loading: false,
+                file: {},
+                uploadFileLoading: false,
                 taskFiles: [],
             }
         },
+        props: {
+            id: Number,
+        },
+        computed: {},
         methods: {
+            init() {
+                this.$store.commit('TASK_STORE/SET_TASK_ID', this.id);
+                this.loadFilenames();
+            },
             goBack: function () {
                 this.$router.push("/tasks");
             },
             uploadFile: function () {
-                this.loading = true;
+                this.uploadFileLoading = true;
                 const formData = new FormData();
                 formData.append('file', this.file);
                 axios.post(`http://localhost:8080/tasks/${this.id}/files`, formData, {
@@ -62,13 +82,13 @@
                     }
                 }).then((response) => {
                     console.log(response.data);
-                    this.loading = false;
                     this.file.status = 'Tải lên thành công';
                     this.loadFilenames();
                 }).catch((error) => {
                     console.log(error.response);
-                    this.loading = false;
                     this.file.status = 'Tải lên thất bại';
+                }).finally(() => {
+                    this.uploadFileLoading = false;
                 });
             },
             handleFileUpload: function (file) {
@@ -90,10 +110,10 @@
             }
         },
         mounted() {
-            this.id = Number.parseInt(this.$route.params.id);
-            this.$store.commit('TASK_STORE/SET_TASK_ID', this.id);
-            this.loadFilenames();
-        }
+            this.loading = true;
+            this.init();
+            this.loading = false;
+        },
     }
 </script>
 

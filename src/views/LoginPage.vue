@@ -1,18 +1,31 @@
 <template>
     <div>
-        <v-form @submit.prevent="login" style="width: 500px; margin: auto">
-            <v-card>
-                <v-card-title>Đăng nhập</v-card-title>
-                <v-card-text>
-                    <v-text-field v-model="email" type="email" label="Email"></v-text-field>
-                    <v-text-field v-model="password" type="password" label="Mật khẩu"></v-text-field>
-                    <v-alert v-model="alert" dismissible transition="scale-transition">Đăng nhập thất bại</v-alert>
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn type="submit" color="primary" :loading="loading">Đăng nhập</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-form>
+        <v-container fluid>
+            <v-layout align-center justify-center>
+                <v-flex xs12 sm8 md4>
+                    <v-form @submit.prevent="login" mx-auto>
+                        <v-card class="elevation-12">
+                            <v-toolbar dark color="primary">
+                                <v-toolbar-title>Khung đăng nhập</v-toolbar-title>
+                            </v-toolbar>
+                            <v-card-text>
+                                <v-text-field prepend-icon="person" v-model="email" type="email"
+                                              label="Email"></v-text-field>
+                                <v-text-field prepend-icon="lock" v-model="password" type="password"
+                                              label="Mật khẩu"></v-text-field>
+                                <v-alert v-model="alert" dismissible transition="scale-transition">Đăng nhập thất
+                                    bại
+                                </v-alert>
+                            </v-card-text>
+                            <v-card-actions>
+                                <v-btn type="submit" color="primary" :loading="loading">Đăng nhập</v-btn>
+                            </v-card-actions>
+
+                        </v-card>
+                    </v-form>
+                </v-flex>
+            </v-layout>
+        </v-container>
     </div>
 </template>
 
