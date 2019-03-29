@@ -24,6 +24,13 @@ const router = new Router({
         {
             path: '/tasks/:id',
             name: 'Chi tiết tác vụ',
+            props: (route) => {
+                const id = Number.parseInt(route.params.id);
+                if (Number.isNaN(id)) {
+                    return 0;
+                }
+                return {id};
+            },
             component: () => import('@/views/tasks/TaskDetailPage.vue')
         },
         {
@@ -51,6 +58,26 @@ const router = new Router({
             name: 'Quản lý thông tin phòng ban',
             component: () => import('@/views/departments/DepartmentDetailPage.vue')
         },
+        {
+            path: '/userLeaveRequests',
+            name: 'Quản lý đơn xin nghỉ phép',
+            component: () => import('@/views/leaveRequests/UserLeaveRequestPage.vue')
+        },
+        {
+            path: '/approverLeaveRequests',
+            name: 'Xét duyệt đơn xin nghỉ phép',
+            component: () => import('@/views/leaveRequests/ApproverLeaveRequestPage.vue')
+        },
+        {
+            path: '/projects/:id',
+            name: 'Quản lý thông tin dự án',
+            component: () => import('@/views/projects/ProjectDetailPage.vue')
+        },
+        {
+            path: '/viewUserLeaves',
+            name: 'Theo dõi nghỉ phép',
+            component: () => import('@/views/leaveRequests/viewUserLeavePage.vue')
+        }
     ]
 });
 
