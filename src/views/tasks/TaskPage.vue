@@ -1,26 +1,15 @@
 <template>
     <div>
-        <!--<TaskSearch></TaskSearch>-->
-        <!--<br>-->
-        <!--<br>-->
-        <!--<ExecutorTaskTable v-if="isStaff || isManager"></ExecutorTaskTable>-->
-        <!--<br>-->
+
         <div class="elevation-1">
 
             <v-expansion-panel focusable class="elevation-0">
                 <v-expansion-panel-content>
                     <template slot="header">
-                        <div>Item</div>
+
+                        <span><v-icon left>search</v-icon>Tìm kiếm</span>
                     </template>
-                    <v-card>
-                        <v-card-text>
-                            <v-text-field
-                                    class="mx-3"
-                                    label="Search"
-                                    prepend-inner-icon="search"
-                            ></v-text-field>
-                        </v-card-text>
-                    </v-card>
+                    <TaskSearch></TaskSearch>
                 </v-expansion-panel-content>
             </v-expansion-panel>
             <v-toolbar tabs fixed-tabs class="elevation-0">
@@ -40,7 +29,7 @@
                         <v-tab v-if="isAdmin || isManager">
                             TÁC VỤ ĐÃ GIAO
                         </v-tab>
-                        <v-tab>
+                        <v-tab v-if="isManager || isStaff">
                             TÁC VỤ LIÊN QUAN
                         </v-tab>
                     </v-tabs>
@@ -49,13 +38,13 @@
 
             <v-tabs-items v-model="tabs">
                 <v-tab-item v-if="isManager || isStaff">
-                    <CreatorTaskTable type="executor"></CreatorTaskTable>
+                    <TaskTable title="TÁC VỤ ĐƯỢC GIAO" getTasksURL="search/executes"></TaskTable>
                 </v-tab-item>
-                <v-tab-item v-if="isAdmin || isManager">
-                    <CreatorTaskTable type="creator"></CreatorTaskTable>
+                <v-tab-item v-if="isManager || isAdmin">
+                    <TaskTable title="TÁC VỤ ĐÃ GIAO" getTasksURL="search/creates"></TaskTable>
                 </v-tab-item>
-                <v-tab-item>
-                    <CreatorTaskTable type="related"></CreatorTaskTable>
+                <v-tab-item v-if="isManager || isStaff">
+                    <TaskTable title="TÁC VỤ THEO DÕI" getTasksURL="search/relatives"></TaskTable>
                 </v-tab-item>
             </v-tabs-items>
         </div>
@@ -69,7 +58,7 @@
 
     export default {
         name: "TaskPage",
-        components: {TaskSearch, CreatorTaskTable: TaskTable},
+        components: {TaskSearch, TaskTable},
         data() {
             return {
                 tabs: null,

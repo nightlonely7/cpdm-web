@@ -11,6 +11,14 @@
                     </v-list-tile-title>
                 </v-list-tile>
                 <v-divider/>
+                <v-list-tile to="/documents">
+                    <v-list-tile-action>
+                        <v-icon>account_circle</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Quản lý tài liệu</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
                 <v-list-tile to="/tasks">
                     <v-list-tile-action>
                         <v-icon>account_circle</v-icon>
@@ -103,7 +111,6 @@
                         <v-list-tile
                                 v-for="notification in notifications"
                                 :key="notification"
-                                @click=""
                         >
                             <v-list-tile-title
                                     v-text="notification"
@@ -148,7 +155,7 @@
         </v-toolbar>
         <v-content>
             <v-container fluid>
-                <router-view></router-view>
+                <router-view :key="$route.fullPath"></router-view>
             </v-container>
         </v-content>
         <v-footer color="indigo" app>
