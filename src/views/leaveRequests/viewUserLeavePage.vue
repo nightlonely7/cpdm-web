@@ -51,7 +51,6 @@
             </v-menu>
         </v-toolbar>
         <v-data-table
-                ref="table"
                 :headers="table.headers"
                 :items="users"
                 :loading="table.loading"

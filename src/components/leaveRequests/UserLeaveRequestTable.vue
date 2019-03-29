@@ -67,7 +67,7 @@
                                                        :allowed-dates="allowedDates"
                                                        :events="workingTaskDates"
                                                        event-color="red "
-                                                        @input="fromDateMenu = false"></v-date-picker>
+                                                        @input="setToDate"></v-date-picker>
                                     </v-menu>
                                 </v-flex>
                                 <v-flex xs12 sm4 md4>
@@ -319,6 +319,12 @@
 
                 //Reset content
                 this.$refs.txtContent.reset();
+            },
+            setToDate: function(){
+                this.fromDateMenu = false;
+                if(this.editItem.toDate < this.editItem.fromDate){
+                    this.editItem.toDate = this.editItem.fromDate;
+                }
             },
             getUserLeveRequests: function () {
                 this.table.loading = true;
