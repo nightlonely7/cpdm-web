@@ -28,17 +28,17 @@
                                 </v-flex>
                                 <v-flex xs12 sm4 md4>
                                     <v-text-field
-                                        v-model="editItem.approver.displayName"
-                                        label="Người xét duyệt"
-                                        readonly
+                                            v-model="editItem.approver.displayName"
+                                            label="Người xét duyệt"
+                                            readonly
                                     ></v-text-field>
                                     <!--<v-select-->
-                                            <!--v-model="editItem.approver"-->
-                                            <!--:items="approvers"-->
-                                            <!--item-text="displayName"-->
-                                            <!--name="approver"-->
-                                            <!--label="Người xét duyệt"-->
-                                            <!--return-object-->
+                                    <!--v-model="editItem.approver"-->
+                                    <!--:items="approvers"-->
+                                    <!--item-text="displayName"-->
+                                    <!--name="approver"-->
+                                    <!--label="Người xét duyệt"-->
+                                    <!--return-object-->
                                     <!--&gt;</v-select>-->
                                 </v-flex>
                                 <v-flex xs12 sm4 md4>
@@ -58,7 +58,7 @@
                                                     label="Ngày bắt đầu"
                                                     prepend-icon="event"
                                                     readonly
-                                                        v-on="on"
+                                                    v-on="on"
                                             ></v-text-field>
                                         </template>
                                         <v-date-picker v-model="editItem.fromDate"
@@ -66,8 +66,8 @@
                                                        :max="maxDate"
                                                        :allowed-dates="allowedDates"
                                                        :events="workingTaskDates"
-                                                       event-color="red "
-                                                        @input="fromDateMenu = false"></v-date-picker>
+                                                       event-color="red"
+                                                       @input="fromDateMenu = false"></v-date-picker>
                                     </v-menu>
                                 </v-flex>
                                 <v-flex xs12 sm4 md4>
@@ -181,7 +181,7 @@
                     max: v => (!!v && v.length <= 255) || 'Nội dung tối đa 255 kí tự'
                 },
                 minDate: moment(new Date()).toISOString().substr(0, 10),
-                maxDate: moment(new Date().get).add(365,'days').toISOString().substr(0, 10),
+                maxDate: moment(new Date().get).add(365, 'days').toISOString().substr(0, 10),
                 defaultItem: {
                     id: 0,
                     content: '',
@@ -303,13 +303,13 @@
                     }
                 );
             },
-            setDialog: function(){
+            setDialog: function () {
                 //Set available dates
                 var count = 0;
-                var minAvailableDate = moment(new Date()).add(count,'days').toISOString().substr(0, 10);
-                while(notAllowedDate.includes(minAvailableDate)){
+                var minAvailableDate = moment(new Date()).add(count, 'days').toISOString().substr(0, 10);
+                while (notAllowedDate.includes(minAvailableDate)) {
                     count++;
-                    minAvailableDate = moment(new Date()).add(count,'days').toISOString().substr(0, 10);
+                    minAvailableDate = moment(new Date()).add(count, 'days').toISOString().substr(0, 10);
                 }
                 this.editItem.fromDate = minAvailableDate;
                 this.editItem.toDate = minAvailableDate;
@@ -390,26 +390,26 @@
             },
             save() {
                 //check input condition
-                if(this.editItem.fromDate > this.editItem.toDate){
+                if (this.editItem.fromDate > this.editItem.toDate) {
                     this.snackBarText = 'Ngày nghỉ phép không hợp lệ';
                     this.snackbar = true;
                     return;
                 }
-                var fromDate = moment(this.editItem.fromDate).add(1,'days');
-                var toDate = moment(this.editItem.toDate).add(1,'days');
-                while (fromDate.add(1,'days').diff(toDate) <= 0) {
-                    if(notAllowedDate.includes(fromDate.clone().toISOString().substr(0,10))){
+                var fromDate = moment(this.editItem.fromDate).add(1, 'days');
+                var toDate = moment(this.editItem.toDate).add(1, 'days');
+                while (fromDate.add(1, 'days').diff(toDate) <= 0) {
+                    if (notAllowedDate.includes(fromDate.clone().toISOString().substr(0, 10))) {
                         this.snackBarText = 'Ngày nghỉ phép không hợp lệ';
                         this.snackbar = true;
                         return;
                     }
                 }
-                if(this.editItem.content == null || this.editItem.content.trim() == ''){
+                if (this.editItem.content == null || this.editItem.content.trim() == '') {
                     this.snackBarText = 'Nội dung không được để trống';
                     this.snackbar = true;
                     return;
                 }
-                if(this.editItem.content.length > 255){
+                if (this.editItem.content.length > 255) {
                     this.snackBarText = 'Nội dung không được quá 255 kí tự';
                     this.snackbar = true;
                     return;
@@ -443,7 +443,7 @@
                         if (error.response.status == 405) {
                             this.snackBarText = 'Không thể tạo đơn vì chưa bàn giao công việc';
                             this.snackbar = true;
-                            if(this.editItem.id != 0){
+                            if (this.editItem.id != 0) {
                                 this.snackBarText = 'Không thể chỉnh sửa đơn đã duyệt';
                                 this.snackbar = true;
                             }

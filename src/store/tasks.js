@@ -3,9 +3,11 @@ const taskStoreDefaultState = () => {
         showForm: false,
         showIssueForm: false,
         showRelativeForm: false,
-        titleSearchValue: '',
-        summarySearchValue: '',
-        projectSelected: null,
+        titleSearchValue: null,
+        summarySearchValue: null,
+        startTimeFromSearchValue: null,
+        startTimeToSearchValue: null,
+        projectIdSearchValue: null,
         taskForm: {
             project: {},
             executor: {},
@@ -28,13 +30,21 @@ export default {
         SET_SUMMARY_SEARCH_VALUE(state, summarySearchValue) {
             state.summarySearchValue = summarySearchValue
         },
-        SET_PROJECT_SELECTED(state, projectSelected) {
-            state.projectSelected = projectSelected
+        SET_START_TIME_FROM_SEARCH_VALUE(state, startTimeFromSearchValue) {
+            state.startTimeFromSearchValue = startTimeFromSearchValue
+        },
+        SET_START_TIME_TO_SEARCH_VALUE(state, startTimeToSearchValue) {
+            state.startTimeToSearchValue = startTimeToSearchValue
+        },
+        SET_PROJECT_ID_SEARCH_VALUE(state, projectIdSearchValue) {
+            state.projectIdSearchValue = projectIdSearchValue
         },
         RESET_SEARCH(state) {
-            state.titleSearchValue = '';
-            state.summarySearchValue = '';
-            state.projectSelected = null;
+            state.titleSearchValue = null;
+            state.summarySearchValue = null;
+            state.startTimeFromSearchValue = null;
+            state.startTimeToSearchValue = null;
+            state.projectIdSearchValue = null;
         },
         SET_SHOW_FORM(state, showForm) {
             state.showForm = showForm

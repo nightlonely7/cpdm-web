@@ -92,7 +92,9 @@
             ...mapState('TASK_STORE', {
                 titleSearchValue: state => state.titleSearchValue,
                 summarySearchValue: state => state.summarySearchValue,
-                projectSelected: state => state.projectSelected,
+                startTimeFromSearchValue: state => state.startTimeFromSearchValue,
+                startTimeToSearchValue: state => state.startTimeToSearchValue,
+                projectIdSearchValue: state => state.projectIdSearchValue,
             }),
             ...mapState('AUTHENTICATION', {
                 isLoggedIn: state => state.isLoggedIn,
@@ -118,9 +120,11 @@
                             page: this.pagination.page - 1,
                             size: this.pagination.rowsPerPage,
                             sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
-                            title: this.titleSearchValue == null ? '' : this.titleSearchValue,
-                            summary: this.summarySearchValue == null ? '' : this.summarySearchValue,
-                            projectId: this.projectSelected == null ? '' : this.projectSelected,
+                            title: this.titleSearchValue,
+                            summary: this.summarySearchValue,
+                            startTimeFrom: this.startTimeFromSearchValue,
+                            startTimeTo: this.startTimeToSearchValue,
+                            projectId: this.projectIdSearchValue,
                         }
                     }
                 ).then(response => {
@@ -155,9 +159,17 @@
                 this.pagination.page = 1;
                 this.debouncedGetTasks();
             },
-            projectSelected: function () {
+            startTimeFromSearchValue: function () {
                 this.pagination.page = 1;
-                this.getTasks();
+                this.debouncedGetTasks();
+            },
+            startTimeToSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetTasks();
+            },
+            projectIdSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetTasks();
             }
         },
         created() {

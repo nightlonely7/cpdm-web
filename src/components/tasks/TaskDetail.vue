@@ -26,7 +26,7 @@
             <p>Trạng thái:
                 <v-chip>{{task.status || 'Chưa xác định'}}</v-chip>
                 <br>
-                <span>Số vấn đề hoàn tất: {{totalComplete || 'Chưa xác định'}} / {{totalIssues || 'Chưa xác định'}}</span>
+                <span>Số vấn đề hoàn tất: {{totalComplete}} / {{totalIssues}}</span>
                 <br>
                 <span>Tỉ lệ hoàn thành:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <v-progress-circular :value="completionRate * 100" size="96" rotate="270" width="16" color="primary">
@@ -209,7 +209,7 @@
                         .finally(() => {
                             this.loading = false;
                         })
-                }, 5000)
+                }, 1500)
 
             },
             getTaskIssues: function () {
