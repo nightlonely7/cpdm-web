@@ -48,10 +48,10 @@
             </v-toolbar>
 
             <v-tabs-items v-model="tabs">
-                <v-tab-item v-if="!isAdmin">
+                <v-tab-item v-if="isManager || isStaff">
                     <CreatorTaskTable type="executor"></CreatorTaskTable>
                 </v-tab-item>
-                <v-tab-item v-if="!isStaff">
+                <v-tab-item v-if="isAdmin || isManager">
                     <CreatorTaskTable type="creator"></CreatorTaskTable>
                 </v-tab-item>
                 <v-tab-item>

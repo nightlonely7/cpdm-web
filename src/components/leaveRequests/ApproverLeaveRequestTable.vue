@@ -27,8 +27,12 @@
                 <td class="text-xs-left" v-if="props.item.status === 0">
                     <v-card-actions>
                         <v-btn outline fab small color="indigo"
-                               @click="approveRequest(props.item)">
+                               @click="handleRequest(props.item,1)">
                             <v-icon>check</v-icon>
+                        </v-btn>
+                        <v-btn outline fab small color="red"
+                               @click="handleRequest(props.item,2)">
+                            <v-icon>close</v-icon>
                         </v-btn>
                     </v-card-actions>
                 </td>
@@ -56,6 +60,7 @@
         name: "ApproverLeaveRequestTable",
         props: {
             type: String,
+            refreshFlag: Boolean,
         },
         data() {
             return {
@@ -95,6 +100,10 @@
                         this.title = 'ĐƠN ĐÃ DUYỆT';
                         this.status = 1;
                         break;
+                    case 'declined':
+                        this.title = 'ĐƠN ĐÃ TỪ CHỐI';
+                        this.status = 2;
+                        break;
                 }
                 this.getApproverLeveRequests();
             }
@@ -102,7 +111,7 @@
         methods: {
             getApproverLeveRequests: function () {
                 this.table.loading = true;
-                axios.get(`http://localhost:8080/leaveRequests/findByApprover`,
+                axios.get(`http://localhost:8080/leaveRequests/search/findByApprover`,
                     {
                         params: {
                             page: this.pagination.page - 1,
@@ -133,13 +142,13 @@
             refresh() {
                 this.getApproverLeveRequests();
             },
-            approveRequest(request) {
+            handleRequest(request, status) {
                 if (confirm('Bạn muốn duyệt đơn này?')) {
                     var url = `http://localhost:8080/leaveRequests/` + request.id;
                     var method = 'PUT';
 
                     var updateRequest = request;
-                    updateRequest.status = 1;
+                    updateRequest.status = status;
 
                     axios.request(
                         {
@@ -165,6 +174,12 @@
         },
         watch: {
             pagination: function () {
+                console.log('paging');
+                this.getApproverLeveRequests();
+            },
+            refreshFlag:function () {
+                console.log(this.refreshFlag)
+                console.log('refresh');
                 this.getApproverLeveRequests();
             }
         }

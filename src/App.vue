@@ -39,7 +39,7 @@
                         </v-list-tile>
                     </template>
 
-                    <v-list-tile v-if="isAdmin" to="/viewLeaves">
+                    <v-list-tile v-if="isAdmin" to="/viewLeaveCalendar">
                         <v-list-tile-action>
                             <v-icon></v-icon>
                         </v-list-tile-action>
@@ -47,7 +47,15 @@
                             <v-list-tile-title>Lịch nghỉ phép</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
-                    <v-list-tile v-if="!isStaff" to="/approverLeaveRequests">
+                    <v-list-tile v-if="isAdmin" to="/viewUserLeaves">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Theo dõi nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile v-if="isAdmin || isManager" to="/approverLeaveRequests">
                         <v-list-tile-action>
                             <v-icon></v-icon>
                         </v-list-tile-action>
@@ -55,7 +63,7 @@
                             <v-list-tile-title>Duyệt nghỉ phép</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
-                    <v-list-tile v-if="!isAdmin" to="/userLeaveRequests">
+                    <v-list-tile v-if="isStaff || isManager" to="/userLeaveRequests">
                         <v-list-tile-action>
                             <v-icon></v-icon>
                         </v-list-tile-action>

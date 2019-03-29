@@ -5,9 +5,9 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <v-dialog v-model="dialog" max-width="500px">
+            <v-dialog v-model="dialog" v-if="this.status===0" max-width="500px">
                 <template v-slot:activator="{ on }">
-                    <v-btn color="primary" dark class="mb-2" v-on="on">Thêm mới</v-btn>
+                    <v-btn color="primary" dark class="mb-2" v-on="on" @click="setDialog">Thêm mới</v-btn>
                 </template>
                 <v-card>
                     <v-card-title>
@@ -17,17 +17,29 @@
                         <v-container grid-list-md>
                             <v-layout wrap>
                                 <v-flex xs12 sm12 md12>
-                                    <v-text-field v-model="editItem.content" label="Nội dung"></v-text-field>
+                                    <v-textarea
+                                            ref="txtContent"
+                                            v-model="editItem.content"
+                                            label="Nội dung"
+                                            :rules="[rules.required,rules.max]"
+                                            clearable
+                                            multi-line
+                                    ></v-textarea>
                                 </v-flex>
                                 <v-flex xs12 sm4 md4>
-                                    <v-select
-                                            v-model="editItem.approver"
-                                            :items="approvers"
-                                            item-text="displayName"
-                                            name="approver"
-                                            label="Người xét duyệt"
-                                            return-object
-                                    ></v-select>
+                                    <v-text-field
+                                        v-model="editItem.approver.displayName"
+                                        label="Người xét duyệt"
+                                        readonly
+                                    ></v-text-field>
+                                    <!--<v-select-->
+                                            <!--v-model="editItem.approver"-->
+                                            <!--:items="approvers"-->
+                                            <!--item-text="displayName"-->
+                                            <!--name="approver"-->
+                                            <!--label="Người xét duyệt"-->
+                                            <!--return-object-->
+                                    <!--&gt;</v-select>-->
                                 </v-flex>
                                 <v-flex xs12 sm4 md4>
                                     <v-menu
@@ -46,11 +58,16 @@
                                                     label="Ngày bắt đầu"
                                                     prepend-icon="event"
                                                     readonly
-                                                    v-on="on"
+                                                        v-on="on"
                                             ></v-text-field>
                                         </template>
                                         <v-date-picker v-model="editItem.fromDate"
-                                                       @input="fromDateMenu = false"></v-date-picker>
+                                                       :min="minDate"
+                                                       :max="maxDate"
+                                                       :allowed-dates="allowedDates"
+                                                       :events="workingTaskDates"
+                                                       event-color="red "
+                                                        @input="fromDateMenu = false"></v-date-picker>
                                     </v-menu>
                                 </v-flex>
                                 <v-flex xs12 sm4 md4>
@@ -74,6 +91,11 @@
                                             ></v-text-field>
                                         </template>
                                         <v-date-picker v-model="editItem.toDate"
+                                                       :min="editItem.fromDate"
+                                                       :max="maxDate"
+                                                       :allowed-dates="allowedDates"
+                                                       :events="workingTaskDates"
+                                                       event-color="red"
                                                        @input="toDateMenu = false"></v-date-picker>
                                     </v-menu>
                                 </v-flex>
@@ -137,24 +159,34 @@
 <script>
     import axios from 'axios';
     import {mapGetters, mapState} from "vuex";
+    import moment from "moment";
+
+    var notAllowedDate = [];
 
     export default {
         name: "UserLeaveRequestTable",
-        props:{
+        props: {
             type: String,
+            refreshFlag: Boolean,
         },
-        data(){
+        data() {
             return {
                 snackbar: false,
                 snackBarText: '',
                 title: '',
                 status: 0,
                 dialog: false,
+                rules: {
+                    required: v => !!v || 'Nội dung không được để trống',
+                    max: v => (!!v && v.length <= 255) || 'Nội dung tối đa 255 kí tự'
+                },
+                minDate: moment(new Date()).toISOString().substr(0, 10),
+                maxDate: moment(new Date().get).add(365,'days').toISOString().substr(0, 10),
                 defaultItem: {
                     id: 0,
                     content: '',
-                    fromDate: new Date().toISOString().substr(0, 10),
-                    toDate: new Date().toISOString().substr(0, 10),
+                    fromDate: moment(new Date()).toISOString().substr(0, 10),
+                    toDate: moment(new Date()).toISOString().substr(0, 10),
                     user: {},
                     approver: {},
                     status: 0
@@ -162,8 +194,8 @@
                 editItem: {
                     id: 0,
                     content: '',
-                    fromDate: new Date().toISOString().substr(0, 10),
-                    toDate: new Date().toISOString().substr(0, 10),
+                    fromDate: moment(new Date()).toISOString().substr(0, 10),
+                    toDate: moment(new Date()).toISOString().substr(0, 10),
                     user: {},
                     approver: {},
                     status: 0
@@ -173,6 +205,7 @@
                 createdDateMenu: false,
                 userLeaveRequests: [],
                 approvers: [],
+                workingTaskDates: [],
                 canLoadData: true,
                 alert: '',
                 pagination: {
@@ -215,15 +248,19 @@
                         this.title = 'ĐƠN ĐÃ DUYỆT';
                         this.status = 1;
                         break;
+                    case 'declined':
+                        this.title = 'ĐƠN BỊ TỪ CHỐI';
+                        this.status = 2;
+                        break;
                 }
-                this.getUserLeveRequests();
+                this.refresh();
                 this.getApprovers();
             })
         },
         methods: {
             getApprovers: function () {
                 var roleName = "ROLE_MANAGER";
-                if(!this.isStaff){
+                if (!this.isStaff) {
                     roleName = "ROLE_ADMIN";
                 }
                 axios.get(`http://localhost:8080/users/findAllfDisplayNameByDepartmentAndRoleNameOfCurrentLoggedManager`,
@@ -242,9 +279,50 @@
                     }
                 );
             },
+            getCalendarData: function () {
+                //get not allow date
+                axios.get(`http://localhost:8080/leaveRequests/search/notAllowDateFromToday`,
+                ).then(response => {
+                        notAllowedDate = response.data;
+                    }
+                ).catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data)
+                        }
+                    }
+                );
+                //get dates have working task
+                axios.get(`http://localhost:8080/leaveRequests/search/workingTaskDateFromToday`,
+                ).then(response => {
+                        this.workingTaskDates = response.data;
+                    }
+                ).catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data)
+                        }
+                    }
+                );
+            },
+            setDialog: function(){
+                //Set available dates
+                var count = 0;
+                var minAvailableDate = moment(new Date()).add(count,'days').toISOString().substr(0, 10);
+                while(notAllowedDate.includes(minAvailableDate)){
+                    count++;
+                    minAvailableDate = moment(new Date()).add(count,'days').toISOString().substr(0, 10);
+                }
+                this.editItem.fromDate = minAvailableDate;
+                this.editItem.toDate = minAvailableDate;
+
+                //Set approver
+                this.editItem.approver = this.approvers[0];
+
+                //Reset content
+                this.$refs.txtContent.reset();
+            },
             getUserLeveRequests: function () {
                 this.table.loading = true;
-                axios.get(`http://localhost:8080/leaveRequests/findByUser`,
+                axios.get(`http://localhost:8080/leaveRequests/search/findByUser`,
                     {
                         params: {
                             page: this.pagination.page - 1,
@@ -274,12 +352,13 @@
             },
             refresh() {
                 this.getUserLeveRequests();
+                this.getCalendarData();
             },
             deleteLeaveRequest(id) {
                 if (confirm('Bạn muốn xóa đơn này?')) {
                     axios.delete(`http://localhost:8080/leaveRequests/` + id)
                         .then(() => {
-                                this.getUserLeveRequests();
+                                this.refresh();
                                 this.snackbar = true;
                                 this.snackBarText = "Thành công";
                             }
@@ -310,7 +389,33 @@
                 }, 300)
             },
             save() {
+                //check input condition
+                if(this.editItem.fromDate > this.editItem.toDate){
+                    this.snackBarText = 'Ngày nghỉ phép không hợp lệ';
+                    this.snackbar = true;
+                    return;
+                }
+                var fromDate = moment(this.editItem.fromDate).add(1,'days');
+                var toDate = moment(this.editItem.toDate).add(1,'days');
+                while (fromDate.add(1,'days').diff(toDate) <= 0) {
+                    if(notAllowedDate.includes(fromDate.clone().toISOString().substr(0,10))){
+                        this.snackBarText = 'Ngày nghỉ phép không hợp lệ';
+                        this.snackbar = true;
+                        return;
+                    }
+                }
+                if(this.editItem.content == null || this.editItem.content.trim() == ''){
+                    this.snackBarText = 'Nội dung không được để trống';
+                    this.snackbar = true;
+                    return;
+                }
+                if(this.editItem.content.length > 255){
+                    this.snackBarText = 'Nội dung không được quá 255 kí tự';
+                    this.snackbar = true;
+                    return;
+                }
 
+                //call api
                 var url = `http://localhost:8080/leaveRequests`;
                 var method = 'POST';
 
@@ -325,29 +430,37 @@
                         method: method,
                         data: this.editItem
                     }
-                ).then((response) => {
+                ).then(() => {
                         this.close();
-                        this.getUserLeveRequests();
-                        if (response.status == 405) {
-                            this.snackBarText = 'Không thể chỉnh sửa đơn đã duyệt';
-                            this.snackbar = true;
-                        } else {
-                            this.snackBarText = 'Thành công';
-                            this.snackbar = true;
-                        }
+                        this.refresh();
+                        this.snackBarText = 'Thành công';
+                        this.snackbar = true;
                     }
                 ).catch(error => {
                         if (error.response) {
                             console.log(error.response.data)
                         }
-                        this.snackBarText = 'Thất bại';
-                        this.snackbar = true;
+                        if (error.response.status == 405) {
+                            this.snackBarText = 'Không thể tạo đơn vì chưa bàn giao công việc';
+                            this.snackbar = true;
+                            if(this.editItem.id != 0){
+                                this.snackBarText = 'Không thể chỉnh sửa đơn đã duyệt';
+                                this.snackbar = true;
+                            }
+                        } else {
+                            this.snackBarText = 'Thất bại';
+                            this.snackbar = true;
+                        }
                     }
                 );
-            }
+            },
+            allowedDates: val => notAllowedDate.indexOf(val) == -1
         },
         watch: {
             pagination: function () {
+                this.getUserLeveRequests();
+            },
+            refreshFlag: function () {
                 this.getUserLeveRequests();
             }
         }

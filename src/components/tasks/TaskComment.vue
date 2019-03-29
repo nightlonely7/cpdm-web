@@ -169,7 +169,7 @@
                     status: 0
                 },
                 replies: {},
-                oldVersions: {},
+                oldVersions: [],
                 currentPage: 0,
                 pageSize: 5,
                 totalElements: '',
@@ -299,7 +299,7 @@
                 );
             }
             , loadOldVersion(id) {
-                var url = `http://localhost:8080/comments/loadOldVesion/` + id;
+                var url = `http://localhost:8080/comments/loadOldVersion/` + id;
                 var method = 'GET';
 
                 axios.request(

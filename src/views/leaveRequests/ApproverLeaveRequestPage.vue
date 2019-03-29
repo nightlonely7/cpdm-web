@@ -9,21 +9,27 @@
                         slider-color="primary"
                         color="transparent"
                 >
-                    <v-tab>
+                    <v-tab @click="refreshWaiting=!refreshWaiting">
                         ĐƠN CHỜ DUYỆT
                     </v-tab>
-                    <v-tab>
+                    <v-tab @click="refreshApproved=!refreshApproved">
                         ĐƠN ĐÃ DUYỆT
+                    </v-tab>
+                    <v-tab @click="refreshDeclined=!refreshDeclined">
+                        ĐƠN ĐÃ TỪ CHỐI
                     </v-tab>
                 </v-tabs>
             </template>
         </v-toolbar>
         <v-tabs-items v-model="tags">
             <v-tab-item>
-                <ApproverLeaveRequestTable type="waiting"></ApproverLeaveRequestTable>
+                <ApproverLeaveRequestTable type="waiting" :refreshFlag="refreshWaiting"></ApproverLeaveRequestTable>
             </v-tab-item>
             <v-tab-item>
-                <ApproverLeaveRequestTable type="approved"></ApproverLeaveRequestTable>
+                <ApproverLeaveRequestTable type="approved" :refreshFlag="refreshApproved"></ApproverLeaveRequestTable>
+            </v-tab-item>
+            <v-tab-item>
+                <ApproverLeaveRequestTable type="declined" :refreshFlag="refreshDeclined"></ApproverLeaveRequestTable>
             </v-tab-item>
         </v-tabs-items>
     </div>
@@ -40,6 +46,9 @@
         data() {
             return {
                 tags: null,
+                refreshWaiting: false,
+                refreshApproved: false,
+                refreshDeclined: false,
             }
         },
         computed: {

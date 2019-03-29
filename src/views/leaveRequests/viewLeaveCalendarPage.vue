@@ -52,7 +52,7 @@
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
-                :items="users"
+                :items="viewleaves"
                 :loading="table.loading"
                 :pagination.sync="pagination"
                 :total-items="pagination.totalItems"
@@ -63,17 +63,21 @@
         >
             <v-progress-linear #progress color="blue" indeterminate></v-progress-linear>
             <template v-slot:items="props">
-                <td class="text-xs-left" @click="showLeaves(props)">{{props.item.displayName}}</td>
-            </template>
-            <template v-for=" (leaveRequest,index) in userLeaveRequests" v-slot:expand="props">
-                <tr :key="index" flat>
-                    <td class="text-xs-left"></td>
-                    <td class="text-xs-left">{{leaveRequest.content}}</td>
-                    <td class="text-xs-left">{{leaveRequest.fromDate}}</td>
-                    <td class="text-xs-left">{{leaveRequest.toDate}}</td>
-                    <td class="text-xs-left">{{leaveRequest.approver.displayName}}</td>
-                    <td class="text-xs-left">{{leaveRequest.status === 0 ? "Chờ xét duyệt" : "Đã duyệt"}}</td>
-                </tr>
+                <td class="text-xs-left">{{props.item.displayName}}</td>
+                <template v-for="(leaveList,index) in props.item.leaveList">
+                    <td :key="props.item.displayName + index" class="text-xs-center">
+                        <v-icon
+                                color="red darken-2"
+                                v-if="leaveList.approved">
+                            close
+                        </v-icon>
+                        <v-icon
+                                color="yellow darken-2"
+                                v-else-if="leaveList.waiting">
+                            warning
+                        </v-icon>
+                    </td>
+                </template>
             </template>
         </v-data-table>
 
@@ -93,19 +97,20 @@
 
 <script>
     import axios from "axios";
+    import moment from "moment";
 
     export default {
-        name: "viewLeavePage",
+        name: "viewLeaveCalendarPage",
         data() {
             return {
+                dates: [],
                 snackbar: false,
                 snackBarText: '',
                 fromDateMenu: false,
                 toDateMenu: false,
                 fromDate: new Date().toISOString().substr(0, 10),
-                toDate: new Date().toISOString().substr(0, 10),
-                users: [],
-                userLeaveRequests: [],
+                toDate: moment(this.fromDate).add(6,'days').toISOString().substr(0, 10),
+                viewleaves: [],
                 canLoadData: true,
                 alert: '',
                 pagination: {
@@ -114,40 +119,55 @@
                 },
                 table: {
                     loading: false,
-                    headers: [
-                        {text: 'Tên', value: 'displayName'},
-                        {text: 'Nội dung', value: 'content'},
-                        {text: 'Ngày bắt đầu', value: 'fromDate'},
-                        {text: 'Ngày kết thúc', value: 'toDate'},
-                        {text: 'Người xét duyệt', value: 'approver.displayName'},
-                        {text: 'Trạng thái', value: 'status'},
-                    ]
+                    headers: []
                 },
             }
         },
         mounted() {
             this.$nextTick()
             {
-                this.getUserForAdmin();
+                this.getViewLeaves();
             }
         },
         methods: {
-            getUsersForAdmin: function () {
+            enumerateDaysBetweenDates: function (fromDate, toDate) {
+                this.dates = [];
+
+                var currDate = moment(fromDate).startOf('day').add(-1, 'days');
+                var lastDate = moment(toDate).startOf('day');
+
+                while (currDate.add(1, 'days').diff(lastDate) <= 0) {
+                    this.dates.push(currDate.clone().toDate());
+                }
+
+                this.dates.reverse();
+            },
+            getViewLeaves: function () {
                 this.table.loading = true;
-                axios.get(`http://localhost:8080/users/search/all`,
+                this.enumerateDaysBetweenDates(this.fromDate, this.toDate);
+                this.table.headers = [];
+                this.table.headers.push({text: 'Tên', value: 'displayName'});
+
+                while (this.dates.length > 0) {
+                    var date = moment(this.dates.pop()).format('DD/MM/YYYY');
+                    this.table.headers.push({text: date, sortable: false});
+                }
+                axios.get(`http://localhost:8080/leaveRequests/search/viewLeaves`,
                     {
                         params: {
                             page: this.pagination.page - 1,
                             size: this.pagination.rowsPerPage,
                             sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
+                            fromDate: this.fromDate,
+                            toDate: this.toDate,
                         }
                     }
                 ).then(response => {
                         if (response.status === 204) {
-                            this.users = [];
+                            this.viewleaves = [];
                             this.pagination.totalItems = 0;
                         } else {
-                            this.users = response.data.content;
+                            this.viewleaves = response.data.content;
                             this.pagination.totalItems = response.data.totalElements;
                         }
                         this.table.loading = false;
@@ -162,49 +182,12 @@
                 );
             },
             refresh() {
-                this.getUsersForAdmin();
-            },
-            getUserLeveRequests: function (userId) {
-                this.table.loading = true;
-                axios.get(`http://localhost:8080/leaveRequests/findByUserAndDateRange`,
-                    {
-                        params: {
-                            fromDate: this.fromDate,
-                            toDate: this.toDate,
-                            userId: userId,
-                        }
-                    }
-                ).then(response => {
-                        if (response.status === 204) {
-                            this.userLeaveRequests = [];
-                        } else {
-                            this.userLeaveRequests = response.data;
-                        }
-                        console.log(this.userLeaveRequests);
-                        this.table.loading = false;
-                    }
-                ).catch(error => {
-                        this.table.loading = false;
-                        if (error.response) {
-                            console.log(error.response.data)
-                        }
-                        this.snackbar = true;
-                        this.snackBarText = "Thất bại";
-                    }
-                );
-            },
-            showLeaves(props) {
-                props.expanded = !props.expanded;
-                if (props.expanded) {
-                    this.getUserLeveRequests(props.item.id);
-                } else {
-                    this.userLeaveRequests = [];
-                }
+                this.getViewLeaves();
             }
         },
         watch: {
             pagination: function () {
-                this.getUsersForAdmin();
+                this.getViewLeaves();
             }
         }
     }

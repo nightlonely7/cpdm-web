@@ -47,10 +47,15 @@ const router = new Router({
             component: () => import('@/views/leaveRequests/ApproverLeaveRequestPage.vue')
         },
         {
-            path: '/viewLeaves',
+            path: '/viewLeaveCalendar',
             name: 'Lịch nghỉ phép',
-            component: () => import('@/views/leaveRequests/viewLeavePage.vue')
+            component: () => import('@/views/leaveRequests/viewLeaveCalendarPage.vue')
         },
+        {
+            path: '/viewUserLeaves',
+            name: 'Theo dõi nghỉ phép',
+            component: () => import('@/views/leaveRequests/viewUserLeavePage.vue')
+        }
     ]
 });
 
