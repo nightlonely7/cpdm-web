@@ -71,7 +71,6 @@
                 axios.get(`http://localhost:8080/projects`)
                     .then(response => {
                         this.projectOptions = response.data;
-                        this.$store.commit('TASK_STORE/SET_PROJECT_SELECTED', 1)
                     })
                     .catch(error => {
                         if (error.response) {

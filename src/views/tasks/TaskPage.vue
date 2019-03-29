@@ -30,7 +30,7 @@
                             TÁC VỤ ĐÃ GIAO
                         </v-tab>
                         <v-tab v-if="isManager || isStaff">
-                            TÁC VỤ LIÊN QUAN
+                            TÁC VỤ THEO DÕI
                         </v-tab>
                     </v-tabs>
                 </template>

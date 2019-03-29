@@ -5,7 +5,7 @@ const taskStoreDefaultState = () => {
         showRelativeForm: false,
         titleSearchValue: '',
         summarySearchValue: '',
-        projectSelected: 1,
+        projectSelected: null,
         taskForm: {
             project: {},
             executor: {},
@@ -34,7 +34,7 @@ export default {
         RESET_SEARCH(state) {
             state.titleSearchValue = '';
             state.summarySearchValue = '';
-            state.projectSelected = 1;
+            state.projectSelected = null;
         },
         SET_SHOW_FORM(state, showForm) {
             state.showForm = showForm
