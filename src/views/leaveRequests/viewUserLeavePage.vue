@@ -65,17 +65,34 @@
             <template v-slot:items="props">
                 <tr @click="showLeaves(props)">
                     <td class="text-xs-left">{{props.item.displayName}}</td>
+                    <td class="text-xs-left">{{props.item.fullName}}</td>
+                    <td class="text-xs-left">{{props.item.email}}</td>
+                    <td class="text-xs-left">{{props.item.department.name}}</td>
+                    <td class="text-xs-left">{{props.item.role.name}}</td>
                 </tr>
             </template>
-            <template v-slot:expand="props" v-for="request in userLeaveRequests">
-                <tr :key="request.id">
-                    <td class="text-xs-left">{{request.content}}</td>
-                    <td class="text-xs-left">{{request.fromDate}}</td>
-                    <td class="text-xs-left">{{request.toDate}}</td>
-                    <td class="text-xs-left">{{request.createdDate}}</td>
-                    <td class="text-xs-left">{{request.approver.displayName}}</td>
-                    <td class="text-xs-left">{{request.status === 0 ? "Chờ xét duyệt" : "Đã duyệt"}}</td>
-                </tr>
+            <template v-slot:expand="props">
+                <v-data-table :headers="subTable.headers"
+                              :items="userLeaveRequests"
+                              :loading="subTable.loading"
+                              :no-data-text="alert || 'Không có dữ liệu'"
+                              :no-results-text="alert || 'Không tìm thấy dữ liệu tương ứng'"
+                              hide-actions
+                              :pagination.sync="subPagination"
+                              must-sort>
+                    <v-progress-linear #progress color="blue" indeterminate></v-progress-linear>
+                    <template v-slot:items="props">
+                        <tr>
+                            <td class="text-xs-left"></td>
+                            <td class="text-xs-left">{{props.item.content}}</td>
+                            <td class="text-xs-left">{{props.item.fromDate}}</td>
+                            <td class="text-xs-left">{{props.item.toDate}}</td>
+                            <td class="text-xs-left">{{props.item.createdDate}}</td>
+                            <td class="text-xs-left">{{props.item.approver.displayName}}</td>
+                            <td class="text-xs-left">{{props.item.status === 0 ? "Chờ xét duyệt" : "Đã duyệt"}}</td>
+                        </tr>
+                    </template>
+                </v-data-table>
             </template>
         </v-data-table>
 
@@ -107,6 +124,7 @@
                 fromDate: new Date().toISOString().substr(0, 10),
                 toDate: new Date().toISOString().substr(0, 10),
                 users: [],
+                userId: null,
                 userLeaveRequests: [],
                 canLoadData: true,
                 alert: '',
@@ -117,6 +135,22 @@
                 table: {
                     loading: false,
                     headers: [
+                        {text: 'Tên hiển thị', value: 'content'},
+                        {text: 'Tên đầy đủ', value: 'content'},
+                        {text: 'Email', value: 'content'},
+                        {text: 'Phòng ban', value: 'content'},
+                        {text: 'Chức vụ', value: 'content'},
+                    ]
+                },
+                subPagination: {
+                    sortBy: 'fromDate',
+                    descending: false,
+                    rowsPerPage: -1
+                },
+                subTable: {
+                    loading : false,
+                    headers: [
+                        {text: '', sortable: false},
                         {text: 'Nội dung', value: 'content'},
                         {text: 'Ngày bắt đầu', value: 'fromDate'},
                         {text: 'Ngày kết thúc', value: 'toDate'},
@@ -124,7 +158,7 @@
                         {text: 'Người xét duyệt', value: 'approver.displayName'},
                         {text: 'Trạng thái', value: 'status'},
                     ]
-                },
+                }
             }
         },
         mounted() {
@@ -165,6 +199,9 @@
             },
             refresh() {
                 this.getUsersForAdmin();
+                if(this.userId != null){
+                    this.getUserLeveRequests(this.userId);
+                }
             },
             getUserLeveRequests: function (userId) {
                 this.table.loading = true;
@@ -198,8 +235,10 @@
                 props.expanded = !props.expanded;
                 if (props.expanded) {
                     this.getUserLeveRequests(props.item.id);
+                    this.userId = props.item.id;
                 } else {
                     this.userLeaveRequests = [];
+                    this.userId = null;
                 }
             }
         },
