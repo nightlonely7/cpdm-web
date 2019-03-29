@@ -69,6 +69,11 @@ const router = new Router({
             component: () => import('@/views/leaveRequests/ApproverLeaveRequestPage.vue')
         },
         {
+            path: '/projects',
+            name: 'Quản lý dự án',
+            component: () => import('@/views/projects/ProjectPage.vue')
+        },
+        {
             path: '/projects/:id',
             name: 'Quản lý thông tin dự án',
             component: () => import('@/views/projects/ProjectDetailPage.vue')
@@ -77,7 +82,7 @@ const router = new Router({
             path: '/viewUserLeaves',
             name: 'Theo dõi nghỉ phép',
             component: () => import('@/views/leaveRequests/viewUserLeavePage.vue')
-        }
+        },
     ]
 });
 

@@ -85,45 +85,46 @@
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
-        <v-expansion-panel>
-            <v-expansion-panel-content>
+            <v-expansion-panel>
+                <v-expansion-panel-content>
 
-                <template slot="header">
-                    Danh sách vấn đề
-                </template>
+                    <template slot="header">
+                        Danh sách vấn đề
+                    </template>
 
-                <v-list>
-                    <v-list-tile-content>
-                        <v-list-tile>
-                            <v-btn @click="showIssueForm">Thêm vấn đề</v-btn>
+                    <v-list>
+                        <v-list-tile-content>
+                            <v-list-tile>
+                                <v-btn @click="showIssueForm">Thêm vấn đề</v-btn>
 
-                        </v-list-tile>
-                        <v-list-tile v-for="issue in taskIssues" :key="issue.id">
-                            {{issue.summary}} - {{issue.detail}}
-                            <v-btn @click="editIssue(issue)">Sửa</v-btn>
-                            <v-btn @click="deleteIssue(issue.id)">Xóa</v-btn>
-                        </v-list-tile>
-                    </v-list-tile-content>
-                </v-list>
+                            </v-list-tile>
+                            <v-list-tile v-for="issue in taskIssues" :key="issue.id">
+                                {{issue.summary}} - {{issue.detail}}
+                                <v-btn @click="editIssue(issue)">Sửa</v-btn>
+                                <v-btn @click="deleteIssue(issue.id)">Xóa</v-btn>
+                            </v-list-tile>
+                        </v-list-tile-content>
+                    </v-list>
 
 
-            </v-expansion-panel-content>
-        </v-expansion-panel>
+                </v-expansion-panel-content>
+            </v-expansion-panel>
 
-        <br>
-        <v-divider></v-divider>
-        <v-layout row v-if="(isManager && isChild) || (isAdmin && !isChild)">
-            <v-btn @click="deleteTask" color="error">
-                Xóa
-            </v-btn>
-            <TaskForm v-if="isAdmin || isManager" @refresh="getTask" :form="form">
-                <template #activator="{on}">
-                    <v-btn v-on="on" color="primary">Chỉnh sửa</v-btn>
-                </template>
-            </TaskForm>
-        </v-layout>
-        <TaskIssueForm @refresh="refreshIssues"></TaskIssueForm>
-        <TaskRelativeForm @refresh="refreshRelatives"></TaskRelativeForm>
+            <br>
+            <v-divider></v-divider>
+            <v-layout row v-if="(isManager && isChild) || (isAdmin && !isChild)">
+                <v-btn @click="deleteTask" color="error">
+                    Xóa
+                </v-btn>
+                <TaskForm v-if="isAdmin || isManager" @refresh="getTask" :form="form">
+                    <template #activator="{on}">
+                        <v-btn v-on="on" color="primary">Chỉnh sửa</v-btn>
+                    </template>
+                </TaskForm>
+            </v-layout>
+            <TaskIssueForm @refresh="refreshIssues"></TaskIssueForm>
+            <TaskRelativeForm @refresh="refreshRelatives"></TaskRelativeForm>
+        </div>
     </div>
 </template>
 
