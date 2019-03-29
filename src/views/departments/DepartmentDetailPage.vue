@@ -1,7 +1,5 @@
 <template>
     <div>
-        <v-btn @click="goBack" color="primary">Trở về</v-btn>
-        <br/><br/>
         <DepartmentDetail :id="id"></DepartmentDetail>
     </div>
 </template>
@@ -18,9 +16,7 @@
             }
         },
         methods: {
-            goBack: function () {
-                this.$router.push('/tasks');
-            }
+
         }
     }
 </script>

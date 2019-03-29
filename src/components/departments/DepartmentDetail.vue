@@ -1,5 +1,7 @@
 <template>
     <div>
+        <v-btn @click="goBack" color="primary">Trở về</v-btn>
+        <br/><br/>
         <p style="color: blue">Tên phòng ban: {{department.name || 'Chưa xác định'}}</p>
         <p style="color: blue">Mã phòng ban: {{department.alias || 'Chưa xác định'}}</p>
         <v-btn @click="showForm" color="primary">Sửa</v-btn>
@@ -12,7 +14,6 @@
 <script>
     import axios from 'axios';
     import DepartmentForm from "./DepartmentForm";
-    import {mapState} from 'vuex';
 
     export default {
         name: "DepartmentDetail",
@@ -46,6 +47,8 @@
             showForm: function () {
                 this.$store.commit('DEPARTMENT_STORE/SET_SHOW_FORM', true);
                 this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_FORM', this.department);
+                this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_NAME', this.department.name);
+                this.$store.commit('DEPARTMENT_STORE/SET_IS_EDIT', true);
             },
             deleteDepartment: function () {
                 if (confirm('Xóa?')) {
@@ -55,11 +58,15 @@
                         .then(
                             response => {
                                 this.department = response.data;
-                                this.$router.push("/tasks");
+                                this.$router.push("/departments");
                                 console.log(this.department);
+                                this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_NAME', '');
                             }
                         )
                 }
+            },
+            goBack: function () {
+                this.$router.push('/departments');
             }
         },
     }

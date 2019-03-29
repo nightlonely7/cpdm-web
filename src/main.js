@@ -13,7 +13,9 @@ import VeeValidate from 'vee-validate';
 import './views/validator/validateEmail';
 import './views/validator/validateDepName';
 import DatetimePicker from 'vuetify-datetime-picker';
+import Vuex from 'vuex'
 
+Vue.use(Vuex);
 Vue.use(DatetimePicker);
 Vue.use(VeeValidate);
 
@@ -28,10 +30,8 @@ axios.interceptors.request.use(
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
-
         return config;
     },
-
     (error) => {
         return Promise.reject(error);
     }

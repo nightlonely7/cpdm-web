@@ -85,24 +85,6 @@
                         }
                     );
             },
-            searchDepartments: function () {
-                axios.get('http://localhost:8080/departments/search/name', {
-                    params: {
-                        name: ''
-                    }
-                })
-                    .then(
-                        response => {
-                            this.departments = response.data.content;
-                            this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENTS', this.departments);
-                        }
-                    )
-                    .catch(
-                        err => {
-                            console.log(err);
-                        }
-                    );
-            },
             refresh: function () {
                 this.getDepartments();
             },

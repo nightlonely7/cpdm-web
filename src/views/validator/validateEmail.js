@@ -11,23 +11,21 @@ Validator.extend('emailValidator', {
 });
 
 async function checkEmailExisted(value) {
-    var isEmailExisted = true;
+    let isEmailExisted = true;
     try {
         await axios.get('http://localhost:8080/users/check/existByEmail/', {
             params: {
                 email: value
             }
+        }).then(response => {
+            isEmailExisted = !response.data;
         })
-            .then(
-                response => {
-                    isEmailExisted = !response.data;
-                })
             .catch(
                 () => {
                     console.log("Email không trùng");
                 }
-            );
-    }catch (err) {
+            )
+    } catch (err) {
         await console.log(err);
     }
     return isEmailExisted;

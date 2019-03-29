@@ -14,8 +14,9 @@
                                               label="Email"
                                               name="email"
                                               v-validate="{emailValidator: true}"
+                                              validate-on-blur
                                 ></v-text-field>
-                                <span style="color: red">{{errors.all()}}</span>
+                                <span style="color: red">{{errors.first("email")}}</span>
                             </v-flex>
                             <v-flex md12>
                                 <v-text-field v-if="userForm.id === 0"

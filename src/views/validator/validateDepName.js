@@ -1,5 +1,6 @@
 import axios from "axios";
 import {Validator} from "vee-validate";
+import '@/store/index'
 
 Validator.extend('depNameValidator', {
     getMessage: () => {
@@ -21,13 +22,14 @@ async function checkDepNameExisted(value) {
             .then(
                 response => {
                     isDepNameExisted = !response.data;
+                    console.log(this.$store.state.DEPARTMENT_STORE.isEdit);
                 })
             .catch(
                 () => {
-                    console.log("Phòng ban không trùng");
+                    console.log(this.$store.state.DEPARTMENT_STORE.isEdit);
                 }
             );
-    }catch (err) {
+    } catch (err) {
         await console.log(err);
     }
     return isDepNameExisted;

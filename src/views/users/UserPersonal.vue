@@ -14,6 +14,7 @@
                                               label="Tên hiển thị"
                                               :rules="displayNameRule"
                                               counter="30"
+                                              validate-on-blur
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
@@ -22,6 +23,7 @@
                                               :rules="emailRule"
                                               counter="30"
                                               name="email"
+                                              validate-on-blur
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
@@ -29,6 +31,7 @@
                                               label="Tên đầy đủ"
                                               :rules="fullNameRule"
                                               counter="50"
+                                              validate-on-blur
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
@@ -53,12 +56,14 @@
                                               label="Xác nhận mật khẩu"
                                               :rules="confirmPasswordRule"
                                               :type="'password'"
+                                              validate-on-blur
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
                                 <v-text-field v-model="user.phone"
                                               label="Số điện thoại"
                                               :rules="phoneRule"
+                                              validate-on-blur
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
@@ -70,7 +75,8 @@
                                 <v-menu right offset-x id="birthDay-menu">
                                     <v-text-field v-model="user.birthday"
                                                   label="Ngày sinh" slot="activator"
-                                                  @change="formatDatePicker" @click="formatDatePicker"
+                                                  @change="formatDatePicker"
+                                                  @click="formatDatePicker"
                                     ></v-text-field>
                                     <v-date-picker v-model="datePicker" label="Ngày sinh" color="green"
                                                    scrollable @change="formatDateText">
@@ -84,19 +90,19 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
-                                <v-select v-model="user.department.name"
-                                            v-if="isAdmin"
-                                            label="Phòng ban"
-                                            :items="departments"
-                                            item-text="name"
-                                            item-value="name"
-                                >
-                                </v-select>
                                 <v-text-field v-model="user.department.name"
+                                              v-if="isStaff"
                                               label="Phòng ban"
                                               readonly
-                                              v-else
                                 ></v-text-field>
+                                <v-select v-model="user.department.name"
+                                          label="Phòng ban"
+                                          :items="departments"
+                                          item-text="name"
+                                          item-value="name"
+                                          v-else-if="isManager"
+                                >
+                                </v-select>
                             </v-flex>
                             <v-flex md6>
                                 <v-text-field v-model="user.role.name"
@@ -176,6 +182,8 @@
             },
             ...mapGetters('AUTHENTICATION', {
                 isAdmin: 'isAdmin',
+                isManager: 'isManager',
+                isStaff: 'isStaff'
             }),
             departments: {
                 get(){
