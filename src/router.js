@@ -61,12 +61,17 @@ const router = new Router({
         {
             path: '/viewLeaveCalendar',
             name: 'Lịch nghỉ phép',
-            component: () => import('@/views/leaveRequests/viewLeaveCalendarPage.vue')
+            component: () => import('@/views/leaveRequests/ViewLeaveCalendarPage.vue')
         },
         {
             path: '/viewUserLeaves',
             name: 'Theo dõi nghỉ phép',
-            component: () => import('@/views/leaveRequests/viewUserLeavePage.vue')
+            component: () => import('@/views/leaveRequests/ViewUserLeavePage.vue')
+        },
+        {
+            path: '/managePolicyForLeave',
+            name: 'Quản lý chính sách nghỉ phép',
+            component: () => import('@/views/leaveRequests/ManagePolicyForLeavePage.vue')
         }
     ]
 });

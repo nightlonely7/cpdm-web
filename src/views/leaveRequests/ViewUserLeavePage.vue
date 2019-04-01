@@ -114,7 +114,7 @@
     import axios from "axios";
 
     export default {
-        name: "viewUserLeavePage",
+        name: "ViewUserLeavePage",
         data() {
             return {
                 snackbar: false,

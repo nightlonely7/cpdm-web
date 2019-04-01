@@ -63,6 +63,14 @@
                             <v-list-tile-title>Theo dõi nghỉ phép</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
+                    <v-list-tile v-if="isAdmin" to="/managePolicyForLeave">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Chính sách nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
                     <v-list-tile v-if="isAdmin || isManager" to="/approverLeaveRequests">
                         <v-list-tile-action>
                             <v-icon></v-icon>

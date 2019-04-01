@@ -322,7 +322,7 @@
             },
             setToDate: function(){
                 this.fromDateMenu = false;
-                if(this.editItem.toDate < this.editItem.fromDate){
+                if(this.editItem.toDate < this.editItem.fromDate)   {
                     this.editItem.toDate = this.editItem.fromDate;
                 }
             },
