@@ -1,162 +1,174 @@
 <template>
-    <v-expansion-panel focusable>
-        <v-expansion-panel-content>
-            <template #header>Tìm theo thời gian bắt đầu tác vụ</template>
-            <v-card class="elevation-2">
-                <v-card-text>
-                    <v-btn @click="reset" color="primary">Đặt lại</v-btn>
-                    <v-layout row wrap>
+    <v-hover>
+        <template #default="{hover}">
+            <v-expansion-panel>
+                <v-expansion-panel-content :class="`${hover ? 'primary' : ''}`" ripple>
+                    <template #actions>
+                        <v-icon :color="`${hover ? 'white' : 'primary'}`">$vuetify.icons.expand</v-icon>
+                    </template>
+                    <template #header>
+                        <span :style="`color: ${hover ? 'white' : ''}`">
+                            <v-icon left :color="`${hover ? 'white' : 'primary'}`">date_range</v-icon>
+                            Tìm theo thời gian tác vụ bắt đầu
+                        </span>
+                    </template>
+                    <v-card class="elevation-2">
+                        <v-card-text>
+                            <v-btn @click="reset" color="primary">Đặt lại</v-btn>
+                            <v-layout row wrap>
 
-                        <!--Start Date From-->
-                        <v-flex xs12 sm6 md6>
-                            <v-dialog
-                                    ref="startDateFromDialog"
-                                    v-model="startDateFromMenu"
-                                    :return-value.sync="startDateFrom"
-                                    persistent
-                                    lazy
-                                    full-width
-                                    width="290px"
-                            >
-                                <template #activator="{ on }">
-                                    <v-text-field
-                                            v-model="startDateFrom"
-                                            label="Ngày bắt đầu từ"
-                                            prepend-inner-icon="mdi-calendar"
-                                            readonly
-                                            clearable
-                                            @click:clear="clearStartDateFrom"
-                                            v-on="on"
-                                    ></v-text-field>
-                                </template>
-                                <v-date-picker
-                                        v-if="startDateFromMenu"
-                                        v-model="startDateFrom"
-                                        :max="startDateTo"
-                                        full-width
-                                >
-                                    <v-spacer></v-spacer>
-                                    <v-btn flat color="primary" @click="startDateFromMenu = false">Cancel
-                                    </v-btn>
-                                    <v-btn flat color="primary" @click="saveStartDateFrom">OK</v-btn>
-                                </v-date-picker>
-                            </v-dialog>
-                        </v-flex>
+                                <!--Start Date From-->
+                                <v-flex xs12 sm6 md6>
+                                    <v-dialog
+                                            ref="startDateFromDialog"
+                                            v-model="startDateFromMenu"
+                                            :return-value.sync="startDateFrom"
+                                            persistent
+                                            lazy
+                                            full-width
+                                            width="290px"
+                                    >
+                                        <template #activator="{ on }">
+                                            <v-text-field
+                                                    v-model="startDateFrom"
+                                                    label="Ngày bắt đầu từ"
+                                                    prepend-inner-icon="mdi-calendar"
+                                                    readonly
+                                                    clearable
+                                                    @click:clear="clearStartDateFrom"
+                                                    v-on="on"
+                                            ></v-text-field>
+                                        </template>
+                                        <v-date-picker
+                                                v-if="startDateFromMenu"
+                                                v-model="startDateFrom"
+                                                :max="startDateTo"
+                                                full-width
+                                        >
+                                            <v-spacer></v-spacer>
+                                            <v-btn flat color="primary" @click="startDateFromMenu = false">Cancel
+                                            </v-btn>
+                                            <v-btn flat color="primary" @click="saveStartDateFrom">OK</v-btn>
+                                        </v-date-picker>
+                                    </v-dialog>
+                                </v-flex>
 
-                        <!--Start Date To-->
-                        <v-flex xs12 sm6 md6>
-                            <v-dialog
-                                    ref="startDateToDialog"
-                                    v-model="startDateToMenu"
-                                    :return-value.sync="startDateTo"
-                                    persistent
-                                    lazy
-                                    full-width
-                                    width="290px"
-                            >
-                                <template #activator="{ on }">
-                                    <v-text-field
-                                            v-model="startDateTo"
-                                            label="Ngày bắt đầu đến"
-                                            prepend-inner-icon="mdi-calendar"
-                                            readonly
-                                            clearable
-                                            @click:clear="clearStartDateTo"
-                                            v-on="on"
-                                    ></v-text-field>
-                                </template>
-                                <v-date-picker
-                                        v-if="startDateToMenu"
-                                        v-model="startDateTo"
-                                        :min="startDateFrom"
-                                        full-width
-                                >
-                                    <v-spacer></v-spacer>
-                                    <v-btn flat color="primary" @click="startDateToMenu = false">Cancel
-                                    </v-btn>
-                                    <v-btn flat color="primary" @click="saveStartDateTo">OK</v-btn>
-                                </v-date-picker>
-                            </v-dialog>
-                        </v-flex>
+                                <!--Start Date To-->
+                                <v-flex xs12 sm6 md6>
+                                    <v-dialog
+                                            ref="startDateToDialog"
+                                            v-model="startDateToMenu"
+                                            :return-value.sync="startDateTo"
+                                            persistent
+                                            lazy
+                                            full-width
+                                            width="290px"
+                                    >
+                                        <template #activator="{ on }">
+                                            <v-text-field
+                                                    v-model="startDateTo"
+                                                    label="Ngày bắt đầu đến"
+                                                    prepend-inner-icon="mdi-calendar"
+                                                    readonly
+                                                    clearable
+                                                    @click:clear="clearStartDateTo"
+                                                    v-on="on"
+                                            ></v-text-field>
+                                        </template>
+                                        <v-date-picker
+                                                v-if="startDateToMenu"
+                                                v-model="startDateTo"
+                                                :min="startDateFrom"
+                                                full-width
+                                        >
+                                            <v-spacer></v-spacer>
+                                            <v-btn flat color="primary" @click="startDateToMenu = false">Cancel
+                                            </v-btn>
+                                            <v-btn flat color="primary" @click="saveStartDateTo">OK</v-btn>
+                                        </v-date-picker>
+                                    </v-dialog>
+                                </v-flex>
 
-                        <!--Start Time From-->
-                        <v-flex xs12 sm6 md6>
-                            <v-dialog
-                                    ref="startTimeFromDialog"
-                                    v-model="startTimeFromMenu"
-                                    :return-value.sync="startTimeFrom"
-                                    persistent
-                                    lazy
-                                    full-width
-                                    width="290px"
-                            >
-                                <template #activator="{ on }">
-                                    <v-text-field
-                                            v-model="startTimeFrom"
-                                            label="Thời gian bắt đầu từ"
-                                            prepend-inner-icon="access_time"
-                                            readonly
-                                            clearable
-                                            :disabled="startDateFrom == null"
-                                            @click:clear="clearStartTimeFrom"
-                                            v-on="on"
-                                    ></v-text-field>
-                                </template>
-                                <v-time-picker
-                                        v-if="startTimeFromMenu"
-                                        v-model="startTimeFrom"
-                                        :max="maxStartTimeFrom"
-                                        full-width
-                                >
-                                    <v-spacer></v-spacer>
-                                    <v-btn flat color="primary" @click="startTimeFromMenu = false">Cancel
-                                    </v-btn>
-                                    <v-btn flat color="primary" @click="saveStartTimeFrom">OK</v-btn>
-                                </v-time-picker>
-                            </v-dialog>
-                        </v-flex>
+                                <!--Start Time From-->
+                                <v-flex xs12 sm6 md6>
+                                    <v-dialog
+                                            ref="startTimeFromDialog"
+                                            v-model="startTimeFromMenu"
+                                            :return-value.sync="startTimeFrom"
+                                            persistent
+                                            lazy
+                                            full-width
+                                            width="290px"
+                                    >
+                                        <template #activator="{ on }">
+                                            <v-text-field
+                                                    v-model="startTimeFrom"
+                                                    label="Thời gian bắt đầu từ"
+                                                    prepend-inner-icon="access_time"
+                                                    readonly
+                                                    clearable
+                                                    :disabled="startDateFrom == null"
+                                                    @click:clear="clearStartTimeFrom"
+                                                    v-on="on"
+                                            ></v-text-field>
+                                        </template>
+                                        <v-time-picker
+                                                v-if="startTimeFromMenu"
+                                                v-model="startTimeFrom"
+                                                :max="maxStartTimeFrom"
+                                                full-width
+                                        >
+                                            <v-spacer></v-spacer>
+                                            <v-btn flat color="primary" @click="startTimeFromMenu = false">Cancel
+                                            </v-btn>
+                                            <v-btn flat color="primary" @click="saveStartTimeFrom">OK</v-btn>
+                                        </v-time-picker>
+                                    </v-dialog>
+                                </v-flex>
 
-                        <!--Start Time To-->
-                        <v-flex xs12 sm6 md6>
-                            <v-dialog
-                                    ref="startTimeToDialog"
-                                    v-model="startTimeToMenu"
-                                    :return-value.sync="startTimeTo"
-                                    persistent
-                                    lazy
-                                    full-width
-                                    width="290px"
-                            >
-                                <template #activator="{ on }">
-                                    <v-text-field
-                                            v-model="startTimeTo"
-                                            label="Thời gian bắt đầu đến"
-                                            prepend-inner-icon="access_time"
-                                            readonly
-                                            clearable
-                                            :disabled="startDateTo == null"
-                                            @click:clear="clearStartTimeTo"
-                                            v-on="on"
-                                    ></v-text-field>
-                                </template>
-                                <v-time-picker
-                                        v-if="startTimeToMenu"
-                                        v-model="startTimeTo"
-                                        :min="minStartTimeTo"
-                                        full-width
-                                >
-                                    <v-spacer></v-spacer>
-                                    <v-btn flat color="primary" @click="startTimeToMenu = false">Cancel
-                                    </v-btn>
-                                    <v-btn flat color="primary" @click="saveStartTimeTo">OK</v-btn>
-                                </v-time-picker>
-                            </v-dialog>
-                        </v-flex>
-                    </v-layout>
-                </v-card-text>
-            </v-card>
-        </v-expansion-panel-content>
-    </v-expansion-panel>
+                                <!--Start Time To-->
+                                <v-flex xs12 sm6 md6>
+                                    <v-dialog
+                                            ref="startTimeToDialog"
+                                            v-model="startTimeToMenu"
+                                            :return-value.sync="startTimeTo"
+                                            persistent
+                                            lazy
+                                            full-width
+                                            width="290px"
+                                    >
+                                        <template #activator="{ on }">
+                                            <v-text-field
+                                                    v-model="startTimeTo"
+                                                    label="Thời gian bắt đầu đến"
+                                                    prepend-inner-icon="access_time"
+                                                    readonly
+                                                    clearable
+                                                    :disabled="startDateTo == null"
+                                                    @click:clear="clearStartTimeTo"
+                                                    v-on="on"
+                                            ></v-text-field>
+                                        </template>
+                                        <v-time-picker
+                                                v-if="startTimeToMenu"
+                                                v-model="startTimeTo"
+                                                :min="minStartTimeTo"
+                                                full-width
+                                        >
+                                            <v-spacer></v-spacer>
+                                            <v-btn flat color="primary" @click="startTimeToMenu = false">Cancel
+                                            </v-btn>
+                                            <v-btn flat color="primary" @click="saveStartTimeTo">OK</v-btn>
+                                        </v-time-picker>
+                                    </v-dialog>
+                                </v-flex>
+                            </v-layout>
+                        </v-card-text>
+                    </v-card>
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+        </template>
+    </v-hover>
 </template>
 
 <script>

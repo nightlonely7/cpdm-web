@@ -30,14 +30,52 @@
                                           prepend-inner-icon="build"
                                 >
                                     <template #item="{item}">
-                                        {{item.name || ''}}{{item.id === 1 ? '' : ' - '}}{{item.alias || ''}}
+                                        {{item.name || ''}} - {{item.alias || ''}}
                                     </template>
                                     <template #selection="{item}">
-                                        {{item.name || ''}}{{item.id === 1 ? '' : ' - '}}{{item.alias || ''}}
+                                        {{item.name || ''}} - {{item.alias || ''}}
                                     </template>
                                 </v-select>
                             </v-flex>
+                            <v-flex md6 sm12>
+                                <v-text-field v-model="documentForm.startTime"
+                                              label="Thời gian hiệu lực"
+                                              prepend-inner-icon="event"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex md6 sm12>
+                                <v-text-field v-model="documentForm.endTime"
+                                              label="Thời gian hết hạn"
+                                              prepend-inner-icon="event"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex md12 sm12>
+                                <v-textarea v-model="documentForm.description"
+                                            label="Nội dung chi tiết"
+                                            height="500"
+                                            outline
+                                ></v-textarea>
+                            </v-flex>
+                            <v-flex md12 sm12>
+                                <v-autocomplete chips deletable-chips cache-items multiple
+                                                v-model="relatives"
+                                                :items="viewerOptions"
+                                                item-text="email"
+                                                item-value="id"
+                                                :loading="viewerOptionsLoading"
+                                                :search-input.sync="viewerOptionsSearch"
+                                                label="Người liên quan"
+                                                clearable
+                                                hide-no-data
+                                >
 
+                                    <template #item="{item}">
+
+                                        {{item.email}} - {{item.fullName}} - Phòng ban:
+                                        {{item.department.name}}
+                                    </template>
+                                </v-autocomplete>
+                            </v-flex>
                         </v-layout>
                     </v-container>
                 </v-card-text>
@@ -65,13 +103,17 @@
 
 <script>
     import axios from 'axios';
+    import _ from 'lodash';
 
     export default {
         name: "DocumentForm",
         data() {
             return {
                 saveLoading: false,
-                documentForm: {...this.form},
+                relatives: [],
+                viewerOptions: [],
+                viewerOptionsLoading: false,
+                viewerOptionsSearch: null,
                 dialog: false,
                 projectOptions: [],
             }
@@ -82,10 +124,15 @@
                 default: function () {
                     return {
                         id: 0,
-                        project: {},
+                        project: {id: null},
                     };
                 }
             }
+        },
+        computed: {
+            documentForm() {
+                return {...this.form};
+            },
         },
         methods: {
             close() {
@@ -93,7 +140,13 @@
             },
             save() {
                 this.saveLoading = true;
-                const data = {...this.documentForm};
+                console.log(this.documentForm);
+                const data = {
+                    ...this.documentForm,
+                    relatives: this.relatives.map(value => {
+                        return {id: value};
+                    }),
+                };
                 const method = 'POST';
                 const url = `http://localhost:8080/documents`;
                 axios({url, method, data})
@@ -124,10 +177,47 @@
                             console.log(error.response);
                         }
                     });
-            }
+            },
+            getViewerOptions: function (email) {
+                this.viewerOptionsLoading = true;
+                setTimeout(() => {
+                    axios.get(`http://localhost:8080/users/search/findAllForSelectByEmailContaining`, {
+                        params: {
+                            email: email,
+                        }
+                    }).then(response => {
+                        if (response.status === 204) {
+                            this.viewerOptions = [];
+                            return;
+                        }
+                        this.viewerOptions = response.data;
+                    }).catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data);
+                        } else {
+                            console.log(error.response);
+                        }
+                    }).finally(() => {
+                        this.viewerOptionsLoading = false;
+                    });
+                }, 500);
+            },
         },
         mounted() {
             this.getProjectOptions();
+        },
+        created() {
+            this.debouncedGetViewerOptions = _.debounce(this.getViewerOptions, 500);
+        },
+        watch: {
+            viewerOptionsSearch: function (val) {
+                if (val && !!val.length) {
+                    this.debouncedGetViewerOptions(val);
+                }
+            },
+            relatives: function () {
+                this.viewerOptionsSearch = '';
+            }
         }
     }
 </script>

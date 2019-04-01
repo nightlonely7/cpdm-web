@@ -2,6 +2,7 @@
     <div class="elevation-1">
 
         <TaskSearch></TaskSearch>
+        <v-divider></v-divider>
         <v-toolbar tabs fixed-tabs class="elevation-0">
             <v-toolbar-title>QUẢN LÝ TÁC VỤ</v-toolbar-title>
             <template slot="extension">
@@ -24,6 +25,7 @@
             </template>
         </v-toolbar>
 
+        <v-divider></v-divider>
         <v-tabs-items v-model="tabs">
             <v-tab-item v-if="isManager || isStaff">
                 <TaskTable title="TÁC VỤ ĐƯỢC GIAO" getTasksURL="search/executes"></TaskTable>

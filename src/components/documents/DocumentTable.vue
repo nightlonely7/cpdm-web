@@ -17,17 +17,22 @@
                 :loading="table.loading"
                 :pagination.sync="pagination"
                 :total-items="pagination.totalItems"
-                rows-per-page-text="Số hàng mỗi trang"
+                :rows-per-page-text="'Số hàng mỗi trang'"
+                :rows-per-page-items="[5, 10, 25, 50, {text: 'Tất cả', value: -1}]"
                 :no-data-text="alert || 'Không có dữ liệu'"
                 :no-results-text="alert || 'Không tìm thấy dữ liệu tương ứng'"
-                must-sort
+                :must-sort="true"
         >
-            <v-progress-linear #progress color="primary" indeterminate></v-progress-linear>
+            <template #pageText="{pageStart, pageStop, itemsLength}">
+                {{pageStart}} - {{pageStop}} của tổng cộng {{itemsLength}}
+            </template>
             <template #items="{item}">
                 <td class="text-xs-left">{{item.title}}</td>
                 <td class="text-xs-left">{{item.summary}}</td>
                 <td class="text-xs-left">{{item.project.name}}</td>
-                <td class="text-xs-left">{{item.createdTime}}</td>
+                <td class="text-xs-left">{{moment(item.createdTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
+                <td class="text-xs-left">{{moment(item.startTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
+                <td class="text-xs-left">{{moment(item.endTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
                 <td class="text-xs-left">{{item.status}}</td>
             </template>
         </v-data-table>
@@ -62,7 +67,8 @@
                         {text: 'Nội dung tổng quát', value: 'summary'},
                         {text: 'Dự án', value: 'project.name'},
                         {text: 'Thời gian tạo', value: 'createdTime'},
-                        {text: 'Trạng thái', value: 'status'},
+                        {text: 'Thời gian hiệu lực', value: 'startTime'},
+                        {text: 'Thời gian hết hạn', value: 'endTime'},
                     ]
                 },
             }
@@ -97,13 +103,8 @@
                         }
                     }
                 ).then(response => {
-                        if (response.status === 204) {
-                            this.documents = [];
-                            this.pagination.totalItems = 0;
-                        } else {
-                            this.documents = response.data.content;
-                            this.pagination.totalItems = response.data.totalElements;
-                        }
+                        this.documents = response.data.content;
+                        this.pagination.totalItems = response.data.totalElements;
                     }
                 ).catch(error => {
                         this.alert = 'Không thể truy cập';

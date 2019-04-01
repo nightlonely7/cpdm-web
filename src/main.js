@@ -9,6 +9,7 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import 'animate.css'
+import moment from 'moment'
 
 Vue.config.productionTip = false;
 Vue.use(Vuetify, {
@@ -29,6 +30,8 @@ axios.interceptors.request.use(
         return Promise.reject(error);
     }
 );
+
+Vue.prototype.moment = moment;
 
 new Vue({
     router,
