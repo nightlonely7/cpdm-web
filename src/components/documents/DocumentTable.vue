@@ -94,29 +94,29 @@
             },
             getDocuments: function () {
                 this.table.loading = true;
-                axios.get(`http://localhost:8080/documents`,
-                    {
-                        params: {
-                            page: this.pagination.page - 1,
-                            size: this.pagination.rowsPerPage,
-                            sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
-                        }
-                    }
-                ).then(response => {
+                const url = this.isAdmin ? `http://localhost:8080/documents` : `http://localhost:8080/documents/search/relatives`;
+                const method = 'GET';
+                const params = {
+                    page: this.pagination.page - 1,
+                    size: this.pagination.rowsPerPage,
+                    sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
+                };
+                axios({url, method, params})
+                    .then(response => {
                         this.documents = response.data.content;
                         this.pagination.totalItems = response.data.totalElements;
-                    }
-                ).catch(error => {
+                    })
+                    .catch(error => {
                         this.alert = 'Không thể truy cập';
                         if (error.response) {
                             console.log(error.response.data);
                         } else {
                             console.log(error);
                         }
-                    }
-                ).finally(() => {
-                    this.table.loading = false;
-                });
+                    })
+                    .finally(() => {
+                        this.table.loading = false;
+                    });
             },
         },
         watch: {
