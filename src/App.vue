@@ -27,6 +27,35 @@
                         <v-list-tile-title>Quản lý tác vụ</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
+                <v-list-group>
+                    <template v-slot:activator>
+                        <v-list-tile>
+                            <v-list-tile-action>
+                                <v-icon>mdi-calendar-blank</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Quản lí ủy quyền</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </template>
+
+                    <v-list-tile to="/approverAssignRequests" v-if="isManager || isAdmin">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Duyệt ủy quyền</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile to="/userAssignRequests" v-if="isManager || isStaff">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Xin ủy quyền</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list-group>
                 <v-list-tile to="/users" v-if="isManager || isAdmin">
                     <v-list-tile-action>
                         <v-icon>mdi-file-document</v-icon>

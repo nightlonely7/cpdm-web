@@ -24,6 +24,7 @@
                                             label="Số ngày nghỉ"
                                             hint="Số ngày nghỉ tối đa không cần bàn giao công việc"
                                             :rules="[rules.required]"
+                                            min="0"
                                     ></v-text-field>
                                 </v-flex>
                                 <v-flex xs12 sm6 md6>
@@ -207,8 +208,8 @@
             },
             editPolicy(item) {
                 this.dialog = true;
-                this.editItem = item;
-                this.oldItem = item;
+                Object.assign(this.editItem,item);
+                Object.assign(this.oldItem,item);
                 this.isAddNew = false;
             },
             deletePolicy(item) {
@@ -254,7 +255,6 @@
                 while(notAllowedDate.includes(minAvailableDate)){
                     count++;
                     minAvailableDate = moment(new Date()).add(count,'days').toISOString().substr(0, 10);
-                    console.log(minAvailableDate);
                 }
                 this.editItem.valid_from_date = minAvailableDate;
             },
@@ -266,7 +266,7 @@
             },
             save() {
                 //validate input
-                if (this.editItem.number_of_day_off_free_check == null || this.editItem.number_of_day_off_free_check.trim() == '') {
+                if (this.editItem.number_of_day_off_free_check == null) {
                     this.snackBarText = 'Số ngày nghỉ không được để trống';
                     this.snackbar = true;
                     return;

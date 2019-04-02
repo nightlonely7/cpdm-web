@@ -72,6 +72,16 @@ const router = new Router({
             path: '/managePolicyForLeave',
             name: 'Quản lý chính sách nghỉ phép',
             component: () => import('@/views/leaveRequests/ManagePolicyForLeavePage.vue')
+        },
+        {
+            path: '/userAssignRequests',
+            name: 'Quản lý đơn xin ủy quyền',
+            component: () => import('@/views/assignRequests/UserAssignRequestPage.vue')
+        },
+        {
+            path: '/approverAssignRequests',
+            name: 'Xét duyệt đơn xin ủy quyền',
+            component: () => import('@/views/assignRequests/ApproverAssignRequestPage.vue')
         }
     ]
 });
