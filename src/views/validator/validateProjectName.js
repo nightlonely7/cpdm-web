@@ -1,9 +1,9 @@
 import axios from "axios";
 import {Validator} from "vee-validate";
 
-Validator.extend('depNameValidator', {
+Validator.extend('projectNameValidator', {
     getMessage: () => {
-        return "Phòng ban này đã tồn tại xin hãy nhập phòng ban khác!";
+        return "Dự án này đã tồn tại xin hãy nhập dự án khác!";
     },
     validate: (value, obj) => {
         return checkDepNameExisted(value, obj);
@@ -11,29 +11,29 @@ Validator.extend('depNameValidator', {
 });
 
 async function checkDepNameExisted(value, obj) {
-    let isDepNameExisted = true;
+    let isProjectNameExisted = true;
     let currentName = obj[0];
     let isEdit = obj[1];
     if(isEdit && currentName === value){
         return true;
     }
     try {
-        await axios.get('http://localhost:8080/departments/check/existByName/', {
+        await axios.get('http://localhost:8080/projects/check/existByName/', {
             params: {
                 name: value
             }
         })
             .then(
                 response => {
-                    isDepNameExisted = !response.data;
+                    isProjectNameExisted = !response.data;
                 })
             .catch(
-                () => {
-                    console.log("Phòng ban không trùng!");
+                (err) => {
+                    console.log(err);
                 }
             );
     } catch (err) {
-        console.log(err);
+        await console.log(err);
     }
-    return isDepNameExisted;
+    return isProjectNameExisted;
 }

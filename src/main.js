@@ -12,6 +12,7 @@ import 'animate.css'
 import VeeValidate from 'vee-validate';
 import './views/validator/validateEmail';
 import './views/validator/validateDepName';
+import './views/validator/validateProjectName';
 import DatetimePicker from 'vuetify-datetime-picker';
 import Vuex from 'vuex'
 

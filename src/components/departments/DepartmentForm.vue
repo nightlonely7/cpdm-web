@@ -20,7 +20,7 @@
                                                   counter="30"
                                                   v-model="departmentForm.name"
                                                   :rules="nameRule"
-                                                  v-validate="'depNameValidator'"
+                                                  v-validate="{depNameValidator: [departmentName, isEdit]}"
                                                   name="name"
                                                   validate-on-blur>
                                     ></v-text-field>
@@ -28,6 +28,9 @@
                                 </v-flex>
                                 <v-flex md12>
                                     <v-text-field label="Mã phòng ban"
+                                                  counter="30"
+                                                  :rules="aliasRule"
+                                                  name="alias"
                                                   v-model="departmentForm.alias"
                                     ></v-text-field>
                                 </v-flex>
@@ -63,6 +66,9 @@
                 nameRule: [
                     val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
                 ],
+                aliasRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
+                ],
                 snackbar: false,
                 serverErrorText: 'Lưu thông tin thất bại!',
                 timeout: 10000
@@ -72,6 +78,8 @@
             ...mapState('DEPARTMENT_STORE', {
                 showForm: state => state.showForm,
                 departmentForm: state => state.departmentForm,
+                departmentName: state => state.departmentName,
+                isEdit: state => state.isEdit
             })
         },
         methods: {
@@ -80,6 +88,11 @@
                 this.$store.commit('DEPARTMENT_STORE/SET_SHOW_FORM', false);
                 this.departmentForm.name = this.$store.state.DEPARTMENT_STORE.departmentName;
                 this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_NAME', '');
+                const currentDepartment =
+                    this.$store.state.DEPARTMENT_STORE.currentDepartment;
+                this.departmentForm.id = currentDepartment.id;
+                this.departmentForm.name = currentDepartment.name;
+                this.departmentForm.alias = currentDepartment.alias;
             },
             save: function () {
                 if(typeof this.errors.first('name') !== 'undefined'){

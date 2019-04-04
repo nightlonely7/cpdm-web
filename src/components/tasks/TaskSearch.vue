@@ -69,7 +69,7 @@
 
                 axios.get(`http://localhost:8080/projects`)
                     .then(response => {
-                        this.projectOptions = response.data;
+                        this.projectOptions = response.data.content;
                     })
                     .catch(error => {
                         if (error.response) {

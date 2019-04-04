@@ -71,8 +71,9 @@
                     )
             },
             findSummarySearchValue: function () {
-                if (this.titleSearchValue === null) {
-                    this.titleSearchValue = '';
+                console.log(this.summarySearchValue);
+                if (this.summarySearchValue === null) {
+                    this.summarySearchValue = '';
                 }
                 axios.get("http://localhost:8080/projects/search/nameAndAlias",
                     {

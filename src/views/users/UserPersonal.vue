@@ -72,7 +72,7 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6>
-                                <v-menu right offset-x id="birthDay-menu">
+                                <v-menu right offset-x class="menu-size">
                                     <v-text-field v-model="user.birthday"
                                                   label="Ngày sinh" slot="activator"
                                                   @change="formatDatePicker"
@@ -110,6 +110,33 @@
                                               readonly
                                 ></v-text-field>
                             </v-flex>
+                            <!--<v-expansion-panel focusable class="elevation-1">-->
+                                <!--<v-expansion-panel-content>-->
+                                    <!--<template slot="header">-->
+                                        <!--<div>Thay đổi mật khẩu</div>-->
+                                    <!--</template>-->
+                                    <!--<v-container grid-list-md>-->
+                                        <!--<v-layout>-->
+                                            <!--<v-flex md6>-->
+                                                <!--<v-text-field v-model="user.password"-->
+                                                              <!--label="Mật khẩu"-->
+                                                              <!--:rules="passwordRule"-->
+                                                              <!--:type="'password'"-->
+                                                              <!--validate-on-blur-->
+                                                <!--&gt;</v-text-field>-->
+                                            <!--</v-flex>-->
+                                            <!--<v-flex md6>-->
+                                                <!--<v-text-field v-model="user.confirmPassword"-->
+                                                              <!--label="Xác nhận mật khẩu"-->
+                                                              <!--:rules="confirmPasswordRule"-->
+                                                              <!--:type="'password'"-->
+                                                              <!--validate-on-blur-->
+                                                <!--&gt;</v-text-field>-->
+                                            <!--</v-flex>-->
+                                        <!--</v-layout>-->
+                                    <!--</v-container>-->
+                                <!--</v-expansion-panel-content>-->
+                            <!--</v-expansion-panel>-->
                             <v-flex md12>
                                 <p style="color: red" v-if="serverValidate">
                                     Lưu thông tin cá nhân thất bại!
@@ -125,7 +152,11 @@
                     <v-icon left>done</v-icon>
                     Lưu
                 </v-btn>
+                <!--<v-btn color="primary" @click="changePassword">-->
+                    <!--Thay đổi mật khẩu-->
+                <!--</v-btn>-->
             </v-card-actions>
+
         </v-card>
     </div>
 </template>
@@ -244,13 +275,18 @@
                         this.user.birthday = time[2] + '-' + time[1] + '-' + time[0];
                     }
                 }
+            },
+            changePassword: function () {
+                console.log(this.user);
+                this.$store.commit('USER_STORE/SET_CURRENT_USER', this.user);
+                this.$router.push('/viewPassword');
             }
         }
     }
 </script>
 
 <style scoped>
-    #birthDay-menu {
+    .menu-size {
         width: 100%
     }
 </style>

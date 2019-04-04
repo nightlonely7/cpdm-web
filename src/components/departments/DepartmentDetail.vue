@@ -4,6 +4,9 @@
         <br/><br/>
         <p style="color: blue">Tên phòng ban: {{department.name || 'Chưa xác định'}}</p>
         <p style="color: blue">Mã phòng ban: {{department.alias || 'Chưa xác định'}}</p>
+        <v-list>
+
+        </v-list>
         <v-btn @click="showForm" color="primary">Sửa</v-btn>
         <v-btn @click="deleteDepartment" color="error">Xóa</v-btn>
         <br>
@@ -48,6 +51,8 @@
                 this.$store.commit('DEPARTMENT_STORE/SET_SHOW_FORM', true);
                 this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_FORM', this.department);
                 this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_NAME', this.department.name);
+                const department = {...this.department};
+                this.$store.commit('DEPARTMENT_STORE/SET_CURRENT_DEPARTMENT', department);
                 this.$store.commit('DEPARTMENT_STORE/SET_IS_EDIT', true);
             },
             deleteDepartment: function () {
@@ -58,9 +63,10 @@
                         .then(
                             response => {
                                 this.department = response.data;
-                                this.$router.push("/departments");
                                 console.log(this.department);
+                                this.$store.commit('DEPARTMENT_STORE/SET_IS_EDIT', false);
                                 this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_NAME', '');
+                                this.$router.push("/departments");
                             }
                         )
                 }

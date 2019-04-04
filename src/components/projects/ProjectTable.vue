@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-expansion-panel focusable class="elevation-0">
+        <v-expansion-panel focusable class="elevation-1">
             <v-expansion-panel-content>
                 <template slot="header">
                     <div>Tìm kiếm</div>
@@ -25,6 +25,7 @@
                 rows-per-page-text="Số hàng mỗi trang"
                 :no-data-text="alert || 'Không có dữ liệu'"
                 :no-results-text="alert || 'Không tìm thấy dữ liệu tương ứng'"
+                class="elevation-1"
                 must-sort
         >
             <v-progress-linear #progress color="blue" indeterminate></v-progress-linear>
@@ -81,11 +82,19 @@
         },
         methods: {
             getProjects: function () {
-                axios.get('http://localhost:8080/projects')
+                axios.get('http://localhost:8080/projects',
+                    {
+                        params: {
+                            page: this.pagination.page - 1,
+                            size: this.pagination.rowsPerPage,
+                            sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
+                        }
+                    })
                     .then(
                         response => {
                             this.projects = response.data.content;
                             this.$store.commit('PROJECT_STORE/SET_PROJECTS', this.projects);
+                            this.pagination.totalItems = response.data.totalElements;
                         }
                     )
                     .catch(
@@ -95,19 +104,32 @@
                     );
             },
             refresh: function () {
+                this.setPaging();
                 this.getProjects();
             },
             showForm: function () {
                 this.$store.commit('PROJECT_STORE/SET_SHOW_FORM', true);
                 this.$store.commit('PROJECT_STORE/SET_IS_EDIT', false);
-                const project = {...this.project};
-                this.$store.commit('PROJECT_STORE/SET_CURRENT_PROJECT', project);
+                this.$store.commit('PROJECT_STORE/SET_PROJECT_NAME', '');
                 this.$store.commit('PROJECT_STORE/SET_PROJECT_FORM', {
                     id: 0,
                     name: '',
                     alias: ''
                 });
+            },
+            setPaging: function () {
+                this.pagination.page = 1;
+                this.pagination.sortBy = 'name';
+                this.pagination.descending = true;
             }
+        },
+        watch: {
+            pagination: function () {
+                this.getProjects();
+            }
+        },
+        created() {
+            this.debouncedGetTasks = _.debounce(this.getProjects, 500);
         }
     }
 </script>

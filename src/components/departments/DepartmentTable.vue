@@ -41,7 +41,7 @@
     export default {
         name: "DepartmentTable",
         components: {DepartmentForm},
-        data(){
+        data() {
             return {
                 alert: '',
                 pagination: {
@@ -62,21 +62,30 @@
         },
         computed: {
             departments: {
-                get(){
+                get() {
                     return this.$store.state.DEPARTMENT_STORE.departments;
                 },
-                set(value){
+                set(value) {
                     this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENTS', value);
                 }
             }
         },
         methods: {
             getDepartments: function () {
-                axios.get('http://localhost:8080/departments')
+                axios.get('http://localhost:8080/departments',
+                    {
+                        params: {
+                            page: this.pagination.page - 1,
+                            size: this.pagination.rowsPerPage,
+                            sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
+                        }
+                    })
                     .then(
                         response => {
                             this.departments = response.data.content;
+                            // this.pagination = response.data.pageable;
                             this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENTS', this.departments);
+                            this.pagination.totalItems = response.data.totalElements;
                         }
                     )
                     .catch(
@@ -86,18 +95,33 @@
                     );
             },
             refresh: function () {
+                this.setPaging();
                 this.getDepartments();
             },
             showForm: function () {
                 this.$store.commit('DEPARTMENT_STORE/SET_SHOW_FORM', true);
                 this.$store.commit('DEPARTMENT_STORE/SET_IS_EDIT', false);
+                this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_NAME', '');
                 this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_FORM', {
                     id: 0,
                     name: '',
                     alias: '',
                     isAvailable: true
                 });
+            },
+            setPaging: function () {
+                this.pagination.page = 1;
+                this.pagination.sortBy = 'name';
+                this.pagination.descending = true;
             }
+        },
+        watch: {
+            pagination: function () {
+                this.getDepartments();
+            }
+        },
+        created() {
+            this.debouncedGetTasks = _.debounce(this.getDepartments, 500);
         }
     }
 </script>

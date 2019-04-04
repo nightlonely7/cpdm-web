@@ -232,7 +232,6 @@
                 }, 500);
             },
             getExecutorOptions: function () {
-
                 const url = this.isAdmin ?
                     `http://localhost:8080/users/search/findAllManagerSummary` :
                     `http://localhost:8080/users/findAllStaffDisplayNameByDepartmentOfCurrentLoggedManager`;
@@ -253,7 +252,7 @@
                 setTimeout(() => {
                     axios.get(`http://localhost:8080/projects`)
                         .then(response => {
-                            this.projectOptions = response.data;
+                            this.projectOptions = response.data.content;
                         })
                         .catch(error => {
                             if (error.response) {

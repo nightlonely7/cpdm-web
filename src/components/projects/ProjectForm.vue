@@ -17,16 +17,21 @@
                             <v-layout wrap>
                                 <v-flex md12>
                                     <v-text-field label="Tên dự án"
-                                                  counter="30"
+                                                  counter="50"
                                                   v-model="projectForm.name"
                                                   :rules="nameRule"
                                                   name="name"
+                                                  v-validate="{projectNameValidator: [projectName, isEdit]}"
                                                   validate-on-blur>
                                         ></v-text-field>
+                                    <p style="color: red">{{ errors.first('name') }}</p>
                                 </v-flex>
                                 <v-flex md12>
                                     <v-text-field label="Mã dự án"
                                                   v-model="projectForm.alias"
+                                                  counter="50"
+                                                  :rules="aliasRule"
+                                                  name="alias"
                                     ></v-text-field>
                                 </v-flex>
                             </v-layout>
@@ -51,6 +56,7 @@
 <script>
     import axios from 'axios'
     import {mapState} from 'vuex'
+    import 'vee-validate'
 
     export default {
         name: "ProjectForm",
@@ -58,6 +64,9 @@
             return {
                 project: {},
                 nameRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
+                ],
+                aliasRule: [
                     val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
                 ],
                 snackbar: false,
@@ -68,7 +77,9 @@
         computed: {
             ...mapState('PROJECT_STORE', {
                 showForm: state => state.showForm,
-                projectForm: state => state.projectForm
+                projectForm: state => state.projectForm,
+                projectName: state => state.projectName,
+                isEdit: state => state.isEdit
             })
         },
         methods: {
@@ -92,8 +103,9 @@
                     }).then(
                         response => {
                             this.$store.commit('PROJECT_STORE/SET_PROJECT_FORM', response.data);
+                            this.$store.commit('PROJECT_STORE/SET_PROJECT_NAME', '');
+                            this.$router.push(`/projects/${this.projectForm.id}`);
                             this.close();
-                            this.$router.push('/projects');
                         }
                     ).catch(
                         err => {

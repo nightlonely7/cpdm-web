@@ -17,6 +17,11 @@ const router = new Router({
             component: () => import('@/views/documents/DocumentPage.vue')
         },
         {
+            path: '/documents/:id',
+            name: 'Quản lý tài liệu',
+            component: () => import('@/views/documents/DocumentDetailPage.vue')
+        },
+        {
             path: '/tasks',
             name: 'Quản lý tác vụ',
             component: () => import('@/views/tasks/TaskPage.vue')
@@ -82,6 +87,11 @@ const router = new Router({
             path: '/viewUserLeaves',
             name: 'Theo dõi nghỉ phép',
             component: () => import('@/views/leaveRequests/viewUserLeavePage.vue')
+        },
+        {
+            path: '/viewPassword',
+            name: 'Thay đổi mật khẩu',
+            component: () => import('@/views/users/PasswordPage.vue')
         },
     ]
 });

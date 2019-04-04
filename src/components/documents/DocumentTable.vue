@@ -23,12 +23,17 @@
                 must-sort
         >
             <v-progress-linear #progress color="primary" indeterminate></v-progress-linear>
-            <template #items="{item}">
-                <td class="text-xs-left">{{item.title}}</td>
-                <td class="text-xs-left">{{item.summary}}</td>
-                <td class="text-xs-left">{{item.project.name}}</td>
-                <td class="text-xs-left">{{item.createdTime}}</td>
-                <td class="text-xs-left">{{item.status}}</td>
+            <template #items="props">
+                <router-link tag="tr" :to="`/documents/${props.item.id}`"
+                             onmouseover="this.style.cursor='pointer'"
+                             onmouseout="this.style.cursor='none'"
+                >
+                    <td class="text-xs-left">{{props.item.title}}</td>
+                    <td class="text-xs-left">{{props.item.summary}}</td>
+                    <td class="text-xs-left">{{props.item.name}}</td>
+                    <td class="text-xs-left">{{props.item.createdTime}}</td>
+                    <td class="text-xs-left">{{props.item.status}}</td>
+                </router-link>
             </template>
         </v-data-table>
     </div>

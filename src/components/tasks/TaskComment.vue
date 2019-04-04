@@ -4,7 +4,6 @@
             <v-list>
                 <v-toolbar color="indigo" dark>
                     <v-toolbar-title>Bình luận</v-toolbar-title>
-
                     <v-spacer></v-spacer>
                 </v-toolbar>
                 <v-subheader></v-subheader>
@@ -43,9 +42,7 @@
                                @click="deleteComment(item)">
                             <v-icon>delete</v-icon>
                         </v-btn>
-
                     </v-list-tile>
-
                     <v-textarea
                             :key="index"
                             v-model="item.content"
@@ -80,7 +77,6 @@
                         outline
                         :rules="[rules.required,rules.max]"
                 ></v-textarea>
-
                 <v-card-actions>
                     <v-spacer/>
                     <v-btn outline fab small color="indigo" @click="addComment()"

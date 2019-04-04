@@ -105,8 +105,6 @@
                             </v-list-tile>
                         </v-list-tile-content>
                     </v-list>
-
-
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
@@ -224,7 +222,6 @@
                             this.loading = false;
                         })
                 }, 5000)
-
             },
             getTaskIssues: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}/issues`)

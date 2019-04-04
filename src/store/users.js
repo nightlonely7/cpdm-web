@@ -8,6 +8,7 @@ const userStoreDefaultState = () => {
             department: {},
             role: {},
         },
+        currentUser: {}
     }
 };
 
@@ -23,6 +24,15 @@ export default {
         },
         SET_USER_FORM(state, userForm) {
             state.userForm = userForm;
+        },
+        SET_TITLE_SEARCH_VALUE(state, titleSearchValue) {
+            state.titleSearchValue = titleSearchValue;
+        },
+        SET_CURRENT_USER(state, currentUser) {
+            state.currentUser = currentUser;
+        },
+        SET_SUMMARY_SEARCH_VALUE(state, summarySearchValue) {
+            state.summarySearchValue = summarySearchValue;
         },
     }
 };

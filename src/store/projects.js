@@ -6,7 +6,8 @@ const projectStoreDefaultState = () => {
         isEdit: true,
         titleSearchValue: '',
         summarySearchValue: '',
-        currentProject: {}
+        currentProject: {},
+        projectName: '',
     }
 };
 
@@ -34,6 +35,9 @@ export default {
         },
         SET_IS_EDIT(state, isEdit){
             state.isEdit = isEdit;
+        },
+        SET_PROJECT_NAME(state, projectName){
+            state.projectName = projectName;
         },
     }
 };

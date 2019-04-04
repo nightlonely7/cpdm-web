@@ -43,7 +43,7 @@
                         <v-list-tile-title>Quản lý phòng ban</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-                <v-list-tile to="/projects" v-if="isAdmin">
+                <v-list-tile to="/projects" v-if="isAdmin || isManager">
                     <v-list-tile-action>
                         <v-icon>mdi-file-document</v-icon>
                     </v-list-tile-action>
