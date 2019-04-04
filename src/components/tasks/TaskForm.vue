@@ -169,9 +169,9 @@
                 default: function () {
                     return {
                         id: 0,
-                        project: {},
-                        executor: {},
-                        parentTask: {},
+                        project: {id: null},
+                        executor: {id: null},
+                        parentTask: {id: null},
                     };
                 }
             },
@@ -179,7 +179,7 @@
         },
         methods: {
             save: function () {
-                console.log(this.relatives);
+                console.log(this.taskForm);
                 const data = {
                     ...this.taskForm,
                     relatives: this.relatives.map(value => {

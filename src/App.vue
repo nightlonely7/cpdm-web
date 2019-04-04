@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <v-app>
         <v-navigation-drawer fixed app v-model="drawer" v-if="isLoggedIn && isInit">
             <v-list>
@@ -11,30 +11,6 @@
                     </v-list-tile-title>
                 </v-list-tile>
                 <v-divider/>
-                <v-list-tile to="/documents">
-                    <v-list-tile-action>
-                        <v-icon>account_circle</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>Quản lý tài liệu</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
-                <v-list-tile to="/tasks">
-                    <v-list-tile-action>
-                        <v-icon>account_circle</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>Quản lý tác vụ</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
-                <v-list-tile to="/users" v-if="isManager || isAdmin">
-                    <v-list-tile-action>
-                        <v-icon>mdi-file-document</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>Quản lý nhân viên</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
                 <v-list-tile to="/departments" v-if="isAdmin">
                     <v-list-tile-action>
                         <v-icon>mdi-home</v-icon>
@@ -51,6 +27,112 @@
                         <v-list-tile-title>Quản lý dự án</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
+                <v-list-tile to="/documents">
+                    <v-list-tile-action>
+                        <v-icon>account_circle</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Quản lý tài liệu</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+                <v-list-tile to="/tasks">
+                    <v-list-tile-action>
+                        <v-icon>account_circle</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Quản lý tác vụ</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+                <v-list-group>
+                    <template v-slot:activator>
+                        <v-list-tile>
+                            <v-list-tile-action>
+                                <v-icon>mdi-calendar-blank</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Quản lí ủy quyền</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </template>
+
+                    <v-list-tile to="/approverAssignRequests" v-if="isManager || isAdmin">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Duyệt ủy quyền</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile to="/userAssignRequests" v-if="isManager || isStaff">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Xin ủy quyền</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list-group>
+                <v-list-tile to="/users" v-if="isManager || isAdmin">
+                    <v-list-tile-action>
+                        <v-icon>mdi-file-document</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Quản lý nhân viên</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+                <v-list-group>
+                    <template v-slot:activator>
+                        <v-list-tile>
+                            <v-list-tile-action>
+                                <v-icon>mdi-calendar-blank</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Quản lí nghỉ phép</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </template>
+
+                    <v-list-tile v-if="isAdmin" to="/viewLeaveCalendar">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Lịch nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile v-if="isAdmin" to="/viewUserLeaves">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Theo dõi nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile v-if="isAdmin" to="/managePolicyForLeave">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Chính sách nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile v-if="isAdmin || isManager" to="/approverLeaveRequests">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Duyệt nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile v-if="isStaff || isManager" to="/userLeaveRequests">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Xin nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list-group>
             </v-list>
         </v-navigation-drawer>
         <v-toolbar color="indigo" dark fiexed app v-if="isLoggedIn && isInit">
@@ -82,7 +164,6 @@
                         <v-list-tile
                                 v-for="notification in notifications"
                                 :key="notification"
-                                @click=""
                         >
                             <v-list-tile-title
                                     v-text="notification"
@@ -127,7 +208,7 @@
         </v-toolbar>
         <v-content>
             <v-container fluid>
-                <router-view></router-view>
+                <router-view :key="$route.fullPath"></router-view>
             </v-container>
         </v-content>
         <v-footer color="indigo" app>

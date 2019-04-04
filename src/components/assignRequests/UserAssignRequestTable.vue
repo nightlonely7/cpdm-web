@@ -11,7 +11,7 @@
                 </template>
                 <v-card>
                     <v-card-title>
-                        <span class="headline">ĐƠN XIN NGHỈ PHÉP</span>
+                        <span class="headline">ĐƠN XIN ỦY QUYỀN</span>
                     </v-card-title>
                     <v-card-text>
                         <v-container grid-list-md>
@@ -26,20 +26,32 @@
                                             multi-line
                                     ></v-textarea>
                                 </v-flex>
+                                <!--<v-flex xs12 sm6 md6>-->
+                                    <!--<v-text-field-->
+                                            <!--v-model="editItem.approver.displayName"-->
+                                            <!--label="Người xét duyệt"-->
+                                            <!--readonly-->
+                                    <!--&gt;</v-text-field>-->
+                                <!--</v-flex>-->
+                                <v-flex xs12 sm6 md6>
+                                    <v-select
+                                    v-model="editItem.assignee"
+                                    :items="assignees"
+                                    item-text="displayName"
+                                    name="assignee"
+                                    label="Người được ủy quyền"
+                                    return-object
+                                    ></v-select>
+                                </v-flex>
                                 <v-flex xs12 sm4 md4>
-                                    <v-text-field
-                                            v-model="editItem.approver.displayName"
-                                            label="Người xét duyệt"
-                                            readonly
-                                    ></v-text-field>
-                                    <!--<v-select-->
-                                    <!--v-model="editItem.approver"-->
-                                    <!--:items="approvers"-->
-                                    <!--item-text="displayName"-->
-                                    <!--name="approver"-->
-                                    <!--label="Người xét duyệt"-->
-                                    <!--return-object-->
-                                    <!--&gt;</v-select>-->
+                                    <v-select
+                                            v-model="editItem.task"
+                                            :items="tasks"
+                                            item-text="tittle"
+                                            name="task"
+                                            label="Tác vụ"
+                                            return-object
+                                    ></v-select>
                                 </v-flex>
                                 <v-flex xs12 sm4 md4>
                                     <v-menu
@@ -113,7 +125,7 @@
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
-                :items="userLeaveRequests"
+                :items="userAssignRequests"
                 :loading="table.loading"
                 :pagination.sync="pagination"
                 :total-items="pagination.totalItems"
@@ -131,10 +143,10 @@
                 <td class="text-xs-left">{{props.item.approver.displayName}}</td>
                 <td class="text-xs-left" v-if="props.item.status === 0">
                     <v-card-actions>
-                        <v-btn outline fab small color="indigo" @click="editLeaveRequest(props.item)">
+                        <v-btn outline fab small color="indigo" @click="editAssignRequest(props.item)">
                             <v-icon>edit</v-icon>
                         </v-btn>
-                        <v-btn outline fab small color="red" @click="deleteLeaveRequest(props.item.id)">
+                        <v-btn outline fab small color="red" @click="deleteAssignRequest(props.item.id)">
                             <v-icon>delete</v-icon>
                         </v-btn>
                     </v-card-actions>
@@ -164,7 +176,7 @@
     var notAllowedDate = [];
 
     export default {
-        name: "UserLeaveRequestTable",
+        name: "UserAssignRequestTable",
         props: {
             type: String,
             refreshFlag: Boolean,
@@ -188,7 +200,9 @@
                     fromDate: moment(new Date()).toISOString().substr(0, 10),
                     toDate: moment(new Date()).toISOString().substr(0, 10),
                     user: {},
+                    assignee: {},
                     approver: {},
+                    task: {},
                     status: 0
                 },
                 editItem: {
@@ -197,14 +211,17 @@
                     fromDate: moment(new Date()).toISOString().substr(0, 10),
                     toDate: moment(new Date()).toISOString().substr(0, 10),
                     user: {},
-                    approver: {},
+                    assignee: {},
+                    task: {},
                     status: 0
                 },
                 fromDateMenu: false,
                 toDateMenu: false,
                 createdDateMenu: false,
-                userLeaveRequests: [],
+                userAssignRequests: [],
                 approvers: [],
+                assignees: [],
+                tasks: [],
                 workingTaskDates: [],
                 canLoadData: true,
                 alert: '',
@@ -255,6 +272,8 @@
                 }
                 this.refresh();
                 this.getApprovers();
+                this.getAssignees();
+                this.getTasks();
             })
         },
         methods: {
@@ -271,6 +290,40 @@
                     }
                 ).then(response => {
                         this.approvers = response.data;
+                    }
+                ).catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data)
+                        }
+                    }
+                );
+            },
+            getAssignees: function () {
+                var roleName = "ROLE_STAFF";
+                axios.get(`http://localhost:8080/users/findAllfDisplayNameByDepartmentAndRoleNameOfCurrentLoggedManager`,
+                    {
+                        params: {
+                            roleName: roleName
+                        }
+                    }
+                ).then(response => {
+                        this.assignees = response.data;
+                    }
+                ).catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data)
+                        }
+                    }
+                );
+            },
+            getTasks: function(){
+                axios.get(`http://localhost:8080/tasks/search/executes`
+                ).then(response => {
+                        if (response.status === 204) {
+                            this.tasks = [];
+                        } else {
+                            this.tasks = response.data.content;
+                        }
                     }
                 ).catch(error => {
                         if (error.response) {
@@ -326,9 +379,9 @@
                     this.editItem.toDate = this.editItem.fromDate;
                 }
             },
-            getUserLeveRequests: function () {
+            getUserAssignRequests: function () {
                 this.table.loading = true;
-                axios.get(`http://localhost:8080/leaveRequests/search/findByUser`,
+                axios.get(`http://localhost:8080/assignRequests/search/findByUser`,
                     {
                         params: {
                             page: this.pagination.page - 1,
@@ -339,10 +392,10 @@
                     }
                 ).then(response => {
                         if (response.status === 204) {
-                            this.userLeaveRequests = [];
+                            this.userAssignRequests = [];
                             this.pagination.totalItems = 0;
                         } else {
-                            this.userLeaveRequests = response.data.content;
+                            this.userAssignRequests = response.data.content;
                             this.pagination.totalItems = response.data.totalElements;
                         }
                         this.table.loading = false;
@@ -357,12 +410,12 @@
                 );
             },
             refresh() {
-                this.getUserLeveRequests();
+                this.getUserAssignRequests();
                 this.getCalendarData();
             },
-            deleteLeaveRequest(id) {
+            deleteAssignRequest(id) {
                 if (confirm('Bạn muốn xóa đơn này?')) {
-                    axios.delete(`http://localhost:8080/leaveRequests/` + id)
+                    axios.delete(`http://localhost:8080/assignRequests/` + id)
                         .then(() => {
                                 this.refresh();
                                 this.snackbar = true;
@@ -384,7 +437,7 @@
                     );
                 }
             },
-            editLeaveRequest(item) {
+            editAssignRequest(item) {
                 Object.assign(this.editItem,item);
                 this.dialog = true;
             },
@@ -397,7 +450,7 @@
             save() {
                 //check input condition
                 if (this.editItem.fromDate > this.editItem.toDate) {
-                    this.snackBarText = 'Ngày nghỉ phép không hợp lệ';
+                    this.snackBarText = 'Ngày ủy quyền phép không hợp lệ';
                     this.snackbar = true;
                     return;
                 }
@@ -405,7 +458,7 @@
                 var toDate = moment(this.editItem.toDate).add(1, 'days');
                 while (fromDate.add(1, 'days').diff(toDate) <= 0) {
                     if (notAllowedDate.includes(fromDate.clone().toISOString().substr(0, 10))) {
-                        this.snackBarText = 'Ngày nghỉ phép không hợp lệ';
+                        this.snackBarText = 'Ngày ủy quyền phép không hợp lệ';
                         this.snackbar = true;
                         return;
                     }
@@ -415,18 +468,28 @@
                     this.snackbar = true;
                     return;
                 }
-                if (this.editItem.content.length > 255) {
+                else if (this.editItem.content.length > 255) {
                     this.snackBarText = 'Nội dung không được quá 255 kí tự';
+                    this.snackbar = true;
+                    return;
+                }
+                else if (this.editItem.assignee == null) {
+                    this.snackBarText = 'Người được ủy quyền chưa được chọn';
+                    this.snackbar = true;
+                    return;
+                }
+                else if (this.editItem.task == null) {
+                    this.snackBarText = 'Tác vụ ủy quyền chưa được chọn';
                     this.snackbar = true;
                     return;
                 }
 
                 //call api
-                var url = `http://localhost:8080/leaveRequests`;
+                var url = `http://localhost:8080/assignRequests`;
                 var method = 'POST';
 
                 if (this.editItem.id != 0) {
-                    url = `http://localhost:8080/leaveRequests/` + this.editItem.id;
+                    url = `http://localhost:8080/assignRequests/` + this.editItem.id;
                     method = 'PUT';
                 }
 
@@ -464,10 +527,10 @@
         },
         watch: {
             pagination: function () {
-                this.getUserLeveRequests();
+                this.getUserAssignRequests();
             },
             refreshFlag: function () {
-                this.getUserLeveRequests();
+                this.getUserAssignRequests();
             }
         }
     }

@@ -24,7 +24,7 @@
                 :rows-per-page-items="[5, 10, 25, 50, {text: 'Tất cả', value: -1}]"
                 :no-data-text="alert || 'Không có dữ liệu'"
                 :no-results-text="alert || 'Không tìm thấy dữ liệu tương ứng'"
-                must-sort
+                :must-sort="true"
         >
             <template #pageText="{pageStart, pageStop, itemsLength}">
                 {{pageStart}} - {{pageStop}} của tổng cộng {{itemsLength}}
@@ -92,7 +92,13 @@
             ...mapState('TASK_STORE', {
                 titleSearchValue: state => state.titleSearchValue,
                 summarySearchValue: state => state.summarySearchValue,
-                projectSelected: state => state.projectSelected,
+                createdTimeFromSearchValue: state => state.createdTimeFromSearchValue,
+                createdTimeToSearchValue: state => state.createdTimeToSearchValue,
+                startTimeFromSearchValue: state => state.startTimeFromSearchValue,
+                startTimeToSearchValue: state => state.startTimeToSearchValue,
+                endTimeFromSearchValue: state => state.endTimeFromSearchValue,
+                endTimeToSearchValue: state => state.endTimeToSearchValue,
+                projectIdSearchValue: state => state.projectIdSearchValue,
             }),
             ...mapState('AUTHENTICATION', {
                 isLoggedIn: state => state.isLoggedIn,
@@ -119,35 +125,36 @@
             getTasks: function () {
                 this.table.loading = true;
                 console.log('load');
-                axios.get(`http://localhost:8080/tasks/${this.getTasksURL}`,
-                    {
-                        params: {
-                            page: this.pagination.page - 1,
-                            size: this.pagination.rowsPerPage,
-                            sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
-                            title: this.titleSearchValue == null ? '' : this.titleSearchValue,
-                            summary: this.summarySearchValue == null ? '' : this.summarySearchValue,
-                            projectId: this.projectSelected == null ? '' : this.projectSelected,
-                        }
-                    }
-                ).then(response => {
-                        if (response.status === 204) {
-                            this.tasks = [];
-                            this.pagination.totalItems = 0;
-                        } else {
-                            this.tasks = response.data.content;
-                            this.pagination.totalItems = response.data.totalElements;
-                        }
-                        this.table.loading = false;
-                    }
-                ).catch(error => {
-                        this.table.loading = false;
+                const url = `http://localhost:8080/tasks/${this.getTasksURL}`;
+                const method = 'GET';
+                const params = {
+                    page: this.pagination.page - 1,
+                    size: this.pagination.rowsPerPage,
+                    sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
+                    title: this.titleSearchValue,
+                    summary: this.summarySearchValue,
+                    createdTimeFrom: this.createdTimeFromSearchValue,
+                    createdTimeTo: this.createdTimeToSearchValue,
+                    startTimeFrom: this.startTimeFromSearchValue,
+                    startTimeTo: this.startTimeToSearchValue,
+                    endTimeFrom: this.endTimeFromSearchValue,
+                    endTimeTo: this.endTimeToSearchValue,
+                    projectId: this.projectIdSearchValue,
+                };
+                axios({url, method, params})
+                    .then(response => {
+                        this.tasks = response.data.content;
+                        this.pagination.totalItems = response.data.totalElements;
+                    })
+                    .catch(error => {
                         this.alert = 'Không thể truy cập';
                         if (error.response) {
                             console.log(error.response.data)
                         }
-                    }
-                );
+                    })
+                    .finally(() => {
+                        this.table.loading = false;
+                    })
             },
         },
         watch: {
@@ -162,9 +169,33 @@
                 this.pagination.page = 1;
                 this.debouncedGetTasks();
             },
-            projectSelected: function () {
+            createdTimeFromSearchValue: function () {
                 this.pagination.page = 1;
-                this.getTasks();
+                this.debouncedGetTasks();
+            },
+            createdTimeToSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetTasks();
+            },
+            startTimeFromSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetTasks();
+            },
+            startTimeToSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetTasks();
+            },
+            endTimeFromSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetTasks();
+            },
+            endTimeToSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetTasks();
+            },
+            projectIdSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetTasks();
             }
         },
         created() {

@@ -100,7 +100,7 @@
     import moment from "moment";
 
     export default {
-        name: "viewLeaveCalendarPage",
+        name: "ViewLeaveCalendarPage",
         data() {
             return {
                 dates: [],

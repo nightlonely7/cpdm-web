@@ -12,6 +12,16 @@ const router = new Router({
             component: () => import('@/views/LoginPage.vue')
         },
         {
+            path: '/projects',
+            name: 'Quản lý dự án',
+            component: () => import('@/views/projects/ProjectPage.vue')
+        },
+        {
+            path: '/projects/:id',
+            name: 'Quản lý thông tin dự án',
+            component: () => import('@/views/projects/ProjectDetailPage.vue')
+        },
+        {
             path: '/documents',
             name: 'Quản lý tài liệu',
             component: () => import('@/views/documents/DocumentPage.vue')
@@ -73,20 +83,31 @@ const router = new Router({
             name: 'Xét duyệt đơn xin nghỉ phép',
             component: () => import('@/views/leaveRequests/ApproverLeaveRequestPage.vue')
         },
+
         {
-            path: '/projects',
-            name: 'Quản lý dự án',
-            component: () => import('@/views/projects/ProjectPage.vue')
-        },
-        {
-            path: '/projects/:id',
-            name: 'Quản lý thông tin dự án',
-            component: () => import('@/views/projects/ProjectDetailPage.vue')
+            path: '/viewLeaveCalendar',
+            name: 'Lịch nghỉ phép',
+            component: () => import('@/views/leaveRequests/ViewLeaveCalendarPage.vue')
         },
         {
             path: '/viewUserLeaves',
             name: 'Theo dõi nghỉ phép',
-            component: () => import('@/views/leaveRequests/viewUserLeavePage.vue')
+            component: () => import('@/views/leaveRequests/ViewUserLeavePage.vue')
+        },
+        {
+            path: '/managePolicyForLeave',
+            name: 'Quản lý chính sách nghỉ phép',
+            component: () => import('@/views/leaveRequests/ManagePolicyForLeavePage.vue')
+        },
+        {
+            path: '/userAssignRequests',
+            name: 'Quản lý đơn xin ủy quyền',
+            component: () => import('@/views/assignRequests/UserAssignRequestPage.vue')
+        },
+        {
+            path: '/approverAssignRequests',
+            name: 'Xét duyệt đơn xin ủy quyền',
+            component: () => import('@/views/assignRequests/ApproverAssignRequestPage.vue')
         },
         {
             path: '/viewPassword',
@@ -97,6 +118,7 @@ const router = new Router({
 });
 
 router.beforeEach((to, from, next) => {
+
     if (to.path === '/login') {
         if (store.getters['AUTHENTICATION/isLoggedIn']) {
             store.dispatch('AUTHENTICATION/INIT')

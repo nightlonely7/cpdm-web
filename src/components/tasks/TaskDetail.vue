@@ -26,7 +26,7 @@
             <p>Trạng thái:
                 <v-chip>{{task.status || 'Chưa xác định'}}</v-chip>
                 <br>
-                <span>Số vấn đề hoàn tất: {{totalComplete || 'Chưa xác định'}} / {{totalIssues || 'Chưa xác định'}}</span>
+                <span>Số vấn đề hoàn tất: {{totalComplete}} / {{totalIssues}}</span>
                 <br>
                 <span>Tỉ lệ hoàn thành:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <v-progress-circular :value="completionRate * 100" size="96" rotate="270" width="16" color="primary">
@@ -105,6 +105,8 @@
                             </v-list-tile>
                         </v-list-tile-content>
                     </v-list>
+
+
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
@@ -196,20 +198,6 @@
             refreshRelatives: function () {
                 this.getTaskRelatives();
             },
-            showForm: function () {
-                this.$store.commit('TASK_STORE/SET_SHOW_FORM', true);
-                const taskForm = {
-                    id: this.task.id,
-                    title: this.task.title,
-                    summary: this.task.summary,
-                    description: this.task.description,
-                    startTime: this.task.startTime,
-                    endTime: this.task.endTime,
-                    executor: this.task.executor,
-                    priority: this.task.priority
-                };
-                this.$store.commit('TASK_STORE/SET_TASK_FORM', taskForm);
-            },
             getTask: function () {
                 setTimeout(() => {
                     axios.get(`http://localhost:8080/tasks/${this.id}`)
@@ -221,7 +209,8 @@
                         .finally(() => {
                             this.loading = false;
                         })
-                }, 5000)
+                }, 1500)
+
             },
             getTaskIssues: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}/issues`)

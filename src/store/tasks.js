@@ -3,9 +3,15 @@ const taskStoreDefaultState = () => {
         showForm: false,
         showIssueForm: false,
         showRelativeForm: false,
-        titleSearchValue: '',
-        summarySearchValue: '',
-        projectSelected: null,
+        titleSearchValue: null,
+        summarySearchValue: null,
+        createdTimeFromSearchValue: null,
+        createdTimeToSearchValue: null,
+        startTimeFromSearchValue: null,
+        startTimeToSearchValue: null,
+        endTimeFromSearchValue: null,
+        endTimeToSearchValue: null,
+        projectIdSearchValue: null,
         taskForm: {
             project: {},
             executor: {},
@@ -31,13 +37,37 @@ export default {
         SET_SUMMARY_SEARCH_VALUE(state, summarySearchValue) {
             state.summarySearchValue = summarySearchValue
         },
-        SET_PROJECT_SELECTED(state, projectSelected) {
-            state.projectSelected = projectSelected
+        SET_CREATED_TIME_FROM_SEARCH_VALUE(state, createdTimeFromSearchValue) {
+            state.createdTimeFromSearchValue = createdTimeFromSearchValue
+        },
+        SET_CREATED_TIME_TO_SEARCH_VALUE(state, createdTimeToSearchValue) {
+            state.createdTimeToSearchValue = createdTimeToSearchValue
+        },
+        SET_START_TIME_FROM_SEARCH_VALUE(state, startTimeFromSearchValue) {
+            state.startTimeFromSearchValue = startTimeFromSearchValue
+        },
+        SET_START_TIME_TO_SEARCH_VALUE(state, startTimeToSearchValue) {
+            state.startTimeToSearchValue = startTimeToSearchValue
+        },
+        SET_END_TIME_FROM_SEARCH_VALUE(state, endTimeFromSearchValue) {
+            state.endTimeFromSearchValue = endTimeFromSearchValue
+        },
+        SET_END_TIME_TO_SEARCH_VALUE(state, endTimeToSearchValue) {
+            state.endTimeToSearchValue = endTimeToSearchValue
+        },
+        SET_PROJECT_ID_SEARCH_VALUE(state, projectIdSearchValue) {
+            state.projectIdSearchValue = projectIdSearchValue
         },
         RESET_SEARCH(state) {
-            state.titleSearchValue = '';
-            state.summarySearchValue = '';
-            state.projectSelected = null;
+            state.titleSearchValue = null;
+            state.summarySearchValue = null;
+            state.createdTimeFromSearchValue = null;
+            state.createdTimeToSearchValue = null;
+            state.startTimeFromSearchValue = null;
+            state.startTimeToSearchValue = null;
+            state.endTimeFromSearchValue = null;
+            state.endTimeToSearchValue = null;
+            state.projectIdSearchValue = null;
         },
         SET_SHOW_FORM(state, showForm) {
             state.showForm = showForm

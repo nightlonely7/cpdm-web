@@ -51,7 +51,6 @@
             </v-menu>
         </v-toolbar>
         <v-data-table
-                ref="table"
                 :headers="table.headers"
                 :items="users"
                 :loading="table.loading"
@@ -115,7 +114,7 @@
     import axios from "axios";
 
     export default {
-        name: "viewUserLeavePage",
+        name: "ViewUserLeavePage",
         data() {
             return {
                 snackbar: false,

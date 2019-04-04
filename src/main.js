@@ -13,11 +13,10 @@ import VeeValidate from 'vee-validate';
 import './views/validator/validateEmail';
 import './views/validator/validateDepName';
 import './views/validator/validateProjectName';
-import DatetimePicker from 'vuetify-datetime-picker';
 import Vuex from 'vuex'
+import moment from 'moment'
 
 Vue.use(Vuex);
-Vue.use(DatetimePicker);
 Vue.use(VeeValidate);
 
 Vue.config.productionTip = false;
@@ -31,12 +30,16 @@ axios.interceptors.request.use(
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }
+
         return config;
     },
+
     (error) => {
         return Promise.reject(error);
     }
 );
+
+Vue.prototype.moment = moment;
 
 new Vue({
     router,

@@ -8,7 +8,7 @@
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
-                :items="approverLeaveRequests"
+                :items="approverAssignRequests"
                 :loading="table.loading"
                 :pagination.sync="pagination"
                 :total-items="pagination.totalItems"
@@ -57,7 +57,7 @@
     import axios from 'axios';
 
     export default {
-        name: "ApproverLeaveRequestTable",
+        name: "ApproverAssignRequestTable",
         props: {
             type: String,
             refreshFlag: Boolean,
@@ -68,7 +68,7 @@
                 snackBarText: '',
                 title: '',
                 status: 0,
-                approverLeaveRequests: [],
+                approverAssignRequests: [],
                 canLoadData: true,
                 alert: '',
                 pagination: {
@@ -111,7 +111,7 @@
         methods: {
             getApproverLeveRequests: function () {
                 this.table.loading = true;
-                axios.get(`http://localhost:8080/leaveRequests/search/findByApprover`,
+                axios.get(`http://localhost:8080/assignRequests/search/findByApprover`,
                     {
                         params: {
                             page: this.pagination.page - 1,
@@ -122,10 +122,10 @@
                     }
                 ).then(response => {
                         if (response.status === 204) {
-                            this.approverLeaveRequests = [];
+                            this.approverAssignRequests = [];
                             this.pagination.totalItems = 0;
                         } else {
-                            this.approverLeaveRequests = response.data.content;
+                            this.approverAssignRequests = response.data.content;
                             this.pagination.totalItems = response.data.totalElements;
                         }
                         this.table.loading = false;
@@ -144,7 +144,7 @@
             },
             handleRequest(request, status) {
                 if (confirm('Bạn muốn duyệt đơn này?')) {
-                    var url = `http://localhost:8080/leaveRequests/` + request.id;
+                    var url = `http://localhost:8080/assignRequests/` + request.id;
                     var method = 'PUT';
 
                     var updateRequest = request;
