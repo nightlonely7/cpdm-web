@@ -24,7 +24,13 @@
             <br v-if="isChild">
 
             <p>Trạng thái:
-                <v-chip>{{task.status || 'Chưa xác định'}}</v-chip>
+                <v-chip :color="this.task.status === 'Completed' ? 'success' : ''"
+                        :text-color="this.task.status === 'Completed' ? 'white' : ''"    >
+                    {{taskStatus || 'Chưa xác định'}}
+                </v-chip>
+                <v-btn v-if="completionRate === 1 && task.status !== 'Completed'" @click="completeTask">Báo cáo hoàn
+                    tất
+                </v-btn>
                 <br>
                 <span>Số vấn đề hoàn tất: {{totalComplete}} / {{totalIssues}}</span>
                 <br>
@@ -36,9 +42,12 @@
             <p>Độ ưu tiên: {{task.priority || 'Chưa xác định'}}</p>
             <p>Người tạo: {{task.creator.displayName || 'Chưa xác định'}}</p>
             <p>Người xử lý: {{task.executor.displayName || 'Chưa xác định'}}</p>
-            <p>Thời gian tạo: {{task.createdTime || 'Chưa xác định'}}</p>
-            <p>Thời gian bắt đầu: {{task.startTime || 'Chưa xác định'}}</p>
-            <p>Thời gian kết thúc: {{task.endTime || 'Chưa xác định'}}</p>
+            <p>Thời gian tạo: {{moment(task.createdTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') ||
+                'Chưa xác định'}}</p>
+            <p>Thời gian bắt đầu: {{moment(task.startTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') ||
+                'Chưa xác định'}}</p>
+            <p>Thời gian kết thúc: {{moment(task.endTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') ||
+                'Chưa xác định'}}</p>
 
             <v-card>
                 <v-card-title>Nội dung chi tiết</v-card-title>
@@ -100,8 +109,12 @@
                             </v-list-tile>
                             <v-list-tile v-for="issue in taskIssues" :key="issue.id">
                                 {{issue.summary}} - {{issue.detail}}
+                                <v-chip :color="`${issue.completed ? 'success' : ''}`">
+                                    {{issue.completed ? 'Hoàn tất' : 'Chưa hoàn tất'}}
+                                </v-chip>
                                 <v-btn @click="editIssue(issue)">Sửa</v-btn>
                                 <v-btn @click="deleteIssue(issue.id)">Xóa</v-btn>
+                                <v-btn v-if="!issue.completed" @click="completeIssue(issue.id)">Báo cáo hoàn tất</v-btn>
                             </v-list-tile>
                         </v-list-tile-content>
                     </v-list>
@@ -150,12 +163,26 @@
                     executor: {},
                     project: {},
                     parentTask: {},
+                    status: '',
                 },
                 taskIssues: [],
                 taskRelatives: [],
             }
         },
         computed: {
+            taskStatus() {
+                if (this.task.status) {
+                    switch (this.task.status) {
+                        case 'Working':
+                            return 'Chưa hoàn tất';
+                        case 'Completed':
+                            return 'Đã hoàn tất';
+                        default:
+                            return '';
+                    }
+                }
+                return null;
+            },
             isChild: function () {
                 return !!this.task.parentTask;
             },
@@ -166,7 +193,7 @@
                 let totalComplete = 0;
                 if (this.taskIssues) {
                     this.taskIssues.forEach(function (issue) {
-                        if (issue.status === 'completed') {
+                        if (issue.completed) {
                             totalComplete++;
                         }
                     });
@@ -184,20 +211,24 @@
                 isManager: 'isManager',
                 isStaff: 'isStaff',
             })
-        },
+        }
+        ,
         mounted() {
             this.$nextTick(function () {
                 this.loading = true;
                 this.getTask();
             })
-        },
+        }
+        ,
         methods: {
             refreshIssues: function () {
                 this.getTaskIssues();
-            },
+            }
+            ,
             refreshRelatives: function () {
                 this.getTaskRelatives();
-            },
+            }
+            ,
             getTask: function () {
                 setTimeout(() => {
                     axios.get(`http://localhost:8080/tasks/${this.id}`)
@@ -211,19 +242,22 @@
                         })
                 }, 1500)
 
-            },
+            }
+            ,
             getTaskIssues: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}/issues`)
                     .then(response => {
                         this.taskIssues = response.data;
                     })
-            },
+            }
+            ,
             getTaskRelatives: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}/relatives`)
                     .then(response => {
                         this.taskRelatives = response.data;
                     })
-            },
+            }
+            ,
             deleteTask: function () {
                 if (confirm('Xóa?')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}`)
@@ -232,14 +266,32 @@
                             }
                         )
                 }
-            },
+            }
+            ,
+            completeTask() {
+                if (confirm('Bạn muốn báo cáo hoàn tất Tác Vụ này chứ?')) {
+                    axios.patch(`http://localhost:8080/tasks/${this.id}/complete`)
+                        .then(() => {
+                            this.getTask();
+                        })
+                        .catch(error => {
+                            if (error.response) {
+                                console.log(error.response.data);
+                            } else {
+                                console.log(error.response);
+                            }
+                        })
+                }
+            }
+            ,
             editIssue: function (issue) {
                 this.$store.commit('TASK_STORE/SET_TASK_ISSUE_FORM', issue);
                 this.$store.commit('TASK_STORE/SET_SHOW_ISSUE_FORM', true);
-            },
+            }
+            ,
             deleteIssue: function (id) {
-                if (confirm('Bạn muốn xóa Vấn đề này chứ')) {
-                    axios.delete(`http://localhost:8080/taskIssues/${id}`)
+                if (confirm('Bạn muốn xóa Vấn Đề này chứ?')) {
+                    axios.delete(`http://localhost:8080/task-issues/${id}`)
                         .then(() => {
                             this.refreshIssues();
                         })
@@ -251,7 +303,24 @@
                             }
                         })
                 }
-            },
+            }
+            ,
+            completeIssue(id) {
+                if (confirm('Bạn muốn báo cáo hoàn tất Vấn Đề này chứ?')) {
+                    axios.patch(`http://localhost:8080/task-issues/${id}/complete`)
+                        .then(() => {
+                            this.refreshIssues();
+                        })
+                        .catch(error => {
+                            if (error.response) {
+                                console.log(error.response.data);
+                            } else {
+                                console.log(error.response);
+                            }
+                        })
+                }
+            }
+            ,
             deleteRelative: function (userId) {
                 if (confirm('Bạn muốn xóa Người liên quan này chứ')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}/relatives/${userId}`)
@@ -266,15 +335,18 @@
                             }
                         })
                 }
-            },
+            }
+            ,
             showIssueForm: function () {
                 this.$store.commit('TASK_STORE/SET_TASK_ISSUE_FORM', {id: 0});
                 this.$store.commit('TASK_STORE/SET_SHOW_ISSUE_FORM', true);
-            },
+            }
+            ,
             showRelativeForm: function () {
                 this.$store.commit('TASK_STORE/SET_SHOW_RELATIVE_FORM', true);
             }
-        },
+        }
+        ,
         // watch: {
         //     id: function () {
         //         this.$router.go();
