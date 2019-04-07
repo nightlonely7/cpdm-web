@@ -22,18 +22,6 @@
                                               label="Nội dung tổng quát"
                                 ></v-text-field>
                             </v-flex>
-                            <!--<v-flex md6 sm12>-->
-                                <!--<v-text-field v-model="taskForm.startTime"-->
-                                              <!--label="Thời gian bắt đầu"-->
-                                              <!--prepend-inner-icon="event"-->
-                                <!--&gt;</v-text-field>-->
-                            <!--</v-flex>-->
-                            <!--<v-flex md6 sm12>-->
-                                <!--<v-text-field v-model="taskForm.endTime"-->
-                                              <!--label="Thời gian kết thúc"-->
-                                              <!--prepend-inner-icon="event"-->
-                                <!--&gt;</v-text-field>-->
-                            <!--</v-flex>-->
 
                             <!--Start Date -->
                             <v-flex xs12 sm6 md6>
@@ -60,14 +48,15 @@
                                             v-if="startDateMenu"
                                             v-model="startDate"
                                             full-width
-                                            :min="moment().format('YYYY-MM-DD')"
+                                            :min="creating ? moment().format('YYYY-MM-DD') : null"
                                             :max="endDate"
                                             locale="vi-vn"
                                     >
                                         <v-spacer></v-spacer>
                                         <v-btn flat color="primary" @click="startDateMenu = false">Hủy
                                         </v-btn>
-                                        <v-btn flat color="primary" @click="$refs.startDateDialog.save(startDate)">Lưu</v-btn>
+                                        <v-btn flat color="primary" @click="$refs.startDateDialog.save(startDate)">Lưu
+                                        </v-btn>
                                     </v-date-picker>
                                 </v-dialog>
                             </v-flex>
@@ -97,13 +86,14 @@
                                             v-if="endDateMenu"
                                             v-model="endDate"
                                             full-width
-                                            :min="startDate ? startDate : moment().format('YYYY-MM-DD')"
+                                            :min="startDate ? startDate : creating ? moment().format('YYYY-MM-DD') : null"
                                             locale="vi-vn"
                                     >
                                         <v-spacer></v-spacer>
                                         <v-btn flat color="primary" @click="endDateMenu = false">Hủy
                                         </v-btn>
-                                        <v-btn flat color="primary" @click="$refs.endDateDialog.save(endDate)">Lưu</v-btn>
+                                        <v-btn flat color="primary" @click="$refs.endDateDialog.save(endDate)">Lưu
+                                        </v-btn>
                                     </v-date-picker>
                                 </v-dialog>
                             </v-flex>
@@ -134,14 +124,15 @@
                                             v-if="startTimeMenu"
                                             v-model="startTime"
                                             full-width
-                                            :min="startDate === moment().format('YYYY-MM-DD') ? moment().format('HH:mm') : null"
+                                            :min="creating ? (startDate === moment().format('YYYY-MM-DD') ? moment().format('HH:mm') : null) : null"
                                             :max="startDate === endDate ? endTime : null"
                                             locale="vi-vn"
                                     >
                                         <v-spacer></v-spacer>
                                         <v-btn flat color="primary" @click="startTimeMenu = false">Hủy
                                         </v-btn>
-                                        <v-btn flat color="primary" @click="$refs.startTimeDialog.save(startTime)">Lưu</v-btn>
+                                        <v-btn flat color="primary" @click="$refs.startTimeDialog.save(startTime)">Lưu
+                                        </v-btn>
                                     </v-time-picker>
                                 </v-dialog>
                             </v-flex>
@@ -174,13 +165,16 @@
                                             full-width
                                             :min="startTime ?
                                             (startDate === endDate ? startTime : null) :
-                                            (startDate === moment().format('YYYY-MM-DD') ? moment().format('HH:mm') : null)"
+                                            creating ?
+                                            (startDate === moment().format('YYYY-MM-DD') ? moment().format('HH:mm') : null) :
+                                            null"
                                             locale="vi-vn"
                                     >
                                         <v-spacer></v-spacer>
                                         <v-btn flat color="primary" @click="endTimeMenu = false">Hủy
                                         </v-btn>
-                                        <v-btn flat color="primary" @click="$refs.endTimeDialog.save(endTime)">Lưu</v-btn>
+                                        <v-btn flat color="primary" @click="$refs.endTimeDialog.save(endTime)">Lưu
+                                        </v-btn>
                                     </v-time-picker>
                                 </v-dialog>
                             </v-flex>
@@ -303,10 +297,10 @@
                 viewerOptions: [],
                 viewerOptionsLoading: false,
                 viewerOptionsSearch: null,
-                startDate: null,
-                startTime: null,
-                endDate: null,
-                endTime: null,
+                startDate: this.form.startDate,
+                startTime: this.form.startTime,
+                endDate: this.form.endDate,
+                endTime: this.form.endTime,
                 startDateMenu: false,
                 startTimeMenu: false,
                 endDateMenu: false,
@@ -335,6 +329,7 @@
                 }
             },
             relative: Boolean,
+            creating: Boolean,
         },
         methods: {
             save: function () {

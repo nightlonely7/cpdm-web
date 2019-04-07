@@ -24,12 +24,17 @@
             <br v-if="isChild">
 
             <p>Trạng thái:
-                <v-chip :color="this.task.status === 'Completed' ? 'success' : ''"
-                        :text-color="this.task.status === 'Completed' ? 'white' : ''"    >
-                    {{taskStatus || 'Chưa xác định'}}
+                <v-chip v-if="task.status === 'Waiting'">Đang chờ</v-chip>
+                <v-chip v-if="task.status === 'Working'" color="primary" text-color="white">Đang thực hiện</v-chip>
+                <v-chip v-if="task.status === 'Completed'" color="success" text-color="white">Hoàn tất</v-chip>
+                <v-chip v-if="task.status === 'Complete outdated'" color="error" text-color="white">Hoàn tất quá hạn
                 </v-chip>
-                <v-btn v-if="completionRate === 1 && task.status !== 'Completed'" @click="completeTask">Báo cáo hoàn
-                    tất
+                <v-chip v-if="task.status === 'Outdated'" color="error" text-color="white">Quá hạn</v-chip>
+                <v-chip v-if="task.status === 'Near deadline'" color="warning" text-color="white">Gần tới hạn</v-chip>
+                <v-btn v-if="completionRate === 1
+                                && task.status !== 'Completed'
+                                && task.status !== 'Complete outdated'"
+                       @click="completeTask">Báo cáo hoàn tất
                 </v-btn>
                 <br>
                 <span>Số vấn đề hoàn tất: {{totalComplete}} / {{totalIssues}}</span>
@@ -42,12 +47,18 @@
             <p>Độ ưu tiên: {{task.priority || 'Chưa xác định'}}</p>
             <p>Người tạo: {{task.creator.displayName || 'Chưa xác định'}}</p>
             <p>Người xử lý: {{task.executor.displayName || 'Chưa xác định'}}</p>
-            <p>Thời gian tạo: {{moment(task.createdTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') ||
-                'Chưa xác định'}}</p>
-            <p>Thời gian bắt đầu: {{moment(task.startTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') ||
-                'Chưa xác định'}}</p>
-            <p>Thời gian kết thúc: {{moment(task.endTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') ||
-                'Chưa xác định'}}</p>
+            <p>Thời gian tạo:
+                {{moment(task.createdTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+            </p>
+            <p>Thời gian bắt đầu:
+                {{moment(task.startTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+            </p>
+            <p>Thời gian kết thúc:
+                {{moment(task.endTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+            </p>
+            <p v-if="task.status === 'Completed' || task.status === 'Complete outdated'">Thời gian hoàn thành:
+                {{moment(task.completedTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+            </p>
 
             <v-card>
                 <v-card-title>Nội dung chi tiết</v-card-title>
@@ -61,7 +72,7 @@
             <v-expansion-panel v-if="isAdmin && !isChild">
                 <v-expansion-panel-content>
 
-                    <template slot="header">
+                    <template #header>
                         Danh sách tác vụ phân nhỏ
                     </template>
 
@@ -72,7 +83,7 @@
             <v-expansion-panel>
                 <v-expansion-panel-content>
 
-                    <template slot="header">
+                    <template #header>
                         Danh sách người theo dõi
                     </template>
 
@@ -97,7 +108,7 @@
             <v-expansion-panel>
                 <v-expansion-panel-content>
 
-                    <template slot="header">
+                    <template #header>
                         Danh sách vấn đề
                     </template>
 
@@ -108,7 +119,7 @@
 
                             </v-list-tile>
                             <v-list-tile v-for="issue in taskIssues" :key="issue.id">
-                                {{issue.summary}} - {{issue.detail}}
+                                {{issue.summary}} - {{issue.description}}
                                 <v-chip :color="`${issue.completed ? 'success' : ''}`">
                                     {{issue.completed ? 'Hoàn tất' : 'Chưa hoàn tất'}}
                                 </v-chip>
@@ -148,6 +159,7 @@
     import TaskRelativeForm from "@/components/tasks/TaskRelativeForm";
     import {mapGetters} from 'vuex';
     import TaskTable from "./TaskTable";
+    import moment from 'moment';
 
     export default {
         name: "TaskDetail",
@@ -164,25 +176,16 @@
                     project: {},
                     parentTask: {},
                     status: '',
+                    endTime: '',
+                    startTime: '',
+                    createdTime: '',
+                    completedTime: '',
                 },
                 taskIssues: [],
                 taskRelatives: [],
             }
         },
         computed: {
-            taskStatus() {
-                if (this.task.status) {
-                    switch (this.task.status) {
-                        case 'Working':
-                            return 'Chưa hoàn tất';
-                        case 'Completed':
-                            return 'Đã hoàn tất';
-                        default:
-                            return '';
-                    }
-                }
-                return null;
-            },
             isChild: function () {
                 return !!this.task.parentTask;
             },
@@ -204,7 +207,13 @@
                 return this.totalComplete === 0 ? 0 : this.totalComplete / this.totalIssues;
             },
             form: function () {
-                return {...this.task};
+                return {
+                    ...this.task,
+                    startDate: moment(this.task.startTime, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD'),
+                    startTime: moment(this.task.startTime, 'DD-MM-YYYY HH:mm:ss').format('HH:mm'),
+                    endDate: moment(this.task.endTime, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD'),
+                    endTime: moment(this.task.endTime, 'DD-MM-YYYY HH:mm:ss').format('HH:mm'),
+                };
             },
             ...mapGetters('AUTHENTICATION', {
                 isAdmin: 'isAdmin',

@@ -8,7 +8,7 @@
                 <span>Làm mới</span>
             </v-btn>
             <v-spacer></v-spacer>
-            <TaskForm v-if="getTasksURL === 'search/creates'" @refresh="refresh" relative>
+            <TaskForm v-if="getTasksURL === 'search/creates'" @refresh="refresh" relative creating>
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary">Tạo mới tác vụ</v-btn>
                 </template>
@@ -29,21 +29,30 @@
             <template #pageText="{pageStart, pageStop, itemsLength}">
                 {{pageStart}} - {{pageStop}} của tổng cộng {{itemsLength}}
             </template>
-            <template #items="props">
-                <router-link tag="tr" :to="`/tasks/${props.item.id}`"
+            <template #items="{item}">
+                <router-link tag="tr" :to="`/tasks/${item.id}`"
                              onmouseover="this.style.cursor='pointer'"
                              onmouseout="this.style.cursor='none'"
                 >
-                    <td class="text-xs-left">{{props.item.title}}</td>
-                    <td class="text-xs-left">{{props.item.summary}}</td>
-                    <td class="text-xs-left">{{props.item.project.name}}</td>
-                    <td class="text-xs-left">{{props.item.createdTime}}</td>
-                    <td class="text-xs-left">{{props.item.startTime}}</td>
-                    <td class="text-xs-left">{{props.item.endTime}}</td>
-                    <td class="text-xs-left">{{props.item.creator.displayName}}</td>
-                    <td class="text-xs-left">{{props.item.executor.displayName}}</td>
-                    <td class="text-xs-left">{{props.item.priority}}</td>
-                    <td class="text-xs-left">{{props.item.status}}</td>
+                    <td class="text-xs-left">{{item.title}}</td>
+                    <td class="text-xs-left">{{item.summary}}</td>
+                    <td class="text-xs-left">{{item.project.name}}</td>
+                    <td class="text-xs-left">{{item.createdTime}}</td>
+                    <td class="text-xs-left">{{item.startTime}}</td>
+                    <td class="text-xs-left">{{item.endTime}}</td>
+                    <td class="text-xs-left">{{item.completedTime || 'Chưa hoàn tất'}}</td>
+                    <td class="text-xs-left">{{item.creator.displayName}}</td>
+                    <td class="text-xs-left">{{item.executor.displayName}}</td>
+                    <td class="text-xs-left">{{item.priority}}</td>
+                    <td class="text-xs-left">
+                        <v-chip v-if="item.status === 'Waiting'">Đang chờ</v-chip>
+                        <v-chip v-if="item.status === 'Working'" color="primary" text-color="white">Đang thực hiện</v-chip>
+                        <v-chip v-if="item.status === 'Completed'" color="success" text-color="white">Hoàn tất</v-chip>
+                        <v-chip v-if="item.status === 'Complete outdated'" color="error" text-color="white">Hoàn tất quá hạn
+                        </v-chip>
+                        <v-chip v-if="item.status === 'Outdated'" color="error" text-color="white">Quá hạn</v-chip>
+                        <v-chip v-if="item.status === 'Near deadline'" color="warning" text-color="white">Gần tới hạn</v-chip>
+                    </td>
                 </router-link>
             </template>
         </v-data-table>
@@ -55,6 +64,7 @@
     import _ from 'lodash';
     import TaskForm from '@/components/tasks/TaskForm.vue';
     import {mapState} from 'vuex'
+    import moment from 'moment';
 
     export default {
         name: "TaskTable",
@@ -80,6 +90,7 @@
                         {text: 'Thời gian tạo', value: 'createdTime'},
                         {text: 'Thời gian bắt đầu', value: 'startTime'},
                         {text: 'Thời gian kết thúc', value: 'endTime'},
+                        {text: 'Thời gian hoàn tất', value: 'completedTime'},
                         {text: 'Người tạo', value: 'creator.displayName'},
                         {text: 'Người thực hiện', value: 'executor.displayName'},
                         {text: 'Độ ưu tiên', value: 'priority'},
@@ -104,7 +115,7 @@
                 isLoggedIn: state => state.isLoggedIn,
                 isStaff: state => state.isStaff,
                 isAdmin: state => state.isAdmin,
-            })
+            }),
         },
         mounted() {
         },

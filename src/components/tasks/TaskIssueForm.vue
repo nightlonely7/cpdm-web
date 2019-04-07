@@ -14,7 +14,7 @@
                             ></v-text-field>
                         </v-flex>
                         <v-flex md12>
-                            <v-text-field v-model="taskIssueForm.detail"
+                            <v-text-field v-model="taskIssueForm.description"
                                           label="Nội dung chi tiết"
                             ></v-text-field>
                         </v-flex>
@@ -63,7 +63,7 @@
                 this.loading = true;
                 const url = this.taskIssueForm.id === 0
                     ? `http://localhost:8080/tasks/${this.taskId}/issues`
-                    : `http://localhost:8080/taskIssues/${this.taskIssueForm.id}`;
+                    : `http://localhost:8080/task-issues/${this.taskIssueForm.id}`;
                 const method = this.taskIssueForm.id === 0 ? 'POST' : 'PUT';
                 const data = {...this.taskIssueForm};
                 console.log(url, method, data);
