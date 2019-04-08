@@ -5,6 +5,7 @@ const taskStoreDefaultState = () => {
         showRelativeForm: false,
         titleSearchValue: null,
         summarySearchValue: null,
+        descriptionSearchValue: null,
         createdTimeFromSearchValue: null,
         createdTimeToSearchValue: null,
         startTimeFromSearchValue: null,
@@ -12,6 +13,7 @@ const taskStoreDefaultState = () => {
         endTimeFromSearchValue: null,
         endTimeToSearchValue: null,
         projectIdSearchValue: null,
+        statusSearchValue: [],
         taskForm: {
             project: {},
             executor: {},
@@ -34,6 +36,9 @@ export default {
         SET_SUMMARY_SEARCH_VALUE(state, summarySearchValue) {
             state.summarySearchValue = summarySearchValue
         },
+        SET_DESCRIPTION_SEARCH_VALUE(state, descriptionSearchValue) {
+            state.descriptionSearchValue = descriptionSearchValue
+        },
         SET_CREATED_TIME_FROM_SEARCH_VALUE(state, createdTimeFromSearchValue) {
             state.createdTimeFromSearchValue = createdTimeFromSearchValue
         },
@@ -55,9 +60,13 @@ export default {
         SET_PROJECT_ID_SEARCH_VALUE(state, projectIdSearchValue) {
             state.projectIdSearchValue = projectIdSearchValue
         },
+        SET_STATUS_SEARCH_VALUE(state, statusSearchValue) {
+            state.statusSearchValue = statusSearchValue
+        },
         RESET_SEARCH(state) {
             state.titleSearchValue = null;
             state.summarySearchValue = null;
+            state.descriptionSearchValue = null;
             state.createdTimeFromSearchValue = null;
             state.createdTimeToSearchValue = null;
             state.startTimeFromSearchValue = null;
@@ -65,6 +74,7 @@ export default {
             state.endTimeFromSearchValue = null;
             state.endTimeToSearchValue = null;
             state.projectIdSearchValue = null;
+            state.statusSearchValue = [];
         },
         SET_SHOW_FORM(state, showForm) {
             state.showForm = showForm

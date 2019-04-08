@@ -45,13 +45,24 @@
                     <td class="text-xs-left">{{item.executor.displayName}}</td>
                     <td class="text-xs-left">{{item.priority}}</td>
                     <td class="text-xs-left">
-                        <v-chip v-if="item.status === 'Waiting'">Đang chờ</v-chip>
-                        <v-chip v-if="item.status === 'Working'" color="primary" text-color="white">Đang thực hiện</v-chip>
-                        <v-chip v-if="item.status === 'Completed'" color="success" text-color="white">Hoàn tất</v-chip>
-                        <v-chip v-if="item.status === 'Complete outdated'" color="error" text-color="white">Hoàn tất quá hạn
+                        <v-chip v-if="item.status === 'Waiting'" style="width: 200px" class="text-xs-center">
+                            Đang chờ
                         </v-chip>
-                        <v-chip v-if="item.status === 'Outdated'" color="error" text-color="white">Quá hạn</v-chip>
-                        <v-chip v-if="item.status === 'Near deadline'" color="warning" text-color="white">Gần tới hạn</v-chip>
+                        <v-chip v-if="item.status === 'Working'" color="primary" text-color="white">
+                            Đang thực hiện
+                        </v-chip>
+                        <v-chip v-if="item.status === 'Completed'" color="success" text-color="white">
+                            Hoàn tất
+                        </v-chip>
+                        <v-chip v-if="item.status === 'Complete outdated'" color="error" text-color="white">
+                            Hoàn tất quá hạn
+                        </v-chip>
+                        <v-chip v-if="item.status === 'Outdated'" color="error" text-color="white">
+                            Quá hạn
+                        </v-chip>
+                        <v-chip v-if="item.status === 'Near deadline'" color="warning" text-color="white">
+                            Gần tới hạn
+                        </v-chip>
                     </td>
                 </router-link>
             </template>
@@ -110,6 +121,8 @@
                 endTimeFromSearchValue: state => state.endTimeFromSearchValue,
                 endTimeToSearchValue: state => state.endTimeToSearchValue,
                 projectIdSearchValue: state => state.projectIdSearchValue,
+                statusSearchValue: state => state.statusSearchValue,
+                descriptionSearchValue: state => state.descriptionSearchValue,
             }),
             ...mapState('AUTHENTICATION', {
                 isLoggedIn: state => state.isLoggedIn,
@@ -129,6 +142,7 @@
             getTasks: function () {
                 this.table.loading = true;
                 console.log('load');
+                console.log(this.statusSearchValue);
                 const url = `http://localhost:8080/tasks/${this.getTasksURL}`;
                 const method = 'GET';
                 const params = {
@@ -137,6 +151,7 @@
                     sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
                     title: this.titleSearchValue,
                     summary: this.summarySearchValue,
+                    description: this.descriptionSearchValue,
                     createdTimeFrom: this.createdTimeFromSearchValue,
                     createdTimeTo: this.createdTimeToSearchValue,
                     startTimeFrom: this.startTimeFromSearchValue,
@@ -144,6 +159,7 @@
                     endTimeFrom: this.endTimeFromSearchValue,
                     endTimeTo: this.endTimeToSearchValue,
                     projectId: this.projectIdSearchValue,
+                    status: _.isEmpty(this.statusSearchValue) ? null : this.statusSearchValue.join(','),
                 };
                 axios({url, method, params})
                     .then(response => {
@@ -170,6 +186,10 @@
                 this.debouncedGetTasks();
             },
             summarySearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetTasks();
+            },
+            descriptionSearchValue: function () {
                 this.pagination.page = 1;
                 this.debouncedGetTasks();
             },
@@ -200,7 +220,11 @@
             projectIdSearchValue: function () {
                 this.pagination.page = 1;
                 this.debouncedGetTasks();
-            }
+            },
+            statusSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetTasks();
+            },
         },
         created() {
             this.debouncedGetTasks = _.debounce(this.getTasks, 500);

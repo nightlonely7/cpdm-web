@@ -1,8 +1,11 @@
 <template>
-    <v-dialog width="500" v-model="showRelativeForm" persistent>
+    <v-dialog v-model="dialog" width="500" persistent>
+        <template #activator="{on}">
+            <slot name="activator" :on="on"></slot>
+        </template>
         <v-card>
             <v-card-title>
-                <span class="headline">THÊM NGƯỜI THEO DÕI</span>
+                <span class="headline">THÊM TÀI LIỆU LIÊN QUAN</span>
             </v-card-title>
 
             <v-card-text>
@@ -10,18 +13,18 @@
                     <v-layout wrap>
                         <v-flex md12>
                             <v-autocomplete chips deletable-chips cache-items multiple
-                                            v-model="relatives"
-                                            :items="viewerOptions"
-                                            item-text="email"
+                                            v-model="documents"
+                                            :items="documentOptions"
+                                            item-text="title"
                                             item-value="id"
-                                            :loading="viewerOptionsLoading"
-                                            :search-input.sync="viewerOptionsSearch"
-                                            label="Người liên quan"
+                                            :loading="documentOptionsLoading"
+                                            :search-input.sync="documentOptionsSearch"
+                                            label="Tài liệu liên quan"
                                             clearable
                                             hide-no-data
                             >
                                 <template #item="{item}">
-                                    {{item.email}} - {{item.fullName}} - Phòng ban: {{item.department.name}}
+                                    {{item.title}} - {{item.summary}}
                                 </template>
                             </v-autocomplete>
                         </v-flex>
@@ -49,32 +52,31 @@
     import {mapState} from 'vuex';
 
     export default {
-        name: "TaskRelativeForm",
+        name: "TaskDocumentForm",
         data() {
             return {
+                dialog: false,
                 loading: false,
-                relatives: [],
-                viewerOptions: [],
-                viewerOptionsLoading: false,
-                viewerOptionsSearch: null,
+                documents: [],
+                documentOptions: [],
+                documentOptionsLoading: false,
+                documentOptionsSearch: null,
             }
         },
-        computed: {
-            ...mapState('TASK_STORE', {
-                showRelativeForm: state => state.showRelativeForm,
-                taskId: state => state.taskId,
-            }),
+        props: {
+            taskId: Number,
         },
+        computed: {},
         methods: {
             close: function () {
-                this.$store.commit('TASK_STORE/SET_SHOW_RELATIVE_FORM', false);
+                this.dialog = false;
             },
             save: function () {
                 this.loading = true;
-                const url = `http://localhost:8080/tasks/${this.taskId}/relatives`;
+                const url = `http://localhost:8080/tasks/${this.taskId}/documents`;
                 const method = 'POST';
                 const data = [
-                    ...this.relatives.map(value => {
+                    ...this.documents.map(value => {
                         return {id: value};
                     }),
                 ];
@@ -82,7 +84,7 @@
                 axios({url, method, data})
                     .then((response) => {
                         console.log(response.data);
-                        this.$store.commit('TASK_STORE/SET_SHOW_RELATIVE_FORM', false);
+                        this.close();
                         this.$emit("refresh");
                     })
                     .catch(error => {
@@ -96,8 +98,8 @@
                         this.loading = false;
                     })
             },
-            getViewerOptions: function (email) {
-                this.viewerOptionsLoading = true;
+            getDocumentOptions: function (email) {
+                this.documentOptionsLoading = true;
                 setTimeout(() => {
                     axios.get(`http://localhost:8080/users/search/findAllForSelectByEmailContaining`, {
                         params: {
@@ -105,10 +107,10 @@
                         }
                     }).then(response => {
                         if (response.status === 204) {
-                            this.viewerOptions = [];
+                            this.documentOptions = [];
                             return;
                         }
-                        this.viewerOptions = response.data;
+                        this.documentOptions = response.data;
                     }).catch(error => {
                         if (error.response) {
                             console.log(error.response.data);
@@ -116,22 +118,22 @@
                             console.log(error.response);
                         }
                     }).finally(() => {
-                        this.viewerOptionsLoading = false;
+                        this.documentOptionsLoading = false;
                     });
                 }, 500);
             },
         },
         created() {
-            this.debouncedGetViewerOptions = _.debounce(this.getViewerOptions, 500);
+            this.debouncedGetDocumentOptions = _.debounce(this.getDocumentOptions, 500);
         },
         watch: {
-            viewerOptionsSearch: function (val) {
+            documentOptionsSearch: function (val) {
                 if (val && !!val.length) {
-                    this.debouncedGetViewerOptions(val);
+                    this.debouncedGetDocumentOptions(val);
                 }
             },
-            relatives: function () {
-                this.viewerOptionsSearch = '';
+            documents: function () {
+                this.documentOptionsSearch = '';
             }
         }
     }

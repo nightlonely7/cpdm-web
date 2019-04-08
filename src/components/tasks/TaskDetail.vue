@@ -30,7 +30,8 @@
                 <v-chip v-if="task.status === 'Complete outdated'" color="error" text-color="white">Hoàn tất quá hạn
                 </v-chip>
                 <v-chip v-if="task.status === 'Outdated'" color="error" text-color="white">Quá hạn</v-chip>
-                <v-chip v-if="task.status === 'Near deadline'" color="warning" text-color="white">Gần tới hạn</v-chip>
+                <v-chip v-if="task.status === 'Near deadline'" color="warning" text-color="white">Gần tới hạn
+                </v-chip>
                 <v-btn v-if="completionRate === 1
                                 && task.status !== 'Completed'
                                 && task.status !== 'Complete outdated'"
@@ -96,6 +97,31 @@
                                 {{user.displayName}} - {{user.fullName}} - {{user.email}} -
                                 Phòng ban: {{user.department.name || ''}} -
                                 Chức vụ: {{user.role.name || ''}}
+                                <v-btn @click="deleteRelative(user.id)">Xóa</v-btn>
+                            </v-list-tile>
+                        </v-list-tile-content>
+                    </v-list>
+
+
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+
+            <v-expansion-panel>
+                <v-expansion-panel-content>
+
+                    <template #header>
+                        Danh sách tài liệu liên quan
+                    </template>
+
+                    <v-list>
+                        <v-list-tile-content>
+                            <v-list-tile>
+                                <v-btn @click="showRelativeForm">Thêm tài liệu liên quan</v-btn>
+                            </v-list-tile>
+                            <v-list-tile v-for="document in documents" :key="document.id">
+                                <span>{{document.title}} - {{document.summary}}</span>
+                                <br>
+                                <router-link :to="`/documents/${document.id}`">Đường dẫn tới tài liệu</router-link>
                                 <v-btn @click="deleteRelative(user.id)">Xóa</v-btn>
                             </v-list-tile>
                         </v-list-tile-content>
@@ -183,6 +209,7 @@
                 },
                 taskIssues: [],
                 taskRelatives: [],
+                documents: [],
             }
         },
         computed: {
@@ -220,53 +247,50 @@
                 isManager: 'isManager',
                 isStaff: 'isStaff',
             })
-        }
-        ,
+        },
         mounted() {
             this.$nextTick(function () {
                 this.loading = true;
                 this.getTask();
             })
-        }
-        ,
+        },
         methods: {
             refreshIssues: function () {
                 this.getTaskIssues();
-            }
-            ,
+            },
             refreshRelatives: function () {
                 this.getTaskRelatives();
-            }
-            ,
+            },
             getTask: function () {
-                setTimeout(() => {
-                    axios.get(`http://localhost:8080/tasks/${this.id}`)
-                        .then(response => {
-                            Object.assign(this.task, response.data);
-                            this.getTaskIssues();
-                            this.getTaskRelatives();
-                        })
-                        .finally(() => {
-                            this.loading = false;
-                        })
-                }, 1500)
-
-            }
-            ,
+                axios.get(`http://localhost:8080/tasks/${this.id}`)
+                    .then(response => {
+                        this.task = response.data;
+                        this.getTaskIssues();
+                        this.getTaskRelatives();
+                        this.getDocuments();
+                    })
+                    .finally(() => {
+                        this.loading = false;
+                    })
+            },
             getTaskIssues: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}/issues`)
                     .then(response => {
                         this.taskIssues = response.data;
                     })
-            }
-            ,
+            },
             getTaskRelatives: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}/relatives`)
                     .then(response => {
                         this.taskRelatives = response.data;
                     })
-            }
-            ,
+            },
+            getDocuments: function () {
+                axios.get(`http://localhost:8080/tasks/${this.id}/documents`)
+                    .then(response => {
+                        this.documents = response.data;
+                    })
+            },
             deleteTask: function () {
                 if (confirm('Xóa?')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}`)
@@ -275,8 +299,7 @@
                             }
                         )
                 }
-            }
-            ,
+            },
             completeTask() {
                 if (confirm('Bạn muốn báo cáo hoàn tất Tác Vụ này chứ?')) {
                     axios.patch(`http://localhost:8080/tasks/${this.id}/complete`)
@@ -291,13 +314,11 @@
                             }
                         })
                 }
-            }
-            ,
+            },
             editIssue: function (issue) {
                 this.$store.commit('TASK_STORE/SET_TASK_ISSUE_FORM', issue);
                 this.$store.commit('TASK_STORE/SET_SHOW_ISSUE_FORM', true);
-            }
-            ,
+            },
             deleteIssue: function (id) {
                 if (confirm('Bạn muốn xóa Vấn Đề này chứ?')) {
                     axios.delete(`http://localhost:8080/task-issues/${id}`)
@@ -312,8 +333,7 @@
                             }
                         })
                 }
-            }
-            ,
+            },
             completeIssue(id) {
                 if (confirm('Bạn muốn báo cáo hoàn tất Vấn Đề này chứ?')) {
                     axios.patch(`http://localhost:8080/task-issues/${id}/complete`)
@@ -328,8 +348,7 @@
                             }
                         })
                 }
-            }
-            ,
+            },
             deleteRelative: function (userId) {
                 if (confirm('Bạn muốn xóa Người liên quan này chứ')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}/relatives/${userId}`)
@@ -344,18 +363,15 @@
                             }
                         })
                 }
-            }
-            ,
+            },
             showIssueForm: function () {
                 this.$store.commit('TASK_STORE/SET_TASK_ISSUE_FORM', {id: 0});
                 this.$store.commit('TASK_STORE/SET_SHOW_ISSUE_FORM', true);
-            }
-            ,
+            },
             showRelativeForm: function () {
                 this.$store.commit('TASK_STORE/SET_SHOW_RELATIVE_FORM', true);
             }
-        }
-        ,
+        },
         // watch: {
         //     id: function () {
         //         this.$router.go();

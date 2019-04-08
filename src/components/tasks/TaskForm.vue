@@ -247,9 +247,7 @@
                                 >
 
                                     <template #item="{item}">
-
-                                        {{item.email}} - {{item.fullName}} - Phòng ban:
-                                        {{item.department.name}}
+                                        {{item.email}} - {{item.fullName}} - Phòng ban: {{item.department.name}}
                                     </template>
                                 </v-autocomplete>
                             </v-flex>
