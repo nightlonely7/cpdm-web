@@ -9,27 +9,19 @@
             </v-card-title>
 
             <v-card-text>
-                <v-container grid-list-md>
-                    <v-layout wrap>
-                        <v-flex md12>
-                            <v-autocomplete chips deletable-chips cache-items multiple
-                                            v-model="documents"
-                                            :items="documentOptions"
-                                            item-text="title"
-                                            item-value="id"
-                                            :loading="documentOptionsLoading"
-                                            :search-input.sync="documentOptionsSearch"
-                                            label="Tài liệu liên quan"
-                                            clearable
-                                            hide-no-data
-                            >
-                                <template #item="{item}">
-                                    {{item.title}} - {{item.summary}}
-                                </template>
-                            </v-autocomplete>
-                        </v-flex>
-                    </v-layout>
-                </v-container>
+                <v-list two-line>
+                    <template v-for="(documentOption, index) in documentOptions">
+                        <v-list-tile :key="documentOption.id" @click="" v-ripple>
+                            <v-list-tile-action>
+                                <v-checkbox v-model="documents" :value="documentOption.id"></v-checkbox>
+                            </v-list-tile-action>
+                            <v-list-tile-content @click="documentSelect(documentOption.id)">
+                                <v-list-tile-title>{{ index + 1 }}. {{ documentOption.title }}</v-list-tile-title>
+                                <v-list-tile-sub-title>{{ documentOption.summary }}</v-list-tile-sub-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </template>
+                </v-list>
             </v-card-text>
 
             <v-card-actions>
@@ -39,7 +31,7 @@
                 </v-btn>
                 <v-btn color="primary" @click="save" :loading="loading">
                     <v-icon left>done</v-icon>
-                    Lưu
+                    Thêm
                 </v-btn>
             </v-card-actions>
         </v-card>
@@ -49,7 +41,7 @@
 
 <script>
     import axios from 'axios';
-    import {mapState} from 'vuex';
+    import _ from 'lodash';
 
     export default {
         name: "TaskDocumentForm",
@@ -65,23 +57,26 @@
         },
         props: {
             taskId: Number,
+            projectId: Number,
         },
         computed: {},
         methods: {
+            documentSelect(id) {
+                if (_.includes(this.documents, id)) {
+                    this.documents.splice(this.documents.indexOf(id), 1);
+                } else
+                    this.documents.push(id);
+            },
             close: function () {
                 this.dialog = false;
             },
             save: function () {
+                console.log(this.documents);
                 this.loading = true;
-                const url = `http://localhost:8080/tasks/${this.taskId}/documents`;
-                const method = 'POST';
-                const data = [
-                    ...this.documents.map(value => {
-                        return {id: value};
-                    }),
-                ];
-                console.log(url, method, data);
-                axios({url, method, data})
+                const url = `http://localhost:8080/tasks/${this.taskId}/documents/${this.documents.join()}`;
+                const method = 'PUT';
+                console.log(url, method);
+                axios({url, method})
                     .then((response) => {
                         console.log(response.data);
                         this.close();
@@ -98,29 +93,23 @@
                         this.loading = false;
                     })
             },
-            getDocumentOptions: function (email) {
+            getDocumentOptions: function () {
                 this.documentOptionsLoading = true;
-                setTimeout(() => {
-                    axios.get(`http://localhost:8080/users/search/findAllForSelectByEmailContaining`, {
-                        params: {
-                            email: email,
-                        }
-                    }).then(response => {
-                        if (response.status === 204) {
-                            this.documentOptions = [];
-                            return;
-                        }
-                        this.documentOptions = response.data;
-                    }).catch(error => {
-                        if (error.response) {
-                            console.log(error.response.data);
-                        } else {
-                            console.log(error.response);
-                        }
-                    }).finally(() => {
-                        this.documentOptionsLoading = false;
-                    });
-                }, 500);
+                axios.get(`http://localhost:8080/documents/search/all`, {
+                    params: {
+                        projectId: this.projectId,
+                    }
+                }).then(response => {
+                    this.documentOptions = response.data;
+                }).catch(error => {
+                    if (error.response) {
+                        console.log(error.response.data);
+                    } else {
+                        console.log(error.response);
+                    }
+                }).finally(() => {
+                    this.documentOptionsLoading = false;
+                });
             },
         },
         created() {
@@ -134,6 +123,13 @@
             },
             documents: function () {
                 this.documentOptionsSearch = '';
+            },
+            dialog(val) {
+                if (val) {
+                    this.getDocumentOptions();
+                } else {
+                    this.documents = [];
+                }
             }
         }
     }

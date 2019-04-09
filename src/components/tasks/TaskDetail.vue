@@ -81,6 +81,10 @@
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
+            <br>
+            <v-divider></v-divider>
+            <br>
+
             <v-expansion-panel>
                 <v-expansion-panel-content>
 
@@ -101,35 +105,47 @@
                             </v-list-tile>
                         </v-list-tile-content>
                     </v-list>
-
-
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
+            <br>
+            <v-divider></v-divider>
+            <br>
+
             <v-expansion-panel>
                 <v-expansion-panel-content>
-
                     <template #header>
                         Danh sách tài liệu liên quan
                     </template>
-
-                    <v-list>
-                        <v-list-tile-content>
-                            <v-list-tile>
-                                <v-btn @click="showRelativeForm">Thêm tài liệu liên quan</v-btn>
-                            </v-list-tile>
-                            <v-list-tile v-for="document in documents" :key="document.id">
-                                <span>{{document.title}} - {{document.summary}}</span>
-                                <br>
-                                <router-link :to="`/documents/${document.id}`">Đường dẫn tới tài liệu</router-link>
-                                <v-btn @click="deleteRelative(user.id)">Xóa</v-btn>
-                            </v-list-tile>
-                        </v-list-tile-content>
+                    <v-list three-line>
+                        <v-list-tile>
+                            <TaskDocumentForm :task-id="id" :project-id="task.project.id" @refresh="getTaskDocuments">
+                                <template #activator="{on}">
+                                    <v-btn v-on="on" color="primary">Thêm tài liệu liên quan</v-btn>
+                                </template>
+                            </TaskDocumentForm>
+                        </v-list-tile>
+                        <v-list-tile v-for="document in documents" :key="document.id">
+                            <v-list-tile-content>
+                                <v-list-tile-title>{{ document.title }}</v-list-tile-title>
+                                <v-list-tile-sub-title>{{ document.summary }}</v-list-tile-sub-title>
+                                <v-list-tile-sub-title>
+                                    <router-link :to="`/documents/${document.id}`">Đường dẫn tới tài liệu</router-link>
+                                </v-list-tile-sub-title>
+                            </v-list-tile-content>
+                            <v-list-tile-action>
+                                <v-btn @click="deleteTaskDocument(document.id)">Xóa</v-btn>
+                            </v-list-tile-action>
+                        </v-list-tile>
                     </v-list>
 
 
                 </v-expansion-panel-content>
             </v-expansion-panel>
+
+            <br>
+            <v-divider></v-divider>
+            <br>
 
             <v-expansion-panel>
                 <v-expansion-panel-content>
@@ -162,6 +178,8 @@
 
             <br>
             <v-divider></v-divider>
+            <br>
+
             <v-layout row v-if="(isManager && isChild) || (isAdmin && !isChild)">
                 <v-btn @click="deleteTask" color="error">
                     Xóa
@@ -186,10 +204,11 @@
     import {mapGetters} from 'vuex';
     import TaskTable from "./TaskTable";
     import moment from 'moment';
+    import TaskDocumentForm from "@/components/tasks/TaskDocumentForm";
 
     export default {
         name: "TaskDetail",
-        components: {TaskTable, TaskRelativeForm, TaskIssueForm, TaskForm},
+        components: {TaskDocumentForm, TaskTable, TaskRelativeForm, TaskIssueForm, TaskForm},
         props: {
             id: Number
         },
@@ -267,7 +286,7 @@
                         this.task = response.data;
                         this.getTaskIssues();
                         this.getTaskRelatives();
-                        this.getDocuments();
+                        this.getTaskDocuments();
                     })
                     .finally(() => {
                         this.loading = false;
@@ -285,7 +304,7 @@
                         this.taskRelatives = response.data;
                     })
             },
-            getDocuments: function () {
+            getTaskDocuments: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}/documents`)
                     .then(response => {
                         this.documents = response.data;
@@ -354,6 +373,21 @@
                     axios.delete(`http://localhost:8080/tasks/${this.id}/relatives/${userId}`)
                         .then(() => {
                             this.refreshRelatives();
+                        })
+                        .catch(error => {
+                            if (error.response) {
+                                console.log(error.response.data);
+                            } else {
+                                console.log(error.response);
+                            }
+                        })
+                }
+            },
+            deleteTaskDocument: function (documentId) {
+                if (confirm('Bạn muốn xóa bỏ liên kết này chứ ?')) {
+                    axios.delete(`http://localhost:8080/tasks/${this.id}/documents/${documentId}`)
+                        .then(() => {
+                            this.getTaskDocuments();
                         })
                         .catch(error => {
                             if (error.response) {
