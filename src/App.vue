@@ -31,7 +31,7 @@
                     <template v-slot:activator>
                         <v-list-tile>
                             <v-list-tile-action>
-                                <v-icon>mdi-calendar-blank</v-icon>
+                                <v-icon>assignment_ind</v-icon>
                             </v-list-tile-action>
                             <v-list-tile-content>
                                 <v-list-tile-title>Quản lí ủy quyền</v-list-tile-title>
@@ -47,12 +47,57 @@
                             <v-list-tile-title>Duyệt ủy quyền</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
-                    <v-list-tile to="/userAssignRequests" v-if="isManager || isStaff">
+                    <v-list-tile to="/createUserAssignRequests" v-if="isManager || isStaff">
                         <v-list-tile-action>
                             <v-icon></v-icon>
                         </v-list-tile-action>
                         <v-list-tile-content>
                             <v-list-tile-title>Xin ủy quyền</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile to="/userAssignRequests" v-if="isManager || isStaff">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Đơn ủy quyền</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list-group>
+                <v-list-group>
+                    <template v-slot:activator>
+                        <v-list-tile>
+                            <v-list-tile-action>
+                                <v-icon>question_answer</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Xin ý kiến lãnh đạo</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </template>
+
+                    <v-list-tile to="/receiverAskingRequests" v-if="isManager || isAdmin">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Phản hồi</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile to="/createAskingRequests" v-if="isManager || isStaff">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Xin ý kiến</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile to="/senderAskingRequests" v-if="isManager || isStaff">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Theo dõi</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
                 </v-list-group>

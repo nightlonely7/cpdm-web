@@ -23,7 +23,8 @@
                                             label="Nội dung"
                                             :rules="[rules.required,rules.max]"
                                             clearable
-                                            multi-line
+                                            counter
+                                            maxlength="255"
                                     ></v-textarea>
                                 </v-flex>
                                 <v-flex xs12 sm4 md4>
@@ -263,7 +264,7 @@
                 if (!this.isStaff) {
                     roleName = "ROLE_ADMIN";
                 }
-                axios.get(`http://localhost:8080/users/findAllfDisplayNameByDepartmentAndRoleNameOfCurrentLoggedManager`,
+                axios.get(`http://localhost:8080/users/findAllDisplayNameByDepartmentAndRoleNameOfCurrentLoggedManager`,
                     {
                         params: {
                             roleName: roleName

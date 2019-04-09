@@ -55,6 +55,8 @@
                             single-line
                             :rules="[rules.required,rules.max]"
                             @click="showEditButton(index)"
+                            counter
+                            maxlength="255"
                     >
                     </v-textarea>
                     <v-textarea
@@ -79,6 +81,8 @@
                         label='Bình luận'
                         outline
                         :rules="[rules.required,rules.max]"
+                        counter
+                        maxlength="255"
                 ></v-textarea>
 
                 <v-card-actions>
@@ -194,7 +198,6 @@
                 };
                 axios.get(`http://localhost:8080/comments/findByTask`, {params})
                     .then(response => {
-                            // this.$store.commit('COMMENT_STORE/SET_COMMENT', response.data.content);
                             this.comments = response.data.content;
                             for (var i in this.comments) {
                                 this.$set(this.comments[i], 'editDisable', true);

@@ -70,7 +70,8 @@
                 this.loadFilenames();
             },
             goBack: function () {
-                this.$router.push("/tasks");
+                // this.$router.push("/tasks");
+                this.$router.back();
             },
             uploadFile: function () {
                 this.uploadFileLoading = true;
