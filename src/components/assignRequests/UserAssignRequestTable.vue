@@ -96,11 +96,23 @@
                 <td class="text-xs-left">{{props.item.toDate}}</td>
                 <td class="text-xs-left">{{props.item.createdDate}}</td>
                 <td class="text-xs-left">{{props.item.approver.displayName}}</td>
+                <td class="text-xs-left">
+                    <template v-for="task in props.item.tasks">
+                        <router-link :key="task.id"
+                                     :to="`/tasks/${task.id}`"
+                                     class="text-xs-left"
+                                     onmouseover="this.style.cursor='pointer'"
+                                     onmouseout="this.style.cursor='none'">
+                            {{task.title}}
+                        </router-link>
+                        <br/>
+                    </template>
+                </td>
                 <td class="text-xs-left" v-if="props.item.status === 0">
                     <v-card-actions>
-                        <v-btn outline fab small color="indigo" @click="editAssignRequest(props.item)">
-                            <v-icon>info</v-icon>
-                        </v-btn>
+                        <!--<v-btn outline fab small color="indigo" @click="editAssignRequest(props.item)">-->
+                            <!--<v-icon>info</v-icon>-->
+                        <!--</v-btn>-->
                         <v-btn outline fab small color="red" @click="deleteAssignRequest(props.item.id)">
                             <v-icon>delete</v-icon>
                         </v-btn>
@@ -193,6 +205,7 @@
                         {text: 'Ngày kết thúc', value: 'toDate'},
                         {text: 'Ngày tạo', value: 'createdDate'},
                         {text: 'Người xét duyệt', value: 'approver.displayName'},
+                        {text: 'Tác vụ liên quan', value: 'tasks'},
                     ]
                 },
             }

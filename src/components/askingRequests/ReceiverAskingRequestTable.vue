@@ -91,6 +91,18 @@
                 <td class="text-xs-left">{{props.item.createdDate}}</td>
                 <td class="text-xs-left">{{props.item.content}}</td>
                 <td class="text-xs-left" v-if="props.item.status === 1">{{props.item.response}}</td>
+                <td class="text-xs-left">
+                    <template v-for="task in props.item.tasks">
+                        <router-link :key="task.id"
+                                     :to="`/tasks/${task.id}`"
+                                     class="text-xs-left"
+                                     onmouseover="this.style.cursor='pointer'"
+                                     onmouseout="this.style.cursor='none'">
+                            {{task.title}}
+                        </router-link>
+                        <br/>
+                    </template>
+                </td>
                 <td class="text-xs-left" v-if="props.item.status === 0">
                     <v-card-actions>
                         <v-btn outline fab small color="indigo"
@@ -167,6 +179,7 @@
                         {text: 'Tên', value: 'user.displayName'},
                         {text: 'Ngày tạo', value: 'createdDate'},
                         {text: 'Nội dung', value: 'content'},
+                        {text: 'Tác vụ liên quan', value: 'task'},
 
                     ]
                 },
@@ -183,7 +196,9 @@
                         break;
                     case 'replied':
                         this.title = 'YÊU CẦU ĐÃ PHẢN HỒI';
+                        this.table.headers.pop();
                         this.table.headers.push({text: 'Phản hồi', value: 'response'});
+                        this.table.headers.push( {text: 'Tác vụ liên quan', value: 'task'});
                         this.status = 1;
                         break;
                 }

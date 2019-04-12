@@ -108,8 +108,8 @@
                 {{pageStart}} - {{pageStop}} của tổng cộng {{itemsLength}}
             </template>
             <template #items="props">
-                <tr :active="props.selected" @click="props.selected = !props.selected">
-                    <td v-if="!isAssigned">
+                <tr :active="props.selected" @click="props.selected = !props.selected" v-if="!isAssigned">
+                    <td>
                         <v-checkbox
                                 :input-value="props.selected"
                                 primary
@@ -134,6 +134,48 @@
                     <td class="text-xs-left">{{props.item.priority}}</td>
                     <!--<td class="text-xs-left">{{props.item.status}}</td>-->
                 </tr>
+                <tr @click="showAssignRequest(props)" v-if="isAssigned">
+                    <td>
+                        <router-link :to="`/tasks/${props.item.id}`"
+                                     class="text-xs-left"
+                                     onmouseover="this.style.cursor='pointer'"
+                                     onmouseout="this.style.cursor='none'">
+                            {{props.item.title}}
+                        </router-link>
+                    </td>
+                    <!--<td class="text-xs-left">{{props.item.summary}}</td>-->
+                    <td class="text-xs-left">{{props.item.project.name}}</td>
+                    <!--<td class="text-xs-left">{{props.item.createdTime}}</td>-->
+                    <td class="text-xs-left">{{props.item.startTime}}</td>
+                    <td class="text-xs-left">{{props.item.endTime}}</td>
+                    <!--<td class="text-xs-left">{{props.item.creator.displayName}}</td>-->
+                    <td class="text-xs-left">{{props.item.executor.displayName}}</td>
+                    <td class="text-xs-left">{{props.item.priority}}</td>
+                    <!--<td class="text-xs-left">{{props.item.status}}</td>-->
+                </tr>
+            </template>
+            <template v-if="isAssigned" v-slot:expand="props">
+                <v-data-table :headers="subTable.headers"
+                              :items="viewAssignRequests"
+                              :loading="subTable.loading"
+                              :no-data-text="alert || 'Không có dữ liệu'"
+                              :no-results-text="alert || 'Không tìm thấy dữ liệu tương ứng'"
+                              hide-actions
+                              :pagination.sync="subPagination"
+                              must-sort>
+                    <v-progress-linear #progress color="blue" indeterminate></v-progress-linear>
+                    <template v-slot:items="props">
+                        <tr>
+                            <td class="text-xs-left"></td>
+                            <td class="text-xs-left">{{props.item.content}}</td>
+                            <td class="text-xs-left">{{props.item.fromDate}}</td>
+                            <td class="text-xs-left">{{props.item.toDate}}</td>
+                            <td class="text-xs-left">{{props.item.createdDate}}</td>
+                            <td class="text-xs-left">{{props.item.approver.displayName}}</td>
+                            <td class="text-xs-left">{{props.item.status === 0 ? "Chờ xét duyệt" : "Đã duyệt"}}</td>
+                        </tr>
+                    </template>
+                </v-data-table>
             </template>
         </v-data-table>
 
@@ -219,6 +261,25 @@
                         // {text: 'Trạng thái', value: 'status'},
                     ]
                 },
+                subPagination: {
+                    sortBy: 'fromDate',
+                    descending: false,
+                    rowsPerPage: -1
+                },
+                subTable: {
+                    loading: false,
+                    headers: [
+                        {text: '', sortable: false},
+                        {text: 'Nội dung', value: 'content'},
+                        {text: 'Ngày bắt đầu', value: 'fromDate'},
+                        {text: 'Ngày kết thúc', value: 'toDate'},
+                        {text: 'Ngày tạo', value: 'createdDate'},
+                        {text: 'Người xét duyệt', value: 'approver.displayName'},
+                        {text: 'Trạng thái', value: 'status'},
+                    ]
+                },
+                viewAssignRequests: [],
+                taskId: null,
             }
         },
         mounted() {
@@ -389,7 +450,42 @@
             },
             storeSelectedTasks() {
                 this.$store.commit('ASSIGN_REQUEST_STORE/SET_SELECTED_TASK', this.selected);
-            }
+            },
+            showAssignRequest(props) {
+                props.expanded = !props.expanded;
+                if (props.expanded) {
+                    this.getAssignRequests(props.item.id);
+                } else {
+                    this.viewAssignRequests = [];
+                }
+            },
+            getAssignRequests: function (taskId) {
+                this.table.loading = true;
+                axios.get(`http://localhost:8080/assignRequests/search/findByTaskAndDateRange/` + taskId,
+                    {
+                        params: {
+                            fromDate: this.fromDate,
+                            toDate: this.toDate
+                        }
+                    }
+                ).then(response => {
+                        if (response.status === 204) {
+                            this.viewAssignRequests = [];
+                        } else {
+                            this.viewAssignRequests = response.data;
+                        }
+                        this.table.loading = false;
+                    }
+                ).catch(error => {
+                        this.table.loading = false;
+                        if (error.response) {
+                            console.log(error.response.data)
+                        }
+                        this.snackbar = true;
+                        this.snackBarText = "Thất bại";
+                    }
+                );
+            },
         },
         watch: {
             pagination: function () {
@@ -401,7 +497,7 @@
             toDate: function () {
                 this.getTasks();
             },
-            refreshFlag: function(){
+            refreshFlag: function () {
                 this.refresh();
             }
         }

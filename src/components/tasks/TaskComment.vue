@@ -38,11 +38,11 @@
                                @click="clearEdit()">
                             <v-icon>close</v-icon>
                         </v-btn>
-                        <v-btn v-if="item.user.displayName == displayName" outline fab small color="red"
-                               v-show="item.editDisable"
-                               @click="deleteComment(item)">
-                            <v-icon>delete</v-icon>
-                        </v-btn>
+                        <!--<v-btn v-if="item.user.displayName == displayName" outline fab small color="red"-->
+                               <!--v-show="item.editDisable"-->
+                               <!--@click="deleteComment(item)">-->
+                            <!--<v-icon>delete</v-icon>-->
+                        <!--</v-btn>-->
 
                     </v-list-tile>
 
