@@ -8,7 +8,6 @@
             <template slot="extension">
                 <v-tabs
                         v-model="tabs"
-                        centered
                         slider-color="primary"
                         color="transparent"
                 >
@@ -50,7 +49,7 @@
         components: {TaskSearch, TaskTable},
         data() {
             return {
-                tabs: null,
+                tabs: 0,
             }
         },
         computed: {

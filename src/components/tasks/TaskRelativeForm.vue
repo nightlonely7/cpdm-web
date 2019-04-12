@@ -20,11 +20,8 @@
                                             clearable
                                             hide-no-data
                             >
-
-                                <template slot="item" slot-scope="data">
-
-                                    {{data.item.email}} - {{data.item.fullName}} - Phòng ban:
-                                    {{data.item.department.name}}
+                                <template #item="{item}">
+                                    {{item.email}} - {{item.fullName}} - Phòng ban: {{item.department.name}}
                                 </template>
                             </v-autocomplete>
                         </v-flex>

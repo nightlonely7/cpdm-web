@@ -22,18 +22,163 @@
                                               label="Nội dung tổng quát"
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex md6 sm12>
-                                <v-text-field v-model="taskForm.startTime"
-                                              label="Thời gian bắt đầu"
-                                              prepend-inner-icon="event"
-                                ></v-text-field>
+
+                            <!--Start Date -->
+                            <v-flex xs12 sm6 md6>
+                                <v-dialog
+                                        ref="startDateDialog"
+                                        v-model="startDateMenu"
+                                        :return-value.sync="startDate"
+                                        persistent
+                                        lazy
+                                        full-width
+                                        width="300px"
+                                >
+                                    <template #activator="{ on }">
+                                        <v-text-field
+                                                v-model="startDate"
+                                                label="Ngày bắt đầu"
+                                                prepend-inner-icon="mdi-calendar"
+                                                readonly
+                                                clearable
+                                                v-on="on"
+                                        ></v-text-field>
+                                    </template>
+                                    <v-date-picker
+                                            v-if="startDateMenu"
+                                            v-model="startDate"
+                                            full-width
+                                            :min="creating ? moment().format('YYYY-MM-DD') : null"
+                                            :max="endDate"
+                                            locale="vi-vn"
+                                    >
+                                        <v-spacer></v-spacer>
+                                        <v-btn flat color="primary" @click="startDateMenu = false">Hủy
+                                        </v-btn>
+                                        <v-btn flat color="primary" @click="$refs.startDateDialog.save(startDate)">Lưu
+                                        </v-btn>
+                                    </v-date-picker>
+                                </v-dialog>
                             </v-flex>
-                            <v-flex md6 sm12>
-                                <v-text-field v-model="taskForm.endTime"
-                                              label="Thời gian kết thúc"
-                                              prepend-inner-icon="event"
-                                ></v-text-field>
+
+                            <!--End Date -->
+                            <v-flex xs12 sm6 md6>
+                                <v-dialog
+                                        ref="endDateDialog"
+                                        v-model="endDateMenu"
+                                        :return-value.sync="endDate"
+                                        persistent
+                                        lazy
+                                        full-width
+                                        width="300px"
+                                >
+                                    <template #activator="{ on }">
+                                        <v-text-field
+                                                v-model="endDate"
+                                                label="Ngày kết thúc"
+                                                prepend-inner-icon="mdi-calendar"
+                                                readonly
+                                                clearable
+                                                v-on="on"
+                                        ></v-text-field>
+                                    </template>
+                                    <v-date-picker
+                                            v-if="endDateMenu"
+                                            v-model="endDate"
+                                            full-width
+                                            :min="startDate ? startDate : creating ? moment().format('YYYY-MM-DD') : null"
+                                            locale="vi-vn"
+                                    >
+                                        <v-spacer></v-spacer>
+                                        <v-btn flat color="primary" @click="endDateMenu = false">Hủy
+                                        </v-btn>
+                                        <v-btn flat color="primary" @click="$refs.endDateDialog.save(endDate)">Lưu
+                                        </v-btn>
+                                    </v-date-picker>
+                                </v-dialog>
                             </v-flex>
+
+                            <!--Start Time -->
+                            <v-flex xs12 sm6 md6>
+                                <v-dialog
+                                        ref="startTimeDialog"
+                                        v-model="startTimeMenu"
+                                        :return-value.sync="startTime"
+                                        persistent
+                                        lazy
+                                        full-width
+                                        width="300px"
+                                >
+                                    <template #activator="{ on }">
+                                        <v-text-field
+                                                v-model="startTime"
+                                                label="Thời gian bắt đầu"
+                                                prepend-inner-icon="access_time"
+                                                readonly
+                                                clearable
+                                                :disabled="startDate == null"
+                                                v-on="on"
+                                        ></v-text-field>
+                                    </template>
+                                    <v-time-picker
+                                            v-if="startTimeMenu"
+                                            v-model="startTime"
+                                            full-width
+                                            :min="creating ? (startDate === moment().format('YYYY-MM-DD') ? moment().format('HH:mm') : null) : null"
+                                            :max="startDate === endDate ? endTime : null"
+                                            locale="vi-vn"
+                                    >
+                                        <v-spacer></v-spacer>
+                                        <v-btn flat color="primary" @click="startTimeMenu = false">Hủy
+                                        </v-btn>
+                                        <v-btn flat color="primary" @click="$refs.startTimeDialog.save(startTime)">Lưu
+                                        </v-btn>
+                                    </v-time-picker>
+                                </v-dialog>
+                            </v-flex>
+
+                            <!--End Time -->
+                            <v-flex xs12 sm6 md6>
+                                <v-dialog
+                                        ref="endTimeDialog"
+                                        v-model="endTimeMenu"
+                                        :return-value.sync="endTime"
+                                        persistent
+                                        lazy
+                                        full-width
+                                        width="300px"
+                                >
+                                    <template #activator="{ on }">
+                                        <v-text-field
+                                                v-model="endTime"
+                                                label="Thời gian kết thúc"
+                                                prepend-inner-icon="access_time"
+                                                readonly
+                                                clearable
+                                                :disabled="endDate == null"
+                                                v-on="on"
+                                        ></v-text-field>
+                                    </template>
+                                    <v-time-picker
+                                            v-if="endTimeMenu"
+                                            v-model="endTime"
+                                            full-width
+                                            :min="startTime ?
+                                            (startDate === endDate ? startTime : null) :
+                                            creating ?
+                                            (startDate === moment().format('YYYY-MM-DD') ? moment().format('HH:mm') : null) :
+                                            null"
+                                            locale="vi-vn"
+                                    >
+                                        <v-spacer></v-spacer>
+                                        <v-btn flat color="primary" @click="endTimeMenu = false">Hủy
+                                        </v-btn>
+                                        <v-btn flat color="primary" @click="$refs.endTimeDialog.save(endTime)">Lưu
+                                        </v-btn>
+                                    </v-time-picker>
+                                </v-dialog>
+                            </v-flex>
+
                             <v-flex md12 sm12>
                                 <v-textarea v-model="taskForm.description"
                                             label="Nội dung chi tiết"
@@ -41,6 +186,7 @@
                                             outline
                                 ></v-textarea>
                             </v-flex>
+
                             <v-flex md6 sm12>
                                 <v-select v-model="taskForm.project.id"
                                           :items="projectOptions"
@@ -50,7 +196,7 @@
                                           append-outer-icon="cached"
                                           @click:append-outer="getProjectOptions"
                                           :loading="projectOptionsLoading"
-                                          @change="getParentTaskOptions(taskForm.project.id)"
+                                          @change="isManager && getParentTaskOptions(taskForm.project.id)"
                                 >
                                     <template #item="{item}">
                                         {{item.name || ''}} - {{item.alias || ''}}
@@ -101,9 +247,7 @@
                                 >
 
                                     <template #item="{item}">
-
-                                        {{item.email}} - {{item.fullName}} - Phòng ban:
-                                        {{item.department.name}}
+                                        {{item.email}} - {{item.fullName}} - Phòng ban: {{item.department.name}}
                                     </template>
                                 </v-autocomplete>
                             </v-flex>
@@ -135,7 +279,6 @@
 <script>
     import axios from 'axios';
     import _ from 'lodash';
-    import moment from 'moment';
     import {mapGetters} from "vuex";
 
     export default {
@@ -152,6 +295,14 @@
                 viewerOptions: [],
                 viewerOptionsLoading: false,
                 viewerOptionsSearch: null,
+                startDate: this.form.startDate,
+                startTime: this.form.startTime,
+                endDate: this.form.endDate,
+                endTime: this.form.endTime,
+                startDateMenu: false,
+                startTimeMenu: false,
+                endDateMenu: false,
+                endTimeMenu: false,
             }
         },
         computed: {
@@ -176,20 +327,23 @@
                 }
             },
             relative: Boolean,
+            creating: Boolean,
         },
         methods: {
             save: function () {
-                console.log(this.taskForm);
                 const data = {
                     ...this.taskForm,
                     relatives: this.relatives.map(value => {
                         return {id: value};
                     }),
                 };
-                data.startTime = moment(data.startTime, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
-                data.endTime = moment(data.endTime, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
-                console.log(data);
+                data.startTime = `${this.startDate} ${this.startTime}:00`;
+                data.endTime = `${this.endDate} ${this.endTime}:00`;
+                if (this.isAdmin) {
+                    data.parentTask = null;
+                }
 
+                console.log(data);
                 const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
                 const method = `${this.taskForm.id === 0 ? 'POST' : 'PUT'}`;
                 axios({url, method, data})
