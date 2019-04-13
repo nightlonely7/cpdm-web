@@ -1,5 +1,5 @@
 import axios from "axios";
-import {mes,db} from "@/firebase.js"
+import {mes, db} from "@/firebase.js"
 
 export default {
     namespaced: true,
@@ -78,14 +78,16 @@ export default {
                             mes.getToken().then(function (token) {
                                 console.log(token);
                                 db.ref("users/" + displayName).set(token);
-                            }).catch(
-                                console.log("Get tokan fail")
+                                resolve(response);
+                            }).catch(() => {
+                                    console.log("Get token fail")
+                                }
                             );
-                        }).catch(
-                            console.log("Grant fail")
+                        }).catch(() => {
+                                console.log("Grant fail")
+                            }
                         );
                         //
-                        resolve(response);
                     })
                     .catch(error => {
                         commit('ERROR');

@@ -161,6 +161,7 @@
     import axios from 'axios';
     import {mapGetters, mapState} from "vuex";
     import moment from "moment";
+    import {db} from '@/firebase.js'
 
     var notAllowedDate = [];
 
@@ -321,9 +322,9 @@
                 //Reset content
                 this.$refs.txtContent.reset();
             },
-            setToDate: function(){
+            setToDate: function () {
                 this.fromDateMenu = false;
-                if(this.editItem.toDate < this.editItem.fromDate)   {
+                if (this.editItem.toDate < this.editItem.fromDate) {
                     this.editItem.toDate = this.editItem.fromDate;
                 }
             },
@@ -386,7 +387,7 @@
                 }
             },
             editLeaveRequest(item) {
-                Object.assign(this.editItem,item);
+                Object.assign(this.editItem, item);
                 this.dialog = true;
             },
             close() {
@@ -438,6 +439,7 @@
                         data: this.editItem
                     }
                 ).then(() => {
+                        this.pushnotification(this.editItem);
                         this.close();
                         this.refresh();
                         this.snackBarText = 'Thành công';
@@ -460,6 +462,29 @@
                         }
                     }
                 );
+            },
+            pushnotification(item){
+                var keys = [];
+                db.ref('users/' + item.approver.displayName).once('value').then(function (snapshot) {
+                    keys.push(snapshot.val());
+                    axios.post('http://localhost:8080/notifications/push',
+                        {
+                            keys : keys,
+                            title : "Đơn xin nghỉ phép",
+                            detail : item.content,
+                        }
+                    ).then(response => {
+                        console.log(response.status);
+                    }).catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data);
+                        } else {
+                            console.log(error.response);
+                        }
+                    });
+                }).catch(error => {
+                    console.log(error.response);
+                });
             },
             allowedDates: val => notAllowedDate.indexOf(val) == -1
         },
