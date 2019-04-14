@@ -32,9 +32,7 @@
                 <v-chip v-if="task.status === 'Outdated'" color="error" text-color="white">Quá hạn</v-chip>
                 <v-chip v-if="task.status === 'Near deadline'" color="warning" text-color="white">Gần tới hạn
                 </v-chip>
-                <v-btn v-if="completionRate === 1
-                                && task.status !== 'Completed'
-                                && task.status !== 'Complete outdated'"
+                <v-btn v-if="(completionRate === 1 || totalIssues === 0) && isRunning"
                        @click="completeTask">Báo cáo hoàn tất
                 </v-btn>
                 <br>
@@ -55,7 +53,7 @@
                 {{moment(task.startTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
             </p>
             <p>Thời gian kết thúc:
-                {{moment(task.endTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+                {{moment(task.endTime,'DD-MM-YYYY HH:mm:ss' ).format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
             </p>
             <p v-if="task.status === 'Completed' || task.status === 'Complete outdated'">Thời gian hoàn thành:
                 {{moment(task.completedTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
@@ -157,8 +155,14 @@
                     <v-list>
                         <v-list-tile-content>
                             <v-list-tile>
-                                <v-btn @click="showIssueForm">Thêm vấn đề</v-btn>
-
+                                <v-btn v-if="task.status === 'Waiting'
+                                            || task.status === 'Working'
+                                            || task.status === 'Outdated'
+                                            || task.status === 'Near deadline'"
+                                       @click="showIssueForm"
+                                >
+                                    Thêm vấn đề
+                                </v-btn>
                             </v-list-tile>
                             <v-list-tile v-for="issue in taskIssues" :key="issue.id">
                                 {{issue.summary}} - {{issue.description}}
@@ -190,7 +194,8 @@
                     </template>
                 </TaskForm>
             </v-layout>
-            <TaskIssueForm @refresh="refreshIssues"></TaskIssueForm>
+            <TaskIssueForm @refresh="refreshIssues">
+            </TaskIssueForm>
             <TaskRelativeForm @refresh="refreshRelatives"></TaskRelativeForm>
         </div>
     </div>
@@ -232,6 +237,11 @@
             }
         },
         computed: {
+            isRunning() {
+               return this.task.status === 'Working'
+                        || this.task.status === 'Outdated'
+                        || this.task.status === 'Near deadline'
+            },
             isChild: function () {
                 return !!this.task.parentTask;
             },
@@ -406,11 +416,6 @@
                 this.$store.commit('TASK_STORE/SET_SHOW_RELATIVE_FORM', true);
             }
         },
-        // watch: {
-        //     id: function () {
-        //         this.$router.go();
-        //     }
-        // }
     }
 </script>
 

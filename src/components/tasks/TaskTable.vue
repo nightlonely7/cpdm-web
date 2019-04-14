@@ -25,9 +25,17 @@
                 :no-data-text="alert || 'Không có dữ liệu'"
                 :no-results-text="alert || 'Không tìm thấy dữ liệu tương ứng'"
                 :must-sort="true"
+                :headers-length="5"
+                :expand="expand"
+                item-key="id"
         >
             <template #pageText="{pageStart, pageStop, itemsLength}">
                 {{pageStart}} - {{pageStop}} của tổng cộng {{itemsLength}}
+            </template>
+            <template #expand="props">
+                <v-card flat>
+                    <v-card-text>Peek-a-boo!</v-card-text>
+                </v-card>
             </template>
             <template #items="{item}">
                 <router-link tag="tr" :to="`/tasks/${item.id}`"
@@ -37,15 +45,25 @@
                     <td class="text-xs-left">{{item.title}}</td>
                     <td class="text-xs-left">{{item.summary}}</td>
                     <td class="text-xs-left">{{item.project.name}}</td>
-                    <td class="text-xs-left">{{item.createdTime}}</td>
-                    <td class="text-xs-left">{{item.startTime}}</td>
-                    <td class="text-xs-left">{{item.endTime}}</td>
-                    <td class="text-xs-left">{{item.completedTime || 'Chưa hoàn tất'}}</td>
+                    <td class="text-xs-left">{{
+                        moment(item.createdTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm')}}
+                    </td>
+                    <td class="text-xs-left">{{
+                        moment(item.startTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm')}}
+                    </td>
+                    <td class="text-xs-left">{{
+                        moment(item.endTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm')}}
+                    </td>
+                    <td class="text-xs-left">
+                        {{item.completedTime ?
+                        moment(item.completedTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') :
+                        'Chưa hoàn tất'}}
+                    </td>
                     <td class="text-xs-left">{{item.creator.displayName}}</td>
                     <td class="text-xs-left">{{item.executor.displayName}}</td>
                     <td class="text-xs-left">{{item.priority}}</td>
                     <td class="text-xs-left">
-                        <v-chip v-if="item.status === 'Waiting'" style="width: 200px" class="text-xs-center">
+                        <v-chip v-if="item.status === 'Waiting'">
                             Đang chờ
                         </v-chip>
                         <v-chip v-if="item.status === 'Working'" color="primary" text-color="white">
@@ -75,7 +93,6 @@
     import _ from 'lodash';
     import TaskForm from '@/components/tasks/TaskForm.vue';
     import {mapState} from 'vuex'
-    import moment from 'moment';
 
     export default {
         name: "TaskTable",
@@ -86,6 +103,7 @@
         },
         data() {
             return {
+                expand: false,
                 tasks: [],
                 alert: '',
                 pagination: {
@@ -96,7 +114,7 @@
                     loading: false,
                     headers: [
                         {text: 'Tiêu đề', value: 'title'},
-                        {text: 'Tổng quát', value: 'summary'},
+                        {text: 'Tổng quát', value: 'summary', width: '25%'},
                         {text: 'Dự án', value: 'project.name'},
                         {text: 'Thời gian tạo', value: 'createdTime'},
                         {text: 'Thời gian bắt đầu', value: 'startTime'},

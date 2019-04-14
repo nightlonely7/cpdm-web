@@ -104,7 +104,7 @@
                     .catch(error => console.log(error.response))
             },
             downloadFile: function (filename) {
-                axios.get(`http://localhost:8080/downloadFile/${filename}`)
+                axios.get(`http://localhost:8080/downloadFile/${filename}`, {responseType: 'blob'})
                     .then(response => {
                         download(response.data, filename, response.headers['Content-Type']);
                     })

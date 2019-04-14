@@ -1,8 +1,8 @@
 import firebase from 'firebase/app';
-import 'firebase/messaging';
-import 'firebase/database';
+import "firebase/database";
+import "firebase/messaging";
 
-var config = {
+const config = {
     apiKey: "AIzaSyCRZo5TR0UxVsuiUpkgAJm7Batq_S3SQHk",
     authDomain: "cpdm-notification.firebaseapp.com",
     databaseURL: "https://cpdm-notification.firebaseio.com",

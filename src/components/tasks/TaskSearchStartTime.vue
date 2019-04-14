@@ -71,6 +71,7 @@
                                                     label="Ngày bắt đầu đến"
                                                     prepend-inner-icon="mdi-calendar"
                                                     readonly
+                                                    clearable
                                                     @click:clear="clearStartDateTo"
                                                     v-on="on"
                                             ></v-text-field>
@@ -144,6 +145,7 @@
                                                     label="Thời gian bắt đầu đến"
                                                     prepend-inner-icon="access_time"
                                                     readonly
+                                                    clearable
                                                     :disabled="startDateTo == null"
                                                     @click:clear="clearStartTimeTo"
                                                     v-on="on"
