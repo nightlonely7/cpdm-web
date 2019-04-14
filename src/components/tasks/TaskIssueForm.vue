@@ -1,5 +1,8 @@
 <template>
-    <v-dialog width="500" v-model="showIssueForm" persistent>
+    <v-dialog width="500" v-model="dialog" persistent>
+        <template #activator="{on}">
+            <slot name="activator" :on="on"></slot>
+        </template>
         <v-card>
             <v-card-title>
                 <span class="headline">FORM VẤN ĐỀ</span>
@@ -9,12 +12,12 @@
                 <v-container grid-list-md>
                     <v-layout wrap>
                         <v-flex md12>
-                            <v-text-field v-model="taskIssueForm.summary"
+                            <v-text-field v-model="form.summary"
                                           label="Nội dung tổng quát"
                             ></v-text-field>
                         </v-flex>
                         <v-flex md12>
-                            <v-text-field v-model="taskIssueForm.description"
+                            <v-text-field v-model="form.description"
                                           label="Nội dung chi tiết"
                             ></v-text-field>
                         </v-flex>
@@ -39,38 +42,45 @@
 
 <script>
     import axios from 'axios';
-    import {mapState} from 'vuex';
 
     export default {
         name: "TaskIssueForm",
         data() {
             return {
+                dialog: false,
                 loading: false,
             }
         },
-        computed: {
-            ...mapState('TASK_STORE', {
-                taskIssueForm: state => state.taskIssueForm,
-                showIssueForm: state => state.showIssueForm,
-                taskId: state => state.taskId,
-            }),
-        },
-        methods: {
-            close: function () {
-                this.$store.commit('TASK_STORE/SET_SHOW_ISSUE_FORM', false);
+        props: {
+            taskId: Number,
+            form: {
+                type: Object,
+                default: function () {
+                    return {
+                        id: 0,
+                        summary: '',
+                        description: '',
+                    };
+                }
             },
-            save: function () {
+        },
+        computed: {},
+        methods: {
+            close() {
+                this.dialog = false;
+            },
+            save() {
                 this.loading = true;
-                const url = this.taskIssueForm.id === 0
+                const url = this.form.id === 0
                     ? `http://localhost:8080/tasks/${this.taskId}/issues`
-                    : `http://localhost:8080/task-issues/${this.taskIssueForm.id}`;
-                const method = this.taskIssueForm.id === 0 ? 'POST' : 'PUT';
-                const data = {...this.taskIssueForm};
+                    : `http://localhost:8080/task-issues/${this.form.id}`;
+                const method = this.form.id === 0 ? 'POST' : 'PUT';
+                const data = {...this.form};
                 console.log(url, method, data);
                 axios({url, method, data})
                     .then((response) => {
                         console.log(response.data);
-                        this.$store.commit('TASK_STORE/SET_SHOW_ISSUE_FORM', false);
+                        this.dialog = false;
                         this.$emit("refresh");
                     })
                     .catch(error => {
