@@ -79,15 +79,12 @@ export default {
                                 console.log(token);
                                 db.ref("users/" + displayName).set(token);
                                 resolve(response);
-                            }).catch(() => {
-                                    console.log("Get token fail")
-                                }
+                            }).catch( () =>
+                                console.log("Get token fail")
                             );
-                        }).catch(() => {
-                                console.log("Grant fail")
-                            }
+                        }).catch( () =>
+                            console.log("Grant fail")
                         );
-                        //
                     })
                     .catch(error => {
                         commit('ERROR');

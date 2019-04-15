@@ -7,7 +7,7 @@
                         <img src='./assets/logo.png' alt="logo">
                     </v-list-tile-avatar>
                     <v-list-tile-title>
-                        SÀI GÒN XUÂN PHÁT
+                        SAIGON XUÂN PHÁT
                     </v-list-tile-title>
                 </v-list-tile>
                 <v-divider/>
@@ -28,7 +28,7 @@
                     </v-list-tile-content>
                 </v-list-tile>
                 <v-list-group>
-                    <template v-slot:activator>
+                    <template #activator>
                         <v-list-tile>
                             <v-list-tile-action>
                                 <v-icon>assignment_ind</v-icon>

@@ -32,13 +32,11 @@
                 <v-chip v-if="task.status === 'Outdated'" color="error" text-color="white">Quá hạn</v-chip>
                 <v-chip v-if="task.status === 'Near deadline'" color="warning" text-color="white">Gần tới hạn
                 </v-chip>
-                <v-btn v-if="completionRate === 1
-                                && task.status !== 'Completed'
-                                && task.status !== 'Complete outdated'"
+                <v-btn v-if="(completionRate === 1 || this.issuesStatus.total === 0) && isRunning"
                        @click="completeTask">Báo cáo hoàn tất
                 </v-btn>
                 <br>
-                <span>Số vấn đề hoàn tất: {{totalComplete}} / {{totalIssues}}</span>
+                <span>Số vấn đề hoàn tất: {{issuesStatus.completed}} / {{issuesStatus.total}}</span>
                 <br>
                 <span>Tỉ lệ hoàn thành:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 <v-progress-circular :value="completionRate * 100" size="96" rotate="270" width="16" color="primary">
@@ -55,7 +53,7 @@
                 {{moment(task.startTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
             </p>
             <p>Thời gian kết thúc:
-                {{moment(task.endTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+                {{moment(task.endTime,'DD-MM-YYYY HH:mm:ss' ).format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
             </p>
             <p v-if="task.status === 'Completed' || task.status === 'Complete outdated'">Thời gian hoàn thành:
                 {{moment(task.completedTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
@@ -95,7 +93,12 @@
                     <v-list>
                         <v-list-tile-content>
                             <v-list-tile>
-                                <v-btn @click="showRelativeForm">Thêm người liên quan</v-btn>
+                                <TaskRelativeForm :task-id="id" @refresh="refreshRelatives">
+                                    <template #activator="{ on }">
+                                        <v-btn v-on="on" color="primary">Thêm người theo dõi</v-btn>
+                                    </template>
+                                </TaskRelativeForm>
+
                             </v-list-tile>
                             <v-list-tile v-for="user in taskRelatives" :key="user.id">
                                 {{user.displayName}} - {{user.fullName}} - {{user.email}} -
@@ -147,34 +150,7 @@
             <v-divider></v-divider>
             <br>
 
-            <v-expansion-panel>
-                <v-expansion-panel-content>
-
-                    <template #header>
-                        Danh sách vấn đề
-                    </template>
-
-                    <v-list>
-                        <v-list-tile-content>
-                            <v-list-tile>
-                                <v-btn @click="showIssueForm">Thêm vấn đề</v-btn>
-
-                            </v-list-tile>
-                            <v-list-tile v-for="issue in taskIssues" :key="issue.id">
-                                {{issue.summary}} - {{issue.description}}
-                                <v-chip :color="`${issue.completed ? 'success' : ''}`">
-                                    {{issue.completed ? 'Hoàn tất' : 'Chưa hoàn tất'}}
-                                </v-chip>
-                                <v-btn @click="editIssue(issue)">Sửa</v-btn>
-                                <v-btn @click="deleteIssue(issue.id)">Xóa</v-btn>
-                                <v-btn v-if="!issue.completed" @click="completeIssue(issue.id)">Báo cáo hoàn tất</v-btn>
-                            </v-list-tile>
-                        </v-list-tile-content>
-                    </v-list>
-
-
-                </v-expansion-panel-content>
-            </v-expansion-panel>
+            <TaskIssue :task="{...task}" @refresh-issues-status="refreshIssuesStatus"></TaskIssue>
 
             <br>
             <v-divider></v-divider>
@@ -184,14 +160,14 @@
                 <v-btn @click="deleteTask" color="error">
                     Xóa
                 </v-btn>
-                <TaskForm v-if="isAdmin || isManager" @refresh="getTask" :form="form">
+                <TaskForm v-if="isAdmin || isManager" @refresh="getTask" :form="{...form}">
                     <template #activator="{on}">
                         <v-btn v-on="on" color="primary">Chỉnh sửa</v-btn>
                     </template>
                 </TaskForm>
             </v-layout>
-            <TaskIssueForm @refresh="refreshIssues"></TaskIssueForm>
-            <TaskRelativeForm @refresh="refreshRelatives"></TaskRelativeForm>
+
+
         </div>
     </div>
 </template>
@@ -199,16 +175,16 @@
 <script>
     import axios from 'axios'
     import TaskForm from "@/components/tasks/TaskForm";
-    import TaskIssueForm from "@/components/tasks/TaskIssueForm";
     import TaskRelativeForm from "@/components/tasks/TaskRelativeForm";
     import {mapGetters} from 'vuex';
     import TaskTable from "./TaskTable";
     import moment from 'moment';
     import TaskDocumentForm from "@/components/tasks/TaskDocumentForm";
+    import TaskIssue from "@/components/tasks/TaskIssue";
 
     export default {
         name: "TaskDetail",
-        components: {TaskDocumentForm, TaskTable, TaskRelativeForm, TaskIssueForm, TaskForm},
+        components: {TaskIssue, TaskDocumentForm, TaskTable, TaskRelativeForm, TaskForm},
         props: {
             id: Number
         },
@@ -226,31 +202,25 @@
                     createdTime: '',
                     completedTime: '',
                 },
-                taskIssues: [],
                 taskRelatives: [],
                 documents: [],
+                issuesStatus: {
+                    total: 0,
+                    completed: 0
+                }
             }
         },
         computed: {
+            isRunning() {
+                return this.task.status === 'Working'
+                    || this.task.status === 'Outdated'
+                    || this.task.status === 'Near deadline'
+            },
             isChild: function () {
                 return !!this.task.parentTask;
             },
-            totalIssues: function () {
-                return this.taskIssues ? this.taskIssues.length : 0;
-            },
-            totalComplete: function () {
-                let totalComplete = 0;
-                if (this.taskIssues) {
-                    this.taskIssues.forEach(function (issue) {
-                        if (issue.completed) {
-                            totalComplete++;
-                        }
-                    });
-                }
-                return totalComplete;
-            },
             completionRate: function () {
-                return this.totalComplete === 0 ? 0 : this.totalComplete / this.totalIssues;
+                return this.issuesStatus.total === 0 ? 0 : this.issuesStatus.completed / this.issuesStatus.total;
             },
             form: function () {
                 return {
@@ -274,8 +244,8 @@
             })
         },
         methods: {
-            refreshIssues: function () {
-                this.getTaskIssues();
+            refreshIssuesStatus() {
+                this.getIssuesStatus();
             },
             refreshRelatives: function () {
                 this.getTaskRelatives();
@@ -284,19 +254,19 @@
                 axios.get(`http://localhost:8080/tasks/${this.id}`)
                     .then(response => {
                         this.task = response.data;
-                        this.getTaskIssues();
                         this.getTaskRelatives();
                         this.getTaskDocuments();
+                        this.getIssuesStatus();
                     })
                     .finally(() => {
                         this.loading = false;
                     })
             },
-            getTaskIssues: function () {
-                axios.get(`http://localhost:8080/tasks/${this.id}/issues`)
-                    .then(response => {
-                        this.taskIssues = response.data;
-                    })
+            getIssuesStatus() {
+               axios.get(`http://localhost:8080/tasks/${this.id}/issues/status`)
+                   .then(response => {
+                       this.issuesStatus = response.data;
+                   })
             },
             getTaskRelatives: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}/relatives`)
@@ -333,10 +303,6 @@
                             }
                         })
                 }
-            },
-            editIssue: function (issue) {
-                this.$store.commit('TASK_STORE/SET_TASK_ISSUE_FORM', issue);
-                this.$store.commit('TASK_STORE/SET_SHOW_ISSUE_FORM', true);
             },
             deleteIssue: function (id) {
                 if (confirm('Bạn muốn xóa Vấn Đề này chứ?')) {
@@ -398,19 +364,7 @@
                         })
                 }
             },
-            showIssueForm: function () {
-                this.$store.commit('TASK_STORE/SET_TASK_ISSUE_FORM', {id: 0});
-                this.$store.commit('TASK_STORE/SET_SHOW_ISSUE_FORM', true);
-            },
-            showRelativeForm: function () {
-                this.$store.commit('TASK_STORE/SET_SHOW_RELATIVE_FORM', true);
-            }
         },
-        // watch: {
-        //     id: function () {
-        //         this.$router.go();
-        //     }
-        // }
     }
 </script>
 

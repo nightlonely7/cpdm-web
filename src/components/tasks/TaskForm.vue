@@ -405,17 +405,11 @@
             getProjectOptions: function () {
                 this.projectOptionsLoading = true;
                 setTimeout(() => {
-                    axios.get(`http://localhost:8080/projects`)
+                    axios.get(`http://localhost:8080/projects/search/all`)
                         .then(response => {
                             this.projectOptions = response.data;
                         })
-                        .catch(error => {
-                            if (error.response) {
-                                console.log(error.response.data);
-                            } else {
-                                console.log(error.response);
-                            }
-                        })
+                        .catch(console.error)
                         .finally(() => {
                             this.projectOptionsLoading = false;
                         });

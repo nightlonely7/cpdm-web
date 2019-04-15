@@ -3,7 +3,7 @@ importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js');
 
 // Initialize the Firebase app in the service worker by passing in the
 // messagingSenderId.
-var config = {
+const config = {
     apiKey: "AIzaSyCRZo5TR0UxVsuiUpkgAJm7Batq_S3SQHk",
     authDomain: "cpdm-notification.firebaseapp.com",
     databaseURL: "https://cpdm-notification.firebaseio.com",
