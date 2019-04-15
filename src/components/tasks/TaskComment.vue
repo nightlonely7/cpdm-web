@@ -37,12 +37,14 @@
                                @click="clearEdit()">
                             <v-icon>close</v-icon>
                         </v-btn>
-                        <v-btn v-if="item.user.displayName == displayName" outline fab small color="red"
-                               v-show="item.editDisable"
-                               @click="deleteComment(item)">
-                            <v-icon>delete</v-icon>
-                        </v-btn>
+                        <!--<v-btn v-if="item.user.displayName == displayName" outline fab small color="red"-->
+                               <!--v-show="item.editDisable"-->
+                               <!--@click="deleteComment(item)">-->
+                            <!--<v-icon>delete</v-icon>-->
+                        <!--</v-btn>-->
+
                     </v-list-tile>
+
                     <v-textarea
                             :key="index"
                             v-model="item.content"
@@ -52,6 +54,8 @@
                             single-line
                             :rules="[rules.required,rules.max]"
                             @click="showEditButton(index)"
+                            counter
+                            maxlength="255"
                     >
                     </v-textarea>
                     <v-textarea
@@ -76,7 +80,10 @@
                         label='Bình luận'
                         outline
                         :rules="[rules.required,rules.max]"
+                        counter
+                        maxlength="255"
                 ></v-textarea>
+
                 <v-card-actions>
                     <v-spacer/>
                     <v-btn outline fab small color="indigo" @click="addComment()"

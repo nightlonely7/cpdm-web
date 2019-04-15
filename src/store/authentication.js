@@ -1,4 +1,5 @@
 import axios from "axios";
+import {mes, db} from "@/firebase.js"
 
 export default {
     namespaced: true,
@@ -72,7 +73,19 @@ export default {
                         const displayName = response.data.displayName;
                         const role = response.data.role.name.replace('ROLE_', '');
                         commit('INIT', {displayName, role});
-                        resolve(response);
+                        //
+                        mes.requestPermission().then(function () {
+                            console.log("Granted");
+                            mes.getToken().then(function (token) {
+                                console.log(token);
+                                db.ref("users/" + displayName).set(token);
+                                resolve(response);
+                            }).catch( () =>
+                                console.log("Get token fail")
+                            );
+                        }).catch( () =>
+                            console.log("Grant fail")
+                        );
                     })
                     .catch(error => {
                         commit('ERROR');

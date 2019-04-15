@@ -43,6 +43,7 @@
                                                 v-model="createdDateFrom"
                                                 :max="createdDateTo"
                                                 full-width
+                                                locale="vi-vn"
                                         >
                                             <v-spacer></v-spacer>
                                             <v-btn flat color="primary" @click="createdDateFromMenu = false">Cancel
@@ -79,6 +80,7 @@
                                                 v-model="createdDateTo"
                                                 :min="createdDateFrom"
                                                 full-width
+                                                locale="vi-vn"
                                         >
                                             <v-spacer></v-spacer>
                                             <v-btn flat color="primary" @click="createdDateToMenu = false">Cancel

@@ -5,6 +5,7 @@ const taskStoreDefaultState = () => {
         showRelativeForm: false,
         titleSearchValue: null,
         summarySearchValue: null,
+        descriptionSearchValue: null,
         createdTimeFromSearchValue: null,
         createdTimeToSearchValue: null,
         startTimeFromSearchValue: null,
@@ -12,12 +13,7 @@ const taskStoreDefaultState = () => {
         endTimeFromSearchValue: null,
         endTimeToSearchValue: null,
         projectIdSearchValue: null,
-        taskForm: {
-            project: {},
-            executor: {},
-        },
-        taskIssueForm: {},
-        taskId: 0,
+        statusSearchValue: [],
     }
 };
 
@@ -25,17 +21,14 @@ export default {
     namespaced: true,
     state: taskStoreDefaultState(),
     mutations: {
-        SET_TASK_FORM(state, taskForm) {
-            Object.assign(state.taskForm, taskForm);
-        },
-        SET_TASK_ISSUE_FORM(state, taskIssueForm) {
-            state.taskIssueForm = taskIssueForm
-        },
         SET_TITLE_SEARCH_VALUE(state, titleSearchValue) {
             state.titleSearchValue = titleSearchValue
         },
         SET_SUMMARY_SEARCH_VALUE(state, summarySearchValue) {
             state.summarySearchValue = summarySearchValue
+        },
+        SET_DESCRIPTION_SEARCH_VALUE(state, descriptionSearchValue) {
+            state.descriptionSearchValue = descriptionSearchValue
         },
         SET_CREATED_TIME_FROM_SEARCH_VALUE(state, createdTimeFromSearchValue) {
             state.createdTimeFromSearchValue = createdTimeFromSearchValue
@@ -58,9 +51,13 @@ export default {
         SET_PROJECT_ID_SEARCH_VALUE(state, projectIdSearchValue) {
             state.projectIdSearchValue = projectIdSearchValue
         },
+        SET_STATUS_SEARCH_VALUE(state, statusSearchValue) {
+            state.statusSearchValue = statusSearchValue
+        },
         RESET_SEARCH(state) {
             state.titleSearchValue = null;
             state.summarySearchValue = null;
+            state.descriptionSearchValue = null;
             state.createdTimeFromSearchValue = null;
             state.createdTimeToSearchValue = null;
             state.startTimeFromSearchValue = null;
@@ -68,18 +65,7 @@ export default {
             state.endTimeFromSearchValue = null;
             state.endTimeToSearchValue = null;
             state.projectIdSearchValue = null;
-        },
-        SET_SHOW_FORM(state, showForm) {
-            state.showForm = showForm
-        },
-        SET_SHOW_ISSUE_FORM(state, showIssueForm) {
-            state.showIssueForm = showIssueForm
-        },
-        SET_SHOW_RELATIVE_FORM(state, showRelativeForm) {
-            state.showRelativeForm = showRelativeForm
-        },
-        SET_TASK_ID(state, taskId) {
-            state.taskId = taskId
+            state.statusSearchValue = [];
         },
         RESET(state) {
             state = Object.assign(state, taskStoreDefaultState());

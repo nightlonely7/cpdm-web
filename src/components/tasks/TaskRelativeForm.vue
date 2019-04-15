@@ -1,5 +1,8 @@
 <template>
-    <v-dialog width="500" v-model="showRelativeForm" persistent>
+    <v-dialog width="500" v-model="dialog" persistent>
+        <template #activator="{on}">
+            <slot name="activator" :on="on"></slot>
+        </template>
         <v-card>
             <v-card-title>
                 <span class="headline">THÊM NGƯỜI THEO DÕI</span>
@@ -20,11 +23,8 @@
                                             clearable
                                             hide-no-data
                             >
-
-                                <template slot="item" slot-scope="data">
-
-                                    {{data.item.email}} - {{data.item.fullName}} - Phòng ban:
-                                    {{data.item.department.name}}
+                                <template #item="{item}">
+                                    {{item.email}} - {{item.fullName}} - Phòng ban: {{item.department.name}}
                                 </template>
                             </v-autocomplete>
                         </v-flex>
@@ -49,12 +49,12 @@
 
 <script>
     import axios from 'axios';
-    import {mapState} from 'vuex';
 
     export default {
         name: "TaskRelativeForm",
         data() {
             return {
+                dialog: false,
                 loading: false,
                 relatives: [],
                 viewerOptions: [],
@@ -62,15 +62,13 @@
                 viewerOptionsSearch: null,
             }
         },
-        computed: {
-            ...mapState('TASK_STORE', {
-                showRelativeForm: state => state.showRelativeForm,
-                taskId: state => state.taskId,
-            }),
+        props: {
+            taskId: Number,
         },
+        computed: {},
         methods: {
             close: function () {
-                this.$store.commit('TASK_STORE/SET_SHOW_RELATIVE_FORM', false);
+                this.dialog = false;
             },
             save: function () {
                 this.loading = true;
@@ -85,7 +83,7 @@
                 axios({url, method, data})
                     .then((response) => {
                         console.log(response.data);
-                        this.$store.commit('TASK_STORE/SET_SHOW_RELATIVE_FORM', false);
+                        this.dialog = false;
                         this.$emit("refresh");
                     })
                     .catch(error => {

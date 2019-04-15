@@ -66,11 +66,11 @@
         computed: {},
         methods: {
             init() {
-                this.$store.commit('TASK_STORE/SET_TASK_ID', this.id);
                 this.loadFilenames();
             },
             goBack: function () {
-                this.$router.push("/tasks");
+                // this.$router.push("/tasks");
+                this.$router.back();
             },
             uploadFile: function () {
                 this.uploadFileLoading = true;
@@ -103,7 +103,7 @@
                     .catch(error => console.log(error.response))
             },
             downloadFile: function (filename) {
-                axios.get(`http://localhost:8080/downloadFile/${filename}`)
+                axios.get(`http://localhost:8080/downloadFile/${filename}`, {responseType: 'blob',})
                     .then(response => {
                         download(response.data, filename, response.headers['Content-Type']);
                     })

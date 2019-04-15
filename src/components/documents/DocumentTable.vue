@@ -47,7 +47,7 @@
 <script>
     import axios from 'axios';
     import _ from 'lodash';
-    import {mapGetters} from 'vuex'
+    import {mapGetters, mapState} from 'vuex'
     import DocumentForm from "./DocumentForm";
 
     export default {
@@ -80,7 +80,7 @@
         },
         computed: {
             ...mapGetters('AUTHENTICATION', {
-                isAdmin: 'isAdmin',
+                isAdmin: "isAdmin",
             })
         },
         mounted() {

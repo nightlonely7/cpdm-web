@@ -83,7 +83,6 @@ const router = new Router({
             name: 'Xét duyệt đơn xin nghỉ phép',
             component: () => import('@/views/leaveRequests/ApproverLeaveRequestPage.vue')
         },
-
         {
             path: '/viewLeaveCalendar',
             name: 'Lịch nghỉ phép',
@@ -100,6 +99,11 @@ const router = new Router({
             component: () => import('@/views/leaveRequests/ManagePolicyForLeavePage.vue')
         },
         {
+            path: '/createUserAssignRequests',
+            name: 'Tạo đơn xin ủy quyền',
+            component: () => import('@/views/assignRequests/CreatingUserAssignRequestPage.vue')
+        },
+        {
             path: '/userAssignRequests',
             name: 'Quản lý đơn xin ủy quyền',
             component: () => import('@/views/assignRequests/UserAssignRequestPage.vue')
@@ -108,6 +112,21 @@ const router = new Router({
             path: '/approverAssignRequests',
             name: 'Xét duyệt đơn xin ủy quyền',
             component: () => import('@/views/assignRequests/ApproverAssignRequestPage.vue')
+        },
+        {
+            path: '/createAskingRequests',
+            name: 'Xin ý kiến lãnh đạo',
+            component: () => import('@/views/askingRequests/CreatingAskingRequestPage.vue')
+        },
+        {
+            path: '/senderAskingRequests',
+            name: 'Theo dõi',
+            component: () => import('@/views/askingRequests/SenderAskingRequestPage.vue')
+        },
+        {
+            path: '/receiverAskingRequests',
+            name: 'Phản hồi',
+            component: () => import('@/views/askingRequests/ReceiverAskingRequestPage.vue')
         },
         {
             path: '/viewPassword',

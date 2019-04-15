@@ -43,6 +43,7 @@
                                                 v-model="endDateFrom"
                                                 :max="endDateTo"
                                                 full-width
+                                                locale="vi-vn"
                                         >
                                             <v-spacer></v-spacer>
                                             <v-btn flat color="primary" @click="endDateFromMenu = false">Cancel
@@ -79,6 +80,7 @@
                                                 v-model="endDateTo"
                                                 :min="endDateFrom"
                                                 full-width
+                                                locale="vi-vn"
                                         >
                                             <v-spacer></v-spacer>
                                             <v-btn flat color="primary" @click="endDateToMenu = false">Cancel

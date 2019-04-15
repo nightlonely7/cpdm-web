@@ -33,6 +33,12 @@
                                               clearable
                                 ></v-text-field>
 
+                                <!--Description Search-->
+                                <v-text-field v-model="descriptionSearchValue"
+                                              label="Tìm bởi nội dung chi tiết"
+                                              clearable
+                                ></v-text-field>
+
                                 <!--Project Search-->
                                 <v-select v-model="projectIdSearchValue"
                                           :items="projectOptions"
@@ -62,6 +68,77 @@
 
                                 <!--End Time Search-->
                                 <TaskSearchEndTime ref="taskSearchEndTime"></TaskSearchEndTime>
+                                <br>
+
+                                <v-card>
+                                    <v-card-title>Tìm theo trạng thái</v-card-title>
+                                    <v-card-text>
+                                        <v-layout wrap>
+
+                                            <v-flex>
+                                                <v-checkbox v-model="statusSearchValue" value="Outdated">
+                                                    <template #label>
+                                                        <v-chip color="error" text-color="white">
+                                                            Quá hạn
+                                                        </v-chip>
+                                                    </template>
+                                                </v-checkbox>
+                                            </v-flex>
+
+                                            <v-flex>
+                                                <v-checkbox v-model="statusSearchValue" value="Near deadline">
+                                                    <template #label>
+                                                        <v-chip color="warning" text-color="white">
+                                                            Gần tới hạn
+                                                        </v-chip>
+                                                    </template>
+                                                </v-checkbox>
+                                            </v-flex>
+
+                                            <v-flex>
+                                                <v-checkbox v-model="statusSearchValue" value="Complete outdated">
+                                                    <template #label>
+                                                        <v-chip color="error" text-color="white">
+                                                            Hoàn tất quá hạn
+                                                        </v-chip>
+                                                    </template>
+                                                </v-checkbox>
+                                            </v-flex>
+
+                                            <v-flex>
+                                                <v-checkbox v-model="statusSearchValue" value="Waiting">
+                                                    <template #label>
+                                                        <v-chip>
+                                                            Đang chờ
+                                                        </v-chip>
+                                                    </template>
+                                                </v-checkbox>
+                                            </v-flex>
+
+                                            <v-flex>
+                                                <v-checkbox v-model="statusSearchValue" value="Working">
+                                                    <template #label>
+                                                        <v-chip color="primary" text-color="white">
+                                                            Đang thực hiện
+                                                        </v-chip>
+                                                    </template>
+                                                </v-checkbox>
+
+                                            </v-flex>
+
+                                            <v-flex>
+                                                <v-checkbox v-model="statusSearchValue" value="Completed">
+                                                    <template #label>
+                                                        <v-chip color="success" text-color="white">
+                                                            Hoàn tất
+                                                        </v-chip>
+                                                    </template>
+                                                </v-checkbox>
+                                            </v-flex>
+
+                                        </v-layout>
+                                    </v-card-text>
+                                </v-card>
 
                             </v-card-text>
                         </v-card>
@@ -97,9 +174,15 @@
             summarySearchValue: {
                 get() {return this.$store.state.TASK_STORE.summarySearchValue},
                 set(val) {this.$store.commit('TASK_STORE/SET_SUMMARY_SEARCH_VALUE', val)}},
+            descriptionSearchValue: {
+                get() {return this.$store.state.TASK_STORE.descriptionSearchValue},
+                set(val) {this.$store.commit('TASK_STORE/SET_DESCRIPTION_SEARCH_VALUE', val)}},
             projectIdSearchValue: {
                 get() {return this.$store.state.TASK_STORE.projectIdSearchValue},
                 set(val) {this.$store.commit('TASK_STORE/SET_PROJECT_ID_SEARCH_VALUE', val)}},
+            statusSearchValue: {
+                get() {return this.$store.state.TASK_STORE.statusSearchValue},
+                set(val) {this.$store.commit('TASK_STORE/SET_STATUS_SEARCH_VALUE', val)}},
         // @formatter:on
         },
 
@@ -113,7 +196,7 @@
             getProjectOptions() {
                 this.projectOptionsLoading = true;
 
-                axios.get(`http://localhost:8080/projects`)
+                axios.get(`http://localhost:8080/projects/search/all`)
                     .then(response => {
                         this.projectOptions = response.data.content;
                     })

@@ -1,8 +1,9 @@
 <template>
-    <div class="elevation-1">
+    <div>
+
         <TaskSearch></TaskSearch>
         <v-divider></v-divider>
-        <v-toolbar tabs fixed-tabs class="elevation-0">
+        <v-toolbar tabs fixed-tabs class="elevation-1">
             <v-toolbar-title>QUẢN LÝ TÁC VỤ</v-toolbar-title>
             <template slot="extension">
                 <v-tabs
@@ -49,7 +50,7 @@
         components: {TaskSearch, TaskTable},
         data() {
             return {
-                tabs: null,
+                tabs: 0,
             }
         },
         computed: {

@@ -12,6 +12,7 @@
     "animate.css": "^3.7.0",
     "axios": "^0.18.0",
     "downloadjs": "^1.4.7",
+    "firebase": "^5.9.4",
     "lodash": "^4.17.11",
     "material-design-icons-iconfont": "^4.0.5",
     "moment": "^2.24.0",
