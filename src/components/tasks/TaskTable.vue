@@ -5,7 +5,7 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh()">
                 <v-icon left>cached</v-icon>
-                <span>Làm mới</span>
+                <span>Tải lại</span>
             </v-btn>
             <v-spacer></v-spacer>
             <TaskForm v-if="getTasksURL === 'search/creates'" @refresh="refresh" relative creating>
