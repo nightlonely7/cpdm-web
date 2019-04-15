@@ -11,6 +11,25 @@
                     </v-list-tile-title>
                 </v-list-tile>
                 <v-divider/>
+
+                <v-list-tile to="/departments">
+                    <v-list-tile-action>
+                        <v-icon>account_circle</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Quản lý phòng ban</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+
+                <v-list-tile to="/projects">
+                    <v-list-tile-action>
+                        <v-icon>account_circle</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Quản lý dự án</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+
                 <v-list-tile to="/documents">
                     <v-list-tile-action>
                         <v-icon>account_circle</v-icon>
@@ -19,6 +38,7 @@
                         <v-list-tile-title>Quản lý tài liệu</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
+
                 <v-list-tile to="/tasks">
                     <v-list-tile-action>
                         <v-icon>account_circle</v-icon>
@@ -168,6 +188,8 @@
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer/>
+            <span>{{ displayName }}</span>
+            &nbsp; &nbsp; &nbsp;
             <v-menu
                     v-show="isLoggedIn"
                     bottom
@@ -271,6 +293,7 @@
         computed: {
             ...mapState('AUTHENTICATION', {
                 role: state => state.role,
+                displayName: state => state.displayName,
             }),
             ...mapGetters('AUTHENTICATION', {
                 isInit: 'isInit',
