@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="text-xs-center">
-            <v-progress-circular v-if="loading" indeterminate
+        <div class="text-xs-center" v-if="loading">
+            <v-progress-circular indeterminate
                                  size="128"
                                  width="16"
                                  color="primary"
@@ -16,7 +16,7 @@
             <br>
             <p>Thuộc dự án: {{task.project.name || 'Chưa xác định'}}</p>
             <br>
-            <p v-if="isChild">Thuộc tác vụ tổng:
+            <p v-if="(isAdmin || isManager) && isChild">Thuộc tác vụ tổng:
                 <router-link :to="`/tasks/${task.parentTask.id}`">
                     {{task.parentTask.title || 'Chưa xác định'}}
                 </router-link>
@@ -33,7 +33,7 @@
                 <v-chip v-if="task.status === 'Near deadline'" color="warning" text-color="white">Gần tới hạn
                 </v-chip>
                 <v-btn v-if="(completionRate === 1 || this.issuesStatus.total === 0) && isRunning && task.executor.id === userId"
-                       @click="completeTask">Báo cáo hoàn tất
+                       @click="completeTask" color="success">Báo cáo hoàn tất
                 </v-btn>
                 <br>
                 <span>Số vấn đề hoàn tất: {{issuesStatus.completed}} / {{issuesStatus.total}}</span>
@@ -266,7 +266,15 @@
                         this.getTaskDocuments();
                         this.getIssuesStatus();
                     })
+                    .catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data);
+                        } else {
+                            console.log(error.response);
+                        }
+                    })
                     .finally(() => {
+                        console.log('detail')
                         this.loading = false;
                     })
             },
