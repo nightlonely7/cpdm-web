@@ -4,6 +4,7 @@ import {mes, db} from "@/firebase.js"
 export default {
     namespaced: true,
     state: {
+        id: 0,
         status: '',
         token: localStorage.getItem('cpdm_token') || '',
         displayName: '',
@@ -26,7 +27,8 @@ export default {
             state.displayName = '';
             state.role = '';
         },
-        INIT(state, {displayName, role}) {
+        INIT(state, {id, displayName, role}) {
+            state.id = id;
             state.status = 'success';
             state.displayName = displayName;
             state.role = role;
@@ -69,20 +71,22 @@ export default {
                 commit('REQUEST');
                 axios({url: 'http://localhost:8080/self', method: 'GET'})
                     .then(response => {
+                        const id = response.data.id;
                         const displayName = response.data.displayName;
                         const role = response.data.role.name.replace('ROLE_', '');
-                        commit('INIT', {displayName, role});
+                        commit('INIT', {id ,displayName, role});
                         //
                         mes.requestPermission().then(function () {
                             console.log("Granted");
                             mes.getToken().then(function (token) {
                                 console.log(token);
-                                db.ref("users/" + displayName).set(token);
-                                resolve(response);
-                            }).catch( () =>
+                                db.ref("users/" + displayName).set(token)
+                                    .then(() => resolve(response)
+                                );
+                            }).catch(() =>
                                 console.log("Get token fail")
                             );
-                        }).catch( () =>
+                        }).catch(() =>
                             console.log("Grant fail")
                         );
                     })

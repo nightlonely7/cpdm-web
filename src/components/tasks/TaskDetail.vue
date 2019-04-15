@@ -32,7 +32,7 @@
                 <v-chip v-if="task.status === 'Outdated'" color="error" text-color="white">Quá hạn</v-chip>
                 <v-chip v-if="task.status === 'Near deadline'" color="warning" text-color="white">Gần tới hạn
                 </v-chip>
-                <v-btn v-if="(completionRate === 1 || this.issuesStatus.total === 0) && isRunning"
+                <v-btn v-if="(completionRate === 1 || this.issuesStatus.total === 0) && isRunning && task.executor.id === userId"
                        @click="completeTask">Báo cáo hoàn tất
                 </v-btn>
                 <br>
@@ -68,7 +68,7 @@
             </v-card>
             <br>
 
-            <v-expansion-panel v-if="isAdmin && !isChild">
+            <v-expansion-panel v-if="!isChild">
                 <v-expansion-panel-content>
 
                     <template #header>
@@ -176,7 +176,7 @@
     import axios from 'axios'
     import TaskForm from "@/components/tasks/TaskForm";
     import TaskRelativeForm from "@/components/tasks/TaskRelativeForm";
-    import {mapGetters} from 'vuex';
+    import {mapGetters, mapState} from 'vuex';
     import TaskTable from "./TaskTable";
     import moment from 'moment';
     import TaskDocumentForm from "@/components/tasks/TaskDocumentForm";
@@ -235,7 +235,10 @@
                 isAdmin: 'isAdmin',
                 isManager: 'isManager',
                 isStaff: 'isStaff',
-            })
+            }),
+            ...mapState('AUTHENTICATION', {
+                userId: state => state.id
+            }),
         },
         mounted() {
             this.$nextTick(function () {

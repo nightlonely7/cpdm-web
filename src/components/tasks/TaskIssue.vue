@@ -44,7 +44,7 @@
                                 </template>
                             </TaskIssueForm>
                             <v-btn v-if="!issue.completed" @click="deleteIssue(issue.id)">Xóa</v-btn>
-                            <v-btn v-if="!issue.completed" @click="completeIssue(issue.id)">Báo cáo hoàn tất</v-btn>
+                            <v-btn v-if="!issue.completed && task.status !== 'Waiting' && task.executor.id === userId" @click="completeIssue(issue.id)">Báo cáo hoàn tất</v-btn>
                         </v-list-tile>
                     </v-list-tile-content>
                 </v-list>
@@ -56,6 +56,7 @@
 <script>
     import axios from 'axios';
     import TaskIssueForm from "@/components/tasks/TaskIssueForm";
+    import {mapState} from "vuex";
 
     export default {
         name: "TaskIssue",
@@ -82,6 +83,9 @@
                     || this.task.status === 'Outdated'
                     || this.task.status === 'Near deadline'
             },
+            ...mapState('AUTHENTICATION', {
+                userId: state => state.id
+            }),
         },
         methods: {
             refreshIssues() {

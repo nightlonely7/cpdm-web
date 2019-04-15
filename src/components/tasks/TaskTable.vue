@@ -113,8 +113,8 @@
                 table: {
                     loading: false,
                     headers: [
-                        {text: 'Tiêu đề', value: 'title'},
-                        {text: 'Tổng quát', value: 'summary', width: '25%'},
+                        {text: 'Tiêu đề', value: 'title', width: '20%'},
+                        {text: 'Tổng quát', value: 'summary', width: '20%'},
                         {text: 'Dự án', value: 'project.name'},
                         {text: 'Thời gian tạo', value: 'createdTime'},
                         {text: 'Thời gian bắt đầu', value: 'startTime'},
