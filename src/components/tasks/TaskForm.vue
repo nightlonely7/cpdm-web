@@ -194,6 +194,10 @@
                                     </v-dialog>
                                 </v-flex>
 
+<!--                                <v-flex md12 sm12>-->
+<!--                                    <span>Thời lượng: {{duration}} ngày</span>-->
+<!--                                </v-flex>-->
+
                                 <v-flex md12 sm12>
                                     <v-textarea v-model="taskForm.description"
                                                 label="Nội dung chi tiết"
@@ -250,14 +254,12 @@
                                     ></v-select>
                                 </v-flex>
                                 <v-flex md6 sm12>
-                                    <v-text-field v-model="taskForm.priority"
-                                                  type="number"
-                                                  label="Mức độ ưu tiên"
-                                                  :rules="priorityRules"
-                                                  validate-on-blur
-                                                  min="1"
-                                                  max="5"
-                                    ></v-text-field>
+                                    <v-slider v-model="taskForm.priority"
+                                              label="Mức độ ưu tiên"
+                                              min="1"
+                                              max="5"
+                                              thumb-label="always"
+                                    ></v-slider>
                                 </v-flex>
                                 <v-flex md12 sm12 v-if="relative">
                                     <v-autocomplete chips deletable-chips cache-items multiple
@@ -307,6 +309,7 @@
     import axios from 'axios';
     import _ from 'lodash';
     import {mapGetters} from "vuex";
+    import moment from 'moment';
 
     export default {
         name: "TaskForm",
@@ -337,10 +340,6 @@
                 dateRules: [
                     val => !!val || "Không được để trống!",
                 ],
-                priorityRules: [
-                    val => !!val || "Không được để trống!",
-                    val => (val >= 1 && val <= 5) || "Độ ưu tiên phải từ 1 tới 5"
-                ],
                 executorRules: [
                     val => !!val || "Không được để trống!",
                 ]
@@ -354,6 +353,11 @@
                 isAdmin: 'isAdmin',
                 isManager: 'isManager'
             }),
+            // duration() {
+            //     const start = `${this.startDate} ${this.startTime}:00`;
+            //     const end = `${this.endDate} ${this.endTime}:00`;
+            //     return moment(end, 'YYYY-MM-DD HH:mm:ss').diff(moment(start ,'YYYY-MM-DD HH:mm:ss'), 'day')
+            // },
         },
         props: {
             form: {
@@ -361,6 +365,7 @@
                 default: function () {
                     return {
                         id: 0,
+                        priority: 1,
                         project: {id: null},
                         executor: {id: null},
                         parentTask: {id: null},

@@ -83,45 +83,56 @@
             <v-divider></v-divider>
             <br>
 
-            <v-expansion-panel>
-                <v-expansion-panel-content>
-
-                    <template #header>
-                        Danh sách người theo dõi
-                    </template>
-
-                    <v-list>
-                        <v-list-tile-content>
-                            <v-list-tile>
-                                <TaskRelativeForm :task-id="id" @refresh="refreshRelatives">
-                                    <template #activator="{ on }">
-                                        <v-btn v-on="on" color="primary">Thêm người theo dõi</v-btn>
-                                    </template>
-                                </TaskRelativeForm>
-
-                            </v-list-tile>
-                            <v-list-tile v-for="user in taskRelatives" :key="user.id">
-                                {{user.displayName}} - {{user.fullName}} - {{user.email}} -
-                                Phòng ban: {{user.department.name || ''}} -
-                                Chức vụ: {{user.role.name || ''}}
-                                <v-btn @click="deleteRelative(user.id)">Xóa</v-btn>
-                            </v-list-tile>
-                        </v-list-tile-content>
-                    </v-list>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
+            <TaskIssue :task="{...task}" @refresh-issues-status="refreshIssuesStatus"></TaskIssue>
 
             <br>
             <v-divider></v-divider>
             <br>
+
+            <div v-if="task.creator.id === userId">
+                <v-expansion-panel>
+                    <v-expansion-panel-content>
+
+                        <template #header>
+                            Danh sách người theo dõi
+                        </template>
+
+                        <v-list>
+                            <v-list-tile-content>
+                                <v-list-tile>
+                                    <TaskRelativeForm :task-id="id" @refresh="refreshRelatives">
+                                        <template #activator="{ on }">
+                                            <v-btn v-on="on" color="primary">Thêm người theo dõi</v-btn>
+                                        </template>
+                                    </TaskRelativeForm>
+
+                                </v-list-tile>
+                                <v-list-tile v-for="user in taskRelatives" :key="user.id">
+                                    {{user.displayName}} - {{user.fullName}} - {{user.email}} -
+                                    Phòng ban: {{user.department.name || ''}} -
+                                    Chức vụ: {{user.role.name || ''}}
+                                    <v-btn @click="deleteRelative(user.id)">Xóa</v-btn>
+                                </v-list-tile>
+                            </v-list-tile-content>
+                        </v-list>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+
+                <br>
+                <v-divider></v-divider>
+                <br>
+            </div>
 
             <v-expansion-panel>
                 <v-expansion-panel-content>
                     <template #header>
                         Danh sách tài liệu liên quan
                     </template>
+                    <div class="text-xs-center" v-if="!documents || (!!documents && !documents.length)">
+                        <span>Không có tài liệu nào</span>
+                    </div>
                     <v-list three-line>
-                        <v-list-tile>
+                        <v-list-tile v-if="task.creator.id === userId">
                             <TaskDocumentForm :task-id="id" :project-id="task.project.id" @refresh="getTaskDocuments">
                                 <template #activator="{on}">
                                     <v-btn v-on="on" color="primary">Thêm tài liệu liên quan</v-btn>
@@ -145,12 +156,6 @@
 
                 </v-expansion-panel-content>
             </v-expansion-panel>
-
-            <br>
-            <v-divider></v-divider>
-            <br>
-
-            <TaskIssue :task="{...task}" @refresh-issues-status="refreshIssuesStatus"></TaskIssue>
 
             <br>
             <v-divider></v-divider>
@@ -266,10 +271,10 @@
                     })
             },
             getIssuesStatus() {
-               axios.get(`http://localhost:8080/tasks/${this.id}/issues/status`)
-                   .then(response => {
-                       this.issuesStatus = response.data;
-                   })
+                axios.get(`http://localhost:8080/tasks/${this.id}/issues/status`)
+                    .then(response => {
+                        this.issuesStatus = response.data;
+                    })
             },
             getTaskRelatives: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}/relatives`)
@@ -293,7 +298,7 @@
                 }
             },
             completeTask() {
-                if (confirm('Bạn muốn báo cáo hoàn tất Tác Vụ này chứ?')) {
+                if (confirm('Bạn muốn báo cáo hoàn tất tác vụ này chứ?')) {
                     axios.patch(`http://localhost:8080/tasks/${this.id}/complete`)
                         .then(() => {
                             this.getTask();
@@ -308,7 +313,7 @@
                 }
             },
             deleteIssue: function (id) {
-                if (confirm('Bạn muốn xóa Vấn Đề này chứ?')) {
+                if (confirm('Bạn muốn xóa vấn đề này chứ?')) {
                     axios.delete(`http://localhost:8080/task-issues/${id}`)
                         .then(() => {
                             this.refreshIssues();
@@ -338,7 +343,7 @@
                 }
             },
             deleteRelative: function (userId) {
-                if (confirm('Bạn muốn xóa Người liên quan này chứ')) {
+                if (confirm('Bạn muốn xóa người theo dõi này chứ')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}/relatives/${userId}`)
                         .then(() => {
                             this.refreshRelatives();
