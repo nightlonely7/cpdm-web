@@ -463,28 +463,46 @@
                     }
                 );
             },
-            pushnotification(item){
+            pushnotification(item) {
                 var keys = [];
-                db.ref('users/' + item.approver.displayName).once('value').then(function (snapshot) {
-                    keys.push(snapshot.val());
-                    axios.post('http://localhost:8080/notifications/push',
-                        {
-                            keys : keys,
-                            title : "Đơn xin nghỉ phép",
-                            detail : item.content,
-                        }
-                    ).then(response => {
-                        console.log(response.status);
+                var title = "Đơn xin nghỉ phép";
+                var url = "/approverLeaveRequests";
+                axios.post('http://localhost:8080/notifications', {
+                        title: title,
+                        detail: item.content,
+                        url: url,
+                        user: item.approver
+                    }
+                ).then(() => {
+                    db.ref('users/' + item.approver.displayName).once('value').then(function (snapshot) {
+                        keys.push(snapshot.val());
+                        axios.post('http://localhost:8080/notifications/push',
+                            {
+                                keys: keys,
+                                title: title,
+                                detail: item.content,
+                                url: url
+                            }
+                        ).then(response => {
+                            console.log(response.status);
+                        }).catch(error => {
+                            if (error.response) {
+                                console.log(error.response.data);
+                            } else {
+                                console.log(error.response);
+                            }
+                        });
                     }).catch(error => {
-                        if (error.response) {
-                            console.log(error.response.data);
-                        } else {
-                            console.log(error.response);
-                        }
+                        console.log(error.response);
                     });
                 }).catch(error => {
-                    console.log(error.response);
+                    if (error.response) {
+                        console.log(error.response.data);
+                    } else {
+                        console.log(error.response);
+                    }
                 });
+
             },
             allowedDates: val => notAllowedDate.indexOf(val) == -1
         },

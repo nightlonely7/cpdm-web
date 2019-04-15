@@ -182,21 +182,20 @@
                             color="error"
                             overlap
                     >
-                        <template slot="badge">
+                        <template slot="badge" v-if="notifications.length > 0">
                             {{ notifications.length }}
                         </template>
                         <v-icon color="white">mdi-bell</v-icon>
                     </v-badge>
                 </v-btn>
-                <v-card>
+                <v-card v-if="notifications.length > 0">
                     <v-list dense>
                         <v-list-tile
                                 v-for="notification in notifications"
-                                :key="notification"
+                                :key="notification.id"
+                                @click="goTo(notification.url)"
                         >
-                            <v-list-tile-title
-                                    v-text="notification"
-                            />
+                            <v-list-tile-title v-text="notification.title"/>
                         </v-list-tile>
                     </v-list>
                 </v-card>
@@ -248,17 +247,13 @@
 
 <script>
     import {mapGetters, mapState} from 'vuex';
+    import axios from 'axios';
+    import {mes} from '@/firebase.js';
 
     export default {
         data: () => ({
             logo: './assets/logo.png',
-            notifications: [
-                'Mike, John responded to your email',
-                'You have 5 new tasks',
-                'You\'re now a friend with Andrew',
-                'Another Notification',
-                'Another One'
-            ],
+            notifications: [],
             title: '',
             drawer: true
         }),
@@ -266,7 +261,12 @@
             source: String
         },
         mounted() {
-
+            this.$nextTick(() => {
+                this.getNotifications();
+            });
+            mes.onMessage(() => {
+               this.getNotifications();
+            });
         },
         computed: {
             ...mapState('AUTHENTICATION', {
@@ -287,6 +287,22 @@
                         this.$store.commit('TASK_STORE/RESET');
                         this.$router.push('/login');
                     });
+            },
+            getNotifications() {
+                axios.get("http://localhost:8080/notifications"
+                ).then(response => {
+                    this.notifications = response.data.content;
+                }).catch(error => {
+                    if(error.response){
+                        console.log(error.response.data);
+                    }
+                    else{
+                        console.log(error.response);
+                    }
+                })
+            },
+            goTo(url){
+                this.$router.push(url);
             }
         },
         watch: {
