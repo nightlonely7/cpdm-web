@@ -68,9 +68,7 @@
                                                 clearable
                                                 hide-no-data
                                 >
-
                                     <template #item="{item}">
-
                                         {{item.email}} - {{item.fullName}} - Phòng ban:
                                         {{item.department.name}}
                                     </template>
@@ -132,7 +130,7 @@
         computed: {
             documentForm() {
                 return {...this.form};
-            },
+            }
         },
         methods: {
             close() {

@@ -27,7 +27,7 @@
                 {{pageStart}} - {{pageStop}} của tổng cộng {{itemsLength}}
             </template>
             <template #items="{item}">
-                <router-link tag="tr" :to="`/documents/${props.item.id}`"
+                <router-link tag="tr" :to="`/documents/${item.id}`"
                              onmouseover="this.style.cursor='pointer'"
                              onmouseout="this.style.cursor='none'"
                 >
@@ -47,7 +47,7 @@
 <script>
     import axios from 'axios';
     import _ from 'lodash';
-    import {mapState} from 'vuex'
+    import {mapGetters} from 'vuex'
     import DocumentForm from "./DocumentForm";
 
     export default {
@@ -79,9 +79,8 @@
             }
         },
         computed: {
-            ...mapState('AUTHENTICATION', {
-                isStaff: state => state.isStaff,
-                isAdmin: state => state.isAdmin,
+            ...mapGetters('AUTHENTICATION', {
+                isAdmin: 'isAdmin',
             })
         },
         mounted() {

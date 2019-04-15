@@ -16,7 +16,6 @@
                         <v-card-text>
                             <v-btn @click="reset" color="primary">Đặt lại</v-btn>
                             <v-layout row wrap>
-
                                 <!--End Date From-->
                                 <v-flex xs12 sm6 md6>
                                     <v-dialog

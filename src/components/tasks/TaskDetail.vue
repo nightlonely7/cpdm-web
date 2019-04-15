@@ -62,7 +62,6 @@
 
             <v-expansion-panel>
                 <v-expansion-panel-content>
-
                     <template slot="header">
                         Danh sách người theo dõi
                     </template>
@@ -70,43 +69,37 @@
                     <v-list>
                         <v-list-tile-content>
                             <v-list-tile>
-                                <v-btn @click="showRelativeForm">Thêm người liên quan</v-btn>
+                                <v-btn color="success" @click="showRelativeForm">Thêm người liên quan</v-btn>
                             </v-list-tile>
                             <v-list-tile v-for="user in taskRelatives" :key="user.id">
                                 {{user.displayName}} - {{user.fullName}} - {{user.email}} -
                                 Phòng ban: {{user.department.name || ''}} -
                                 Chức vụ: {{user.role.name || ''}}
-                                <v-btn @click="deleteRelative(user.id)">Xóa</v-btn>
+                                <v-btn color="error" @click="deleteRelative(user.id)">Xóa</v-btn>
                             </v-list-tile>
                         </v-list-tile-content>
                     </v-list>
-
 
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
             <v-expansion-panel>
                 <v-expansion-panel-content>
-
                     <template slot="header">
                         Danh sách vấn đề
                     </template>
-
                     <v-list>
                         <v-list-tile-content>
                             <v-list-tile>
-                                <v-btn @click="showIssueForm">Thêm vấn đề</v-btn>
-
+                                <v-btn color="success" @click="showIssueForm">Thêm vấn đề</v-btn>
                             </v-list-tile>
                             <v-list-tile v-for="issue in taskIssues" :key="issue.id">
                                 {{issue.summary}} - {{issue.detail}}
-                                <v-btn @click="editIssue(issue)">Sửa</v-btn>
-                                <v-btn @click="deleteIssue(issue.id)">Xóa</v-btn>
+                                <v-btn color="info" @click="editIssue(issue)">Sửa</v-btn>
+                                <v-btn color="error" @click="deleteIssue(issue.id)">Xóa</v-btn>
                             </v-list-tile>
                         </v-list-tile-content>
                     </v-list>
-
-
                 </v-expansion-panel-content>
             </v-expansion-panel>
 

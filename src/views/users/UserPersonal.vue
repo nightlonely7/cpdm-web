@@ -45,21 +45,6 @@
                                 </v-radio-group>
                             </v-flex>
                             <v-flex md6>
-                                <v-text-field v-model="user.password"
-                                              label="Mật khẩu"
-                                              :rules="passwordRule"
-                                              :type="'password'"
-                                ></v-text-field>
-                            </v-flex>
-                            <v-flex md6>
-                                <v-text-field v-model="user.confirmPassword"
-                                              label="Xác nhận mật khẩu"
-                                              :rules="confirmPasswordRule"
-                                              :type="'password'"
-                                              validate-on-blur
-                                ></v-text-field>
-                            </v-flex>
-                            <v-flex md6>
                                 <v-text-field v-model="user.phone"
                                               label="Số điện thoại"
                                               :rules="phoneRule"
@@ -182,17 +167,6 @@
                     val => (val && val.length >= 4 && val.length <= 50)
                         || 'Cần phải điền từ 4 tới 50 ý tự!'
                 ],
-                passwordRule: [
-                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
-                    val => (val && val.length >= 8 && val.length <= 20)
-                        || 'Cần phải điền từ 8 tới 20 ý tự!'
-                ],
-                confirmPasswordRule: [
-                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
-                    val => (val && val.length >= 8 && val.length <= 20)
-                        || 'Cần phải điền từ 8 tới 20 ý tự!',
-                    val => (val === this.user.password) || 'Nhập lại mật khẩu phải trùng với mật khẩu!'
-                ],
                 emailRule: [
                     val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
                     val => /.+@.+/.test(val) || 'Email không hợp lệ!',
@@ -204,7 +178,6 @@
                 datePicker: '',
                 serverValidate: false,
                 isEmailExisted: false,
-                confirmPassword: ''
             }
         },
         computed: {
@@ -245,7 +218,8 @@
                 } else {
                     const user = {...this.user};
                     user.isEnabled = true;
-                    axios.put(`http://localhost:8080/users/${user.id}`, user)
+                    user.password = '12345678';
+                    axios.put(`http://localhost:8080/users/personalUpdate/${user.id}`, user)
                         .then(
                             response => {
                                 this.user = response.data;
@@ -276,11 +250,6 @@
                     }
                 }
             },
-            changePassword: function () {
-                console.log(this.user);
-                this.$store.commit('USER_STORE/SET_CURRENT_USER', this.user);
-                this.$router.push('/viewPassword');
-            }
         }
     }
 </script>

@@ -12,7 +12,9 @@ import 'animate.css'
 import VeeValidate from 'vee-validate';
 import './views/validator/validateEmail';
 import './views/validator/validateDepName';
+import './views/validator/validateDepAlias';
 import './views/validator/validateProjectName';
+import './views/validator/validateProjectAlias';
 import Vuex from 'vuex'
 import moment from 'moment'
 

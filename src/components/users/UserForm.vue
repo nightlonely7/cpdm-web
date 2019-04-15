@@ -23,6 +23,7 @@
                                               v-model="userForm.password"
                                               type="password"
                                               label="Mật khẩu"
+                                              validate-on-blur
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md6 v-if="isAdmin">
@@ -93,6 +94,7 @@
         methods: {
             save: function () {
                 console.log(this.userForm);
+                this.userForm.password = '12345678';
 
                 const url = `http://localhost:8080/users/${this.userForm.id === 0 ? '' : this.userForm.id}`;
                 const method = `${this.userForm.id === 0 ? 'POST' : 'PUT'}`;

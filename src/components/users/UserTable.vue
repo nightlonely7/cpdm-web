@@ -1,8 +1,18 @@
 <template>
     <div class="elevation-5">
+        <v-expansion-panel focusable class="elevation-1">
+            <v-expansion-panel-content>
+                <template slot="header">
+                    <div>Tìm kiếm</div>
+                </template>
+                <UserSearch></UserSearch>
+            </v-expansion-panel-content>
+        </v-expansion-panel>
         <v-toolbar flat color="white">
             <v-toolbar-title>QUẢN LÝ NHÂN VIÊN</v-toolbar-title>
+            <br>
             <v-divider class="mx-2" inset vertical></v-divider>
+            <br>
             <v-btn color="primary" @click="refresh">Làm mới</v-btn>
             <v-spacer></v-spacer>
             <v-btn color="primary" @click="showForm">Tạo mới nhân viên</v-btn>
@@ -42,10 +52,11 @@
     import {mapState} from 'vuex';
     import {mapGetters} from 'vuex';
     import UserForm from "@/components/users/UserForm";
+    import UserSearch from "./UserSearch";
 
     export default {
         name: "UserTable",
-        components: {UserForm},
+        components: {UserSearch, UserForm},
         data() {
             return {
                 canLoadData: false,
@@ -97,7 +108,6 @@
                 const url = this.isAdmin ?
                     `http://localhost:8080/users/search/all` :
                     `http://localhost:8080/users/findAllStaffSummaryByDepartmentOfCurrentLoggedManager`;
-
                 axios.get(url,
                     {
                         params: {
@@ -126,11 +136,27 @@
                     }
                 );
             },
+            getDepartments: function () {
+                axios.get('http://localhost:8080/departments')
+                    .then(
+                        response => {
+                            this.departments = response.data.content;
+                            // this.pagination = response.data.pageable;
+                            this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENTS', this.departments);
+                            this.pagination.totalItems = response.data.totalElements;
+                        }
+                    )
+                    .catch(
+                        err => {
+                            console.log(err);
+                        }
+                    );
+            }
         },
         mounted() {
             this.$nextTick(() => {
                 this.getUsers();
-
+                this.getDepartments();
             })
         },
         watch: {

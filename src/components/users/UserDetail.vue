@@ -73,7 +73,7 @@
                 if (confirm('Bạn muốn xóa nhân viên này chứ?')) {
                     axios.delete(`http://localhost:8080/users/${this.id}`)
                         .then(() => {
-                                this.$router.push("/tasks");
+                                this.$router.push("/users");
                             }
                         )
                 }

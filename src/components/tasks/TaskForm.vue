@@ -152,6 +152,12 @@
                 viewerOptions: [],
                 viewerOptionsLoading: false,
                 viewerOptionsSearch: null,
+                titleRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
+                ],
+                aliasRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
+                ],
             }
         },
         computed: {

@@ -32,7 +32,10 @@
                                                   counter="50"
                                                   :rules="aliasRule"
                                                   name="alias"
+                                                  v-validate="{projectNameValidator: [projectName, isEdit]}"
+                                                  validate-on-blur
                                     ></v-text-field>
+                                    <p style="color: red">{{ errors.first('alias') }}</p>
                                 </v-flex>
                             </v-layout>
                         </v-container>
@@ -57,6 +60,7 @@
     import axios from 'axios'
     import {mapState} from 'vuex'
     import 'vee-validate'
+    import _ from 'lodash'
 
     export default {
         name: "ProjectForm",
@@ -79,6 +83,7 @@
                 showForm: state => state.showForm,
                 projectForm: state => state.projectForm,
                 projectName: state => state.projectName,
+                projectAlias: state => state.projectAlias,
                 isEdit: state => state.isEdit
             })
         },

@@ -37,6 +37,7 @@
     import axios from 'axios';
     import DepartmentForm from "./DepartmentForm";
     import 'vuex';
+    import _ from 'lodash';
 
     export default {
         name: "DepartmentTable",

@@ -5,6 +5,7 @@ const departmentStoreDefaultState = () => {
         departmentForm: {},
         isEdit: true,
         departmentName: '',
+        departmentAlias: '',
         currentDepartment: {},
         titleSearchValue: '',
         summarySearchValue: '',
@@ -29,6 +30,9 @@ export default {
         },
         SET_DEPARTMENT_NAME(state, departmentName){
             state.departmentName = departmentName;
+        },
+        SET_DEPARTMENT_ALIAS(state, departmentAlias){
+            state.departmentAlias = departmentAlias;
         },
         SET_CURRENT_DEPARTMENT(state, currentDepartment){
             state.currentDepartment = currentDepartment;

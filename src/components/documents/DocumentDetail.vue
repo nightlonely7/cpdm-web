@@ -2,35 +2,50 @@
     <div>
         <v-btn @click="goBack" color="primary">Trở về</v-btn>
         <br/><br/>
-        <p style="color: blue">Tên tài liệu: {{document.title || 'Chưa xác định'}}</p>
-        <p style="color: blue">Tóm tắt tài liệu: {{document.summary || 'Chưa xác định'}}</p>
-        <p style="color: blue">Mô tả tài liệu: {{document.description || 'Chưa xác định'}}</p>
-        <p style="color: blue">Tên dự án: {{projectName || 'Chưa xác định'}}</p>
-        <p style="color: blue">Thời gian tạo: {{createdTime || 'Chưa xác định'}}</p>
-        <p style="color: blue">Thời gian hiệu lực: {{startedTime || 'Chưa xác định'}}</p>
-        <p style="color: blue">Thời gian hết hạn: {{endTime || 'Chưa xác định'}}</p>
-        <v-list>
-
-        </v-list>
-        <v-btn @click="showForm" color="primary">Sửa</v-btn>
-        <v-btn @click="deleteDocument" color="error">Xóa</v-btn>
+        <template v-if="isServerError">
+            <p style="color: blue">Tên tài liệu: {{document.title || 'Chưa xác định'}}</p>
+            <p style="color: blue">Tóm tắt tài liệu: {{document.summary || 'Chưa xác định'}}</p>
+            <p style="color: blue">Mô tả tài liệu: {{document.description || 'Chưa xác định'}}</p>
+            <p style="color: blue">Tên dự án: {{document.project.name || 'Chưa xác định'}}</p>
+            <p style="color: blue">Thời gian tạo: {{moment(document.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
+            <p style="color: blue">Thời gian hiệu lực: {{moment(document.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
+            <p style="color: blue">Thời gian hết hạn: {{moment(document.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
+            <!--<v-btn @click="showForm" color="primary">Sửa</v-btn>-->
+            <DocumentForm @click="showForm">
+                <template #activator="{on}">
+                    <v-btn v-on="on" color="primary">Sửa</v-btn>
+                </template>
+            </DocumentForm>
+            <v-btn @click="deleteDocument" color="error">Xóa</v-btn>
+        </template>
+        <template v-else>
+            <h3 style="color:red;">Không tìm thấy tài liệu cần tìm!</h3>
+        </template>
         <br>
     </div>
 </template>
 
 <script>
     import axios from 'axios';
-    import {mapGetters} from 'vuex';
+    import 'vuex';
+    import 'moment';
+    import DocumentForm from "./DocumentForm";
 
     export default {
         name: "DocumentDetail",
+        components: {DocumentForm},
         data(){
             return {
-                document: {},
-                projectName: '',
-                createdTime: '',
-                startedTime: '',
-                endTime: ''
+                document: {
+                    project: {
+                        id: 0,
+                        name: ''
+                    },
+                    createdTime: '',
+                    startTime: '',
+                    endTime: '',
+                },
+                isServerError: true
             }
         },
         computed: {
@@ -49,15 +64,12 @@
                     .then(
                         response => {
                             this.document = response.data;
-                            this.projectName = response.data.project.name;
-                            this.createdTime = response.data.createdTime.split('T')[0];
-                            this.startedTime = response.data.startTime.split('T')[0];
-                            this.endTime = response.data.endTime.split('T')[0];
                         }
                     )
                     .catch(
                         err => {
                             console.log(err);
+                            this.isServerError = false;
                         }
                     );
             },
@@ -82,7 +94,11 @@
                                 this.$store.commit('DOCUMENT_STORE/SET_DOCUMENT_NAME', '');
                                 this.$router.push("/documents");
                             }
-                        )
+                        ).catch(
+                            err => {
+                                console.log(err);
+                            }
+                    )
                 }
             },
             goBack: function () {

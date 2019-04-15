@@ -8,6 +8,7 @@ const projectStoreDefaultState = () => {
         summarySearchValue: '',
         currentProject: {},
         projectName: '',
+        projectAlias: '',
     }
 };
 
@@ -38,6 +39,9 @@ export default {
         },
         SET_PROJECT_NAME(state, projectName){
             state.projectName = projectName;
+        },
+        SET_PROJECT_ALIAS(state, projectAlias){
+            state.projectAlias = projectAlias;
         },
     }
 };

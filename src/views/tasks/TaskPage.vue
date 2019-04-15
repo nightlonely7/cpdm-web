@@ -1,6 +1,5 @@
 <template>
     <div class="elevation-1">
-
         <TaskSearch></TaskSearch>
         <v-divider></v-divider>
         <v-toolbar tabs fixed-tabs class="elevation-0">

@@ -31,8 +31,11 @@
                                                   counter="30"
                                                   :rules="aliasRule"
                                                   name="alias"
+                                                  v-validate="{depAliasValidator: [departmentAlias, isEdit]}"
                                                   v-model="departmentForm.alias"
+                                                  validate-on-blur
                                     ></v-text-field>
+                                    <p style="color: red">{{ errors.first('alias') }}</p>
                                 </v-flex>
                             </v-layout>
                         </v-container>
@@ -79,6 +82,7 @@
                 showForm: state => state.showForm,
                 departmentForm: state => state.departmentForm,
                 departmentName: state => state.departmentName,
+                departmentAlias: state => state.departmentAlias,
                 isEdit: state => state.isEdit
             })
         },

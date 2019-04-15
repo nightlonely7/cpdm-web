@@ -139,6 +139,8 @@
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer/>
+            {{ displayName }}
+            &nbsp &nbsp &nbsp
             <v-menu
                     v-show="isLoggedIn"
                     bottom
@@ -147,7 +149,6 @@
                     offset-y
                     transition="slide-y-transition"
             >
-
                 <v-btn icon slot="activator">
                     <v-badge
                             color="error"
@@ -249,6 +250,7 @@
                 isAdmin: 'isAdmin',
                 isManager: 'isManager',
                 isStaff: 'isStaff',
+                displayName: 'displayName'
             }),
         },
         methods: {
