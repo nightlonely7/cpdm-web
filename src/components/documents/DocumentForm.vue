@@ -14,12 +14,12 @@
                         <v-layout wrap>
                             <v-flex md12>
                                 <v-text-field v-model="documentForm.title"
-                                              label="Title"
+                                              label="Tiêu đề"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12>
                                 <v-text-field v-model="documentForm.summary"
-                                              label="Summary"
+                                              label="Tóm tắt"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12>
@@ -186,7 +186,7 @@
             getProjectOptions() {
                 axios.get(`http://localhost:8080/projects/search/all`)
                     .then(response => {
-                        this.projectOptions = response.data.content;
+                        this.projectOptions = response.data;
                     })
                     .catch(error => {
                         if (error.response) {

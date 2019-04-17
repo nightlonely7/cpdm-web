@@ -10,8 +10,7 @@
             <p style="color: blue">Thời gian tạo: {{moment(document.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
             <p style="color: blue">Thời gian hiệu lực: {{moment(document.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
             <p style="color: blue">Thời gian hết hạn: {{moment(document.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
-            <!--<v-btn @click="showForm" color="primary">Sửa</v-btn>-->
-            <DocumentForm @click="showForm">
+            <DocumentForm>
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary">Sửa</v-btn>
                 </template>
@@ -56,7 +55,6 @@
         },
         mounted() {
             this.getDocumentDetail(this.id);
-            this.$store.commit('DOCUMENT_STORE/SET_SHOW_FORM', false);
         },
         methods: {
             getDocumentDetail: async function (id) {
@@ -73,16 +71,8 @@
                         }
                     );
             },
-            showForm: function () {
-                this.$store.commit('DOCUMENT_STORE/SET_SHOW_FORM', true);
-                this.$store.commit('DOCUMENT_STORE/SET_DOCUMENT_FORM', this.document);
-                this.$store.commit('DOCUMENT_STORE/SET_DOCUMENT_NAME', this.document.title);
-                const document = {...this.document};
-                this.$store.commit('DOCUMENT_STORE/SET_CURRENT_DOCUMENT', document);
-                this.$store.commit('DOCUMENT_STORE/SET_IS_EDIT', true);
-            },
             deleteDocument: function () {
-                if (confirm('Xóa?')) {
+                if (confirm('Xóa tài liệu này?')) {
                     const document = {...this.document};
                     document.isAvailable = false;
                     axios.patch(`http://localhost:8080/documents/${document.id}`, {})

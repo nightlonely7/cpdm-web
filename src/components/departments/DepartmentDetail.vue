@@ -7,10 +7,13 @@
         <v-list>
 
         </v-list>
-        <v-btn @click="showForm" color="primary">Sửa</v-btn>
+        <DepartmentForm>
+            <template #activator="{on}">
+                <v-btn v-on="on" color="primary">Sửa</v-btn>
+            </template>
+        </DepartmentForm>
         <v-btn @click="deleteDepartment" color="error">Xóa</v-btn>
-        <br>
-        <DepartmentForm></DepartmentForm>
+        <br/>
     </div>
 </template>
 
@@ -31,7 +34,6 @@
         },
         mounted() {
             this.getDepartmentDetail(this.id);
-            this.$store.commit('DEPARTMENT_STORE/SET_SHOW_FORM', false);
         },
         methods: {
             getDepartmentDetail: async function (id) {
@@ -46,14 +48,6 @@
                             console.log(err);
                         }
                     );
-            },
-            showForm: function () {
-                this.$store.commit('DEPARTMENT_STORE/SET_SHOW_FORM', true);
-                this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_FORM', this.department);
-                this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_NAME', this.department.name);
-                const department = {...this.department};
-                this.$store.commit('DEPARTMENT_STORE/SET_CURRENT_DEPARTMENT', department);
-                this.$store.commit('DEPARTMENT_STORE/SET_IS_EDIT', true);
             },
             deleteDepartment: function () {
                 if (confirm('Xóa?')) {

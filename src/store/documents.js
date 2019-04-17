@@ -1,6 +1,5 @@
 const documentStoreDefaultState = () => {
     return {
-        showForm: false,
         documents: [],
         documentForm: {},
         isEdit: true,
@@ -17,9 +16,6 @@ export default {
     mutations: {
         SET_DEPARTMENTS(state, documents){
             state.documents = documents;
-        },
-        SET_SHOW_FORM (state, showForm) {
-            state.showForm = showForm;
         },
         SET_DOCUMENT_FORM(state, documentForm){
             state.documentForm = documentForm;

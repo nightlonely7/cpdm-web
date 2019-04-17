@@ -5,8 +5,11 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="showForm">Tạo mới phòng ban</v-btn>
-            <DepartmentForm></DepartmentForm>
+            <DepartmentForm>
+                <template #activator="{on}">
+                    <v-btn v-on="on" color="primary">Tạo mới phòng ban</v-btn>
+                </template>
+            </DepartmentForm>
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
@@ -98,17 +101,6 @@
             refresh: function () {
                 this.setPaging();
                 this.getDepartments();
-            },
-            showForm: function () {
-                this.$store.commit('DEPARTMENT_STORE/SET_SHOW_FORM', true);
-                this.$store.commit('DEPARTMENT_STORE/SET_IS_EDIT', false);
-                this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_NAME', '');
-                this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_FORM', {
-                    id: 0,
-                    name: '',
-                    alias: '',
-                    isAvailable: true
-                });
             },
             setPaging: function () {
                 this.pagination.page = 1;

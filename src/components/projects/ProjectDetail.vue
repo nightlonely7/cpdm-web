@@ -22,7 +22,12 @@
                 </v-list-tile-content>
             </v-list-tile>
         </v-list>
-        <v-btn @click="showForm" color="primary">Sửa</v-btn>
+        <ProjectForm>
+            <template #activator="{on}">
+                <v-btn v-on="on" color="primary">Sửa</v-btn>
+            </template>
+        </ProjectForm>
+        <v-btn @click="deleteProject" color="error">Xóa</v-btn>
         <ProjectForm></ProjectForm>
         <br>
     </div>
@@ -42,12 +47,12 @@
             }
         },
         props: {
-            id: Number
+            id: Number,
+
         },
         mounted() {
             this.getTaskIssueDetail(this.id);
             this.getProjectDetail(this.id);
-            this.$store.commit('PROJECT_STORE/SET_SHOW_FORM', false);
         },
         methods: {
             getProjectDetail: async function (id) {
@@ -80,19 +85,13 @@
                     }
                 );
             },
-            showForm: function () {
-                this.$store.commit('PROJECT_STORE/SET_SHOW_FORM', true);
-                this.$store.commit('PROJECT_STORE/SET_PROJECT_FORM', this.project);
-                const project = {...this.project};
-                this.$store.commit('PROJECT_STORE/SET_CURRENT_PROJECT', project);
-                this.$store.commit('PROJECT_STORE/SET_PROJECT_NAME', this.project.name);
-                this.$store.commit('PROJECT_STORE/SET_IS_EDIT', true);
-            },
             goBack: function () {
                 this.$router.push('/projects');
             },
-            showTaskDetail: function (id) {
-                this.$router.push(`/tasks/${id}`);
+            deleteProject: function () {
+                if (confirm('Xóa?')) {
+
+                }
             }
         },
     }

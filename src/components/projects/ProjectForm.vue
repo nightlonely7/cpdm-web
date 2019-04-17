@@ -1,6 +1,9 @@
 <template>
     <div>
-        <v-dialog v-model="showForm" persistent>
+        <v-dialog v-model="dialog" persistent>
+            <template #activator="{on}">
+                <slot name="activator" :on="on"></slot>
+            </template>
             <v-card>
                 <v-snackbar v-model="snackbar" :top="true" :absolute="true" :timeout="timeout">
                     {{serverErrorText}}
@@ -76,26 +79,29 @@
                 snackbar: false,
                 serverErrorText: 'Lưu thông tin thất bại!',
                 timeout: 10000,
+                dialog: false
             }
         },
         computed: {
             ...mapState('PROJECT_STORE', {
-                showForm: state => state.showForm,
                 projectForm: state => state.projectForm,
                 projectName: state => state.projectName,
                 projectAlias: state => state.projectAlias,
                 isEdit: state => state.isEdit
             })
         },
+        props: {
+            isEditing: Boolean,
+        },
         methods: {
             close: function () {
                 this.snackbar = false;
-                this.$store.commit('PROJECT_STORE/SET_SHOW_FORM', false);
                 const currentProject =
                     this.$store.state.PROJECT_STORE.currentProject;
                 this.projectForm.id = currentProject.id;
                 this.projectForm.name = currentProject.name;
                 this.projectForm.alias = currentProject.alias;
+                this.dialog = false;
             },
             save: function () {
                 if (this.$refs.form.validate()) {

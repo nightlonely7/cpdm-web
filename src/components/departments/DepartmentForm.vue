@@ -1,6 +1,9 @@
 <template>
     <div>
-        <v-dialog v-model="showForm" persistent>
+        <v-dialog v-model="dialog" persistent>
+            <template #activator="{on}">
+                <slot name="activator" :on="on"></slot>
+            </template>
             <v-card>
                 <v-snackbar v-model="snackbar" :top="true" :absolute="true" :timeout="timeout">
                     {{serverErrorText}}
@@ -74,12 +77,12 @@
                 ],
                 snackbar: false,
                 serverErrorText: 'Lưu thông tin thất bại!',
-                timeout: 10000
+                timeout: 10000,
+                dialog: false
             }
         },
         computed: {
             ...mapState('DEPARTMENT_STORE', {
-                showForm: state => state.showForm,
                 departmentForm: state => state.departmentForm,
                 departmentName: state => state.departmentName,
                 departmentAlias: state => state.departmentAlias,
@@ -89,7 +92,6 @@
         methods: {
             close: function () {
                 this.snackbar = false;
-                this.$store.commit('DEPARTMENT_STORE/SET_SHOW_FORM', false);
                 this.departmentForm.name = this.$store.state.DEPARTMENT_STORE.departmentName;
                 this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_NAME', '');
                 const currentDepartment =
@@ -97,6 +99,7 @@
                 this.departmentForm.id = currentDepartment.id;
                 this.departmentForm.name = currentDepartment.name;
                 this.departmentForm.alias = currentDepartment.alias;
+                this.dialog = false;
             },
             save: function () {
                 if(typeof this.errors.first('name') !== 'undefined'){
