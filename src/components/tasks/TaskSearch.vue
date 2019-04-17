@@ -198,7 +198,7 @@
 
                 axios.get(`http://localhost:8080/projects/search/all`)
                     .then(response => {
-                        this.projectOptions = response.data.content;
+                        this.projectOptions = response.data;
                     })
                     .catch(error => {
                         if (error.response) {

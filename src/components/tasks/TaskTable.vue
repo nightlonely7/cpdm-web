@@ -180,19 +180,12 @@
             },
         },
         mounted() {
-            // this.$store.commit('TASK_STORE/SET_TASK_FORM', {id: 0, executor: {}});
         },
         methods: {
-            showForm: function () {
-                this.$store.commit('TASK_STORE/SET_SHOW_FORM', true);
-            },
             refresh: function () {
                 this.pagination.page = 1;
                 this.pagination.sortBy = 'createdTime';
                 this.pagination.descending = true;
-                this.$store.commit('TASK_STORE/SET_TITLE_SEARCH_VALUE', '');
-                this.$store.commit('TASK_STORE/SET_SUMMARY_SEARCH_VALUE', '');
-                this.canLoadData = false;
                 this.getTasks();
             },
             getTasks: function () {

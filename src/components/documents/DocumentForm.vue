@@ -50,12 +50,12 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12 sm12>
-                                <!--<v-textarea v-model="documentForm.description"-->
-                                <!--label="Nội dung chi tiết"-->
-                                <!--height="500"-->
-                                <!--outline-->
-                                <!--&gt;</v-textarea>-->
-                                <span>Nội dung chi tiết:</span>
+                                <br>
+                                <br>
+                                <br>
+                                <span class="font-weight-bold">Nội dung chi tiết:</span>
+                                <br>
+                                <br>
                                 <ckeditor style="height: 500px" :editor="editor" v-model="documentForm.description"
                                           :config="editorConfig"></ckeditor>
                             </v-flex>
@@ -122,16 +122,8 @@
                 editor: ClassicEditor,
                 editorConfig: {
                     language: 'vi',
-                    toolbar: ['heading',
-                        '|',
-                        'bold',
-                        'italic',
-                        'link',
-                        'bulletedList',
-                        'numberedList',
-                        'blockQuote',
-                        'undo',
-                        'redo'],
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList',
+                        'numberedList', 'blockQuote', 'undo', 'redo'],
                     removePlugins: ['imageUpload'],
                 },
             }
@@ -238,5 +230,7 @@
 </script>
 
 <style scoped>
-
+    .ck-editor__editable {
+        min-height: 500px;
+    }
 </style>
