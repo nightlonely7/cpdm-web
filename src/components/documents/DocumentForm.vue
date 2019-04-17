@@ -137,7 +137,7 @@
             }
         },
         props: {
-            form: {
+            documentForm: {
                 type: Object,
                 default: function () {
                     return {
@@ -148,9 +148,6 @@
             }
         },
         computed: {
-            documentForm() {
-                return {...this.form};
-            }
         },
         methods: {
             close() {

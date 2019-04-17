@@ -185,8 +185,7 @@
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer/>
-            <span>{{ displayName }}</span>
-            &nbsp; &nbsp; &nbsp;
+            <span>{{ displayName }}&nbsp; &nbsp; &nbsp;</span>
             <v-menu
                     v-show="isLoggedIn"
                     bottom

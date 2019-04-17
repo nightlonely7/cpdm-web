@@ -4,11 +4,8 @@
         <br/><br/>
         <p style="color: blue">Tên phòng ban: {{department.name || 'Chưa xác định'}}</p>
         <p style="color: blue">Mã phòng ban: {{department.alias || 'Chưa xác định'}}</p>
-        <v-list>
-
-        </v-list>
-        <DepartmentForm>
-            <template #activator="{on}">
+        <DepartmentForm :department-form="{...department}">
+            <template #activator="{on}" >
                 <v-btn v-on="on" color="primary">Sửa</v-btn>
             </template>
         </DepartmentForm>

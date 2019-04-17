@@ -84,14 +84,23 @@
         },
         computed: {
             ...mapState('PROJECT_STORE', {
-                projectForm: state => state.projectForm,
                 projectName: state => state.projectName,
                 projectAlias: state => state.projectAlias,
                 isEdit: state => state.isEdit
-            })
+            }),
         },
         props: {
             isEditing: Boolean,
+            projectForm: {
+                type: Object,
+                default: function() {
+                    return{
+                        id: 0,
+                        name: '',
+                        alias: ''
+                    }
+                }
+            }
         },
         methods: {
             close: function () {

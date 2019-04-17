@@ -6,11 +6,13 @@
                               label="Tìm bởi tên phòng ban"
                               clearable
                               @input="findTitleSearchValue"
+                              validate-on-blur
                 ></v-text-field>
                 <v-text-field v-model="summarySearchValue"
                               label="Tìm bởi nội dung tổng quát"
                               clearable
                               @input="findSummarySearchValue"
+                              validate-on-blur
                 ></v-text-field>
             </v-card-text>
         </v-card>

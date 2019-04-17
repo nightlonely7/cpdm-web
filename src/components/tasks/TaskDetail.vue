@@ -170,7 +170,6 @@
                 </TaskForm>
             </v-layout>
 
-
         </div>
     </div>
 </template>

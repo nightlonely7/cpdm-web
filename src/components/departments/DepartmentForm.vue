@@ -83,11 +83,23 @@
         },
         computed: {
             ...mapState('DEPARTMENT_STORE', {
-                departmentForm: state => state.departmentForm,
                 departmentName: state => state.departmentName,
                 departmentAlias: state => state.departmentAlias,
                 isEdit: state => state.isEdit
-            })
+            }),
+        },
+        props: {
+            departmentForm: {
+                type: Object,
+                default: function () {
+                    return {
+                        id: 0,
+                        name: '',
+                        alias: '',
+                        available: true,
+                    };
+                }
+            },
         },
         methods: {
             close: function () {

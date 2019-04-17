@@ -22,13 +22,12 @@
                 </v-list-tile-content>
             </v-list-tile>
         </v-list>
-        <ProjectForm>
+        <ProjectForm :project-form="{...project}">
             <template #activator="{on}">
                 <v-btn v-on="on" color="primary">Sửa</v-btn>
             </template>
         </ProjectForm>
         <v-btn @click="deleteProject" color="error">Xóa</v-btn>
-        <ProjectForm></ProjectForm>
         <br>
     </div>
 </template>
