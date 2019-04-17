@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="text-xs-center">
-            <v-progress-circular v-if="loading" indeterminate
+        <div class="text-xs-center" v-if="loading">
+            <v-progress-circular indeterminate
                                  size="128"
                                  width="16"
                                  color="primary"
@@ -16,7 +16,7 @@
             <br>
             <p>Thuộc dự án: {{task.project.name || 'Chưa xác định'}}</p>
             <br>
-            <p v-if="isChild">Thuộc tác vụ tổng:
+            <p v-if="(isAdmin || isManager) && isChild">Thuộc tác vụ tổng:
                 <router-link :to="`/tasks/${task.parentTask.id}`">
                     {{task.parentTask.title || 'Chưa xác định'}}
                 </router-link>
@@ -32,8 +32,8 @@
                 <v-chip v-if="task.status === 'Outdated'" color="error" text-color="white">Quá hạn</v-chip>
                 <v-chip v-if="task.status === 'Near deadline'" color="warning" text-color="white">Gần tới hạn
                 </v-chip>
-                <v-btn v-if="(completionRate === 1 || this.issuesStatus.total === 0) && isRunning"
-                       @click="completeTask">Báo cáo hoàn tất
+                <v-btn v-if="(completionRate === 1 || this.issuesStatus.total === 0) && isRunning && task.executor.id === userId"
+                       @click="completeTask" color="success">Báo cáo hoàn tất
                 </v-btn>
                 <br>
                 <span>Số vấn đề hoàn tất: {{issuesStatus.completed}} / {{issuesStatus.total}}</span>
@@ -68,7 +68,7 @@
             </v-card>
             <br>
 
-            <v-expansion-panel v-if="isAdmin && !isChild">
+            <v-expansion-panel v-if="!isChild">
                 <v-expansion-panel-content>
 
                     <template #header>
@@ -83,45 +83,56 @@
             <v-divider></v-divider>
             <br>
 
-            <v-expansion-panel>
-                <v-expansion-panel-content>
-
-                    <template #header>
-                        Danh sách người theo dõi
-                    </template>
-
-                    <v-list>
-                        <v-list-tile-content>
-                            <v-list-tile>
-                                <TaskRelativeForm :task-id="id" @refresh="refreshRelatives">
-                                    <template #activator="{ on }">
-                                        <v-btn v-on="on" color="primary">Thêm người theo dõi</v-btn>
-                                    </template>
-                                </TaskRelativeForm>
-
-                            </v-list-tile>
-                            <v-list-tile v-for="user in taskRelatives" :key="user.id">
-                                {{user.displayName}} - {{user.fullName}} - {{user.email}} -
-                                Phòng ban: {{user.department.name || ''}} -
-                                Chức vụ: {{user.role.name || ''}}
-                                <v-btn color="error" @click="deleteRelative(user.id)">Xóa</v-btn>
-                            </v-list-tile>
-                        </v-list-tile-content>
-                    </v-list>
-                </v-expansion-panel-content>
-            </v-expansion-panel>
+            <TaskIssue :task="{...task}" @refresh-issues-status="refreshIssuesStatus"></TaskIssue>
 
             <br>
             <v-divider></v-divider>
             <br>
+
+            <div v-if="task.creator.id === userId">
+                <v-expansion-panel>
+                    <v-expansion-panel-content>
+
+                        <template #header>
+                            Danh sách người theo dõi
+                        </template>
+
+                        <v-list>
+                            <v-list-tile-content>
+                                <v-list-tile>
+                                    <TaskRelativeForm :task-id="id" @refresh="refreshRelatives">
+                                        <template #activator="{ on }">
+                                            <v-btn v-on="on" color="primary">Thêm người theo dõi</v-btn>
+                                        </template>
+                                    </TaskRelativeForm>
+
+                                </v-list-tile>
+                                <v-list-tile v-for="user in taskRelatives" :key="user.id">
+                                    {{user.displayName}} - {{user.fullName}} - {{user.email}} -
+                                    Phòng ban: {{user.department.name || ''}} -
+                                    Chức vụ: {{user.role.name || ''}}
+                                    <v-btn @click="deleteRelative(user.id)">Xóa</v-btn>
+                                </v-list-tile>
+                            </v-list-tile-content>
+                        </v-list>
+                    </v-expansion-panel-content>
+                </v-expansion-panel>
+
+                <br>
+                <v-divider></v-divider>
+                <br>
+            </div>
 
             <v-expansion-panel>
                 <v-expansion-panel-content>
                     <template #header>
                         Danh sách tài liệu liên quan
                     </template>
+                    <div class="text-xs-center" v-if="!documents || (!!documents && !documents.length)">
+                        <span>Không có tài liệu nào</span>
+                    </div>
                     <v-list three-line>
-                        <v-list-tile>
+                        <v-list-tile v-if="task.creator.id === userId">
                             <TaskDocumentForm :task-id="id" :project-id="task.project.id" @refresh="getTaskDocuments">
                                 <template #activator="{on}">
                                     <v-btn v-on="on" color="primary">Thêm tài liệu liên quan</v-btn>
@@ -148,12 +159,6 @@
             <v-divider></v-divider>
             <br>
 
-            <TaskIssue :task="{...task}" @refresh-issues-status="refreshIssuesStatus"></TaskIssue>
-
-            <br>
-            <v-divider></v-divider>
-            <br>
-
             <v-layout row v-if="(isManager && isChild) || (isAdmin && !isChild)">
                 <v-btn @click="deleteTask" color="error">
                     Xóa
@@ -174,7 +179,7 @@
     import axios from 'axios'
     import TaskForm from "@/components/tasks/TaskForm";
     import TaskRelativeForm from "@/components/tasks/TaskRelativeForm";
-    import {mapGetters} from 'vuex';
+    import {mapGetters, mapState} from 'vuex';
     import TaskTable from "./TaskTable";
     import moment from 'moment';
     import TaskDocumentForm from "@/components/tasks/TaskDocumentForm";
@@ -233,7 +238,10 @@
                 isAdmin: 'isAdmin',
                 isManager: 'isManager',
                 isStaff: 'isStaff',
-            })
+            }),
+            ...mapState('AUTHENTICATION', {
+                userId: state => state.id
+            }),
         },
         mounted() {
             this.$nextTick(function () {
@@ -256,15 +264,23 @@
                         this.getTaskDocuments();
                         this.getIssuesStatus();
                     })
+                    .catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data);
+                        } else {
+                            console.log(error.response);
+                        }
+                    })
                     .finally(() => {
+                        console.log('detail')
                         this.loading = false;
                     })
             },
             getIssuesStatus() {
-               axios.get(`http://localhost:8080/tasks/${this.id}/issues/status`)
-                   .then(response => {
-                       this.issuesStatus = response.data;
-                   })
+                axios.get(`http://localhost:8080/tasks/${this.id}/issues/status`)
+                    .then(response => {
+                        this.issuesStatus = response.data;
+                    })
             },
             getTaskRelatives: function () {
                 axios.get(`http://localhost:8080/tasks/${this.id}/relatives`)
@@ -288,7 +304,7 @@
                 }
             },
             completeTask() {
-                if (confirm('Bạn muốn báo cáo hoàn tất Tác Vụ này chứ?')) {
+                if (confirm('Bạn muốn báo cáo hoàn tất tác vụ này chứ?')) {
                     axios.patch(`http://localhost:8080/tasks/${this.id}/complete`)
                         .then(() => {
                             this.getTask();
@@ -303,7 +319,7 @@
                 }
             },
             deleteIssue: function (id) {
-                if (confirm('Bạn muốn xóa Vấn Đề này chứ?')) {
+                if (confirm('Bạn muốn xóa vấn đề này chứ?')) {
                     axios.delete(`http://localhost:8080/task-issues/${id}`)
                         .then(() => {
                             this.refreshIssues();
@@ -333,7 +349,7 @@
                 }
             },
             deleteRelative: function (userId) {
-                if (confirm('Bạn muốn xóa Người liên quan này chứ')) {
+                if (confirm('Bạn muốn xóa người theo dõi này chứ')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}/relatives/${userId}`)
                         .then(() => {
                             this.refreshRelatives();

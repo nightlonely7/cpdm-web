@@ -21,32 +21,55 @@
             </div>
 
             <div v-if="!issueLoading">
-                <v-list>
-                    <v-list-tile-content>
-                        <v-list-tile v-if="task.status === 'Waiting'|| isTaskRunning">
+                <v-list three-line>
+                    <v-list-tile
+                            v-if="(task.status === 'Waiting'|| isTaskRunning)
+                                    && (task.creator.id === userId || task.executor.id === userId)">
+                        <v-list-tile-content>
                             <TaskIssueForm @refresh="refreshIssues" :task-id="task.id">
                                 <template #activator="{ on }">
                                     <v-btn v-on="on" color="primary">Thêm vấn đề</v-btn>
                                 </template>
                             </TaskIssueForm>
+                        </v-list-tile-content>
 
-                        </v-list-tile>
-                        <v-list-tile v-for="issue in issues" :key="issue.id">
-                            {{issue.summary}} - {{issue.description}}
-                            <v-chip :color="`${issue.completed ? 'success' : ''}`">
-                                {{issue.completed ? 'Hoàn tất' : 'Chưa hoàn tất'}}
-                            </v-chip>
-                            <TaskIssueForm @refresh="refreshIssues" :task-id="task.id" :form="{...issue}"
-                                           v-if="!issue.completed"
-                            >
-                                <template #activator="{ on }">
-                                    <v-btn v-on="on" color="primary">Sửa</v-btn>
-                                </template>
-                            </TaskIssueForm>
-                            <v-btn v-if="!issue.completed" @click="deleteIssue(issue.id)">Xóa</v-btn>
-                            <v-btn v-if="!issue.completed" @click="completeIssue(issue.id)">Báo cáo hoàn tất</v-btn>
-                        </v-list-tile>
-                    </v-list-tile-content>
+                    </v-list-tile>
+                    <template v-for="issue in issues">
+                        <div :key="issue.id">
+                            <v-list-tile>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>{{issue.summary}}</v-list-tile-title>
+                                    <v-list-tile-sub-title>{{issue.description}}</v-list-tile-sub-title>
+                                    <v-list-tile-sub-title>
+                                        <span>Trạng thái :</span>
+                                        <v-chip :color="`${issue.completed ? 'success' : ''}`">
+                                            {{issue.completed ? 'Hoàn tất' : 'Chưa hoàn tất'}}
+                                        </v-chip>
+                                    </v-list-tile-sub-title>
+                                </v-list-tile-content>
+                                <v-list-tile-action-text>
+                                    <v-btn v-if="!issue.completed && task.status !== 'Waiting' && task.executor.id === userId"
+                                           @click="completeIssue(issue.id)" color="success">Báo cáo hoàn tất
+                                    </v-btn>
+                                </v-list-tile-action-text>
+                                <v-list-tile-action-text
+                                        v-if="(task.creator.id === userId || task.executor.id === userId)">
+                                    <TaskIssueForm @refresh="refreshIssues" :task-id="task.id" :form="{...issue}"
+                                                   v-if="!issue.completed"
+                                    >
+                                        <template #activator="{ on }">
+                                            <v-btn v-on="on" color="primary">Sửa</v-btn>
+                                        </template>
+                                    </TaskIssueForm>
+                                </v-list-tile-action-text>
+                                <v-list-tile-action-text>
+                                    <v-btn v-if="!issue.completed && (task.creator.id === userId || task.executor.id === userId)"
+                                           color="error" @click="deleteIssue(issue.id)">Xóa
+                                    </v-btn>
+                                </v-list-tile-action-text>
+                            </v-list-tile>
+                        </div>
+                    </template>
                 </v-list>
             </div>
         </v-expansion-panel-content>
@@ -56,6 +79,7 @@
 <script>
     import axios from 'axios';
     import TaskIssueForm from "@/components/tasks/TaskIssueForm";
+    import {mapState} from "vuex";
 
     export default {
         name: "TaskIssue",
@@ -82,6 +106,9 @@
                     || this.task.status === 'Outdated'
                     || this.task.status === 'Near deadline'
             },
+            ...mapState('AUTHENTICATION', {
+                userId: state => state.id
+            }),
         },
         methods: {
             refreshIssues() {

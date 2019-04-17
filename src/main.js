@@ -7,27 +7,28 @@ import axios from 'axios'
 import '@mdi/font/css/materialdesignicons.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import Vuetify from 'vuetify'
+import VeeValidate from 'vee-validate';
+import './validators/validateDepAlias';
+import './validators/validateDepName';
+import './validators/validateEmail';
+import './validators/validateProjectAlias';
+import './validators/validateProjectName';
 import 'vuetify/dist/vuetify.min.css'
 import 'animate.css'
-import VeeValidate from 'vee-validate';
-import './views/validator/validateEmail';
-import './views/validator/validateDepName';
-import './views/validator/validateDepAlias';
-import './views/validator/validateProjectName';
-import './views/validator/validateProjectAlias';
-import Vuex from 'vuex'
 import moment from 'moment'
-
-Vue.use(Vuex);
-Vue.use(VeeValidate);
+import CKEditor from '@ckeditor/ckeditor5-vue';
 
 Vue.config.productionTip = false;
+
+Vue.use(VeeValidate);
 Vue.use(Vuetify, {
     iconfont: "mdi"
 });
+Vue.use(CKEditor);
 
 axios.interceptors.request.use(
     (config) => {
+        // console.log(config);
         let token = localStorage.getItem('cpdm_token');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;

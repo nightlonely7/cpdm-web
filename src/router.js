@@ -12,13 +12,37 @@ const router = new Router({
             component: () => import('@/views/LoginPage.vue')
         },
         {
+            path: '/departments',
+            name: 'Quản lý phòng ban',
+            component: () => import('@/views/departments/DepartmentPage.vue')
+        },
+        {
+            path: '/departments/:id',
+            name: 'Chi tiết phòng ban',
+            props: (route) => {
+                const id = Number.parseInt(route.params.id);
+                if (Number.isNaN(id)) {
+                    return 0;
+                }
+                return {id};
+            },
+            component: () => import('@/views/departments/DepartmentDetailPage.vue')
+        },
+        {
             path: '/projects',
-            name: 'Quản lý dự án',
+            name: 'Quản lý dự án',
             component: () => import('@/views/projects/ProjectPage.vue')
         },
         {
             path: '/projects/:id',
-            name: 'Quản lý thông tin dự án',
+            name: 'Chi tiết dự án',
+            props: (route) => {
+                const id = Number.parseInt(route.params.id);
+                if (Number.isNaN(id)) {
+                    return 0;
+                }
+                return {id};
+            },
             component: () => import('@/views/projects/ProjectDetailPage.vue')
         },
         {
@@ -28,7 +52,14 @@ const router = new Router({
         },
         {
             path: '/documents/:id',
-            name: 'Quản lý tài liệu',
+            name: 'Chi tiết tài liệu',
+            props: (route) => {
+                const id = Number.parseInt(route.params.id);
+                if (Number.isNaN(id)) {
+                    return 0;
+                }
+                return {id};
+            },
             component: () => import('@/views/documents/DocumentDetailPage.vue')
         },
         {
@@ -55,23 +86,20 @@ const router = new Router({
         },
         {
             path: '/users/:id',
-            name: 'Quản lý nhân viên',
+            name: 'Chi tiết nhân viên',
+            props: (route) => {
+                const id = Number.parseInt(route.params.id);
+                if (Number.isNaN(id)) {
+                    return 0;
+                }
+                return {id};
+            },
             component: () => import('@/views/users/UserDetailPage.vue')
         },
         {
             path: '/self',
             name: 'Quản lý thông tin cá nhân',
             component: () => import('@/views/users/UserPersonal.vue')
-        },
-        {
-            path: '/departments',
-            name: 'Quản lý phòng ban',
-            component: () => import('@/views/departments/DepartmentPage.vue')
-        },
-        {
-            path: '/departments/:id',
-            name: 'Quản lý thông tin phòng ban',
-            component: () => import('@/views/departments/DepartmentDetailPage.vue')
         },
         {
             path: '/userLeaveRequests',
@@ -113,6 +141,7 @@ const router = new Router({
             name: 'Xét duyệt đơn xin ủy quyền',
             component: () => import('@/views/assignRequests/ApproverAssignRequestPage.vue')
         },
+        ,
         {
             path: '/createAskingRequests',
             name: 'Xin ý kiến lãnh đạo',
@@ -127,11 +156,6 @@ const router = new Router({
             path: '/receiverAskingRequests',
             name: 'Phản hồi',
             component: () => import('@/views/askingRequests/ReceiverAskingRequestPage.vue')
-        },
-        {
-            path: '/viewPassword',
-            name: 'Thay đổi mật khẩu',
-            component: () => import('@/views/users/PasswordPage.vue')
         },
     ]
 });

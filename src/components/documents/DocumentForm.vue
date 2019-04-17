@@ -50,11 +50,14 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12 sm12>
-                                <v-textarea v-model="documentForm.description"
-                                            label="Nội dung chi tiết"
-                                            height="500"
-                                            outline
-                                ></v-textarea>
+                                <!--<v-textarea v-model="documentForm.description"-->
+                                <!--label="Nội dung chi tiết"-->
+                                <!--height="500"-->
+                                <!--outline-->
+                                <!--&gt;</v-textarea>-->
+                                <span>Nội dung chi tiết:</span>
+                                <ckeditor style="height: 500px" :editor="editor" v-model="documentForm.description"
+                                          :config="editorConfig"></ckeditor>
                             </v-flex>
                             <v-flex md12 sm12>
                                 <v-autocomplete chips deletable-chips cache-items multiple
@@ -102,6 +105,8 @@
 <script>
     import axios from 'axios';
     import _ from 'lodash';
+    import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+    import '@ckeditor/ckeditor5-build-classic/build/translations/vi'
 
     export default {
         name: "DocumentForm",
@@ -114,6 +119,21 @@
                 viewerOptionsSearch: null,
                 dialog: false,
                 projectOptions: [],
+                editor: ClassicEditor,
+                editorConfig: {
+                    language: 'vi',
+                    toolbar: ['heading',
+                        '|',
+                        'bold',
+                        'italic',
+                        'link',
+                        'bulletedList',
+                        'numberedList',
+                        'blockQuote',
+                        'undo',
+                        'redo'],
+                    removePlugins: ['imageUpload'],
+                },
             }
         },
         props: {
@@ -164,7 +184,7 @@
                     });
             },
             getProjectOptions() {
-                axios.get(`http://localhost:8080/projects`)
+                axios.get(`http://localhost:8080/projects/search/all`)
                     .then(response => {
                         this.projectOptions = response.data.content;
                     })

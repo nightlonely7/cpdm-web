@@ -5,7 +5,7 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh()">
                 <v-icon left>cached</v-icon>
-                <span>Làm mới</span>
+                <span>Tải lại</span>
             </v-btn>
             <v-spacer></v-spacer>
             <TaskForm v-if="getTasksURL === 'search/creates'" @refresh="refresh" relative creating>
@@ -15,8 +15,8 @@
             </TaskForm>
         </v-toolbar>
         <v-data-table
-                :headers="table.headers"
-                :items="tasks"
+                :headers="filteredHeaders"
+                :items="filteredTasks"
                 :loading="table.loading"
                 :pagination.sync="pagination"
                 :total-items="pagination.totalItems"
@@ -42,27 +42,29 @@
                              onmouseover="this.style.cursor='pointer'"
                              onmouseout="this.style.cursor='none'"
                 >
-                    <td class="text-xs-left">{{item.title}}</td>
-                    <td class="text-xs-left">{{item.summary}}</td>
-                    <td class="text-xs-left">{{item.project.name}}</td>
-                    <td class="text-xs-left">{{
+                    <td class="text-xs-left" v-if="showColumn('title')">{{item.title}}</td>
+                    <td class="text-xs-left" v-if="showColumn('summary')">{{item.summary}}</td>
+                    <td class="text-xs-left" v-if="showColumn('project.name')">{{item.project.name}}</td>
+                    <td class="text-xs-left" v-if="showColumn('createdTime')">{{
                         moment(item.createdTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm')}}
                     </td>
-                    <td class="text-xs-left">{{
+                    <td class="text-xs-left" v-if="showColumn('startTime')">{{
                         moment(item.startTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm')}}
                     </td>
-                    <td class="text-xs-left">{{
+                    <td class="text-xs-left" v-if="showColumn('endTime')">{{
                         moment(item.endTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm')}}
                     </td>
-                    <td class="text-xs-left">
+                    <td class="text-xs-left" v-if="showColumn('completedTime')">
                         {{item.completedTime ?
                         moment(item.completedTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') :
                         'Chưa hoàn tất'}}
                     </td>
-                    <td class="text-xs-left">{{item.creator.displayName}}</td>
-                    <td class="text-xs-left">{{item.executor.displayName}}</td>
-                    <td class="text-xs-left">{{item.priority}}</td>
-                    <td class="text-xs-left">
+                    <td class="text-xs-left" v-if="showColumn('creator.displayName')">{{item.creator.displayName}}</td>
+                    <td class="text-xs-left" v-if="showColumn('executor.displayName')">{{item.executor.displayName}}
+                    </td>
+                    <td :class="`text-xs-left font-weight-bold ${priorityColor(item.priority)}`" v-if="showColumn('priority')">
+                        {{item.priority}}</td>
+                    <td class="text-xs-left" v-if="showColumn('status')">
                         <v-chip v-if="item.status === 'Waiting'">
                             Đang chờ
                         </v-chip>
@@ -84,7 +86,24 @@
                     </td>
                 </router-link>
             </template>
+
         </v-data-table>
+        <v-divider></v-divider>
+        <v-card class="elevation-0">
+            <v-card-title>NHỮNG CỘT HIỂN THỊ</v-card-title>
+            <v-card-text>
+                <v-layout wrap>
+                    <template v-for="header in table.headers">
+                        <v-flex xs3 :key="header.value">
+                            <v-checkbox :label="header.text"
+                                        v-model="header.selected"
+                                        :value="header.selected"
+                            ></v-checkbox>
+                        </v-flex>
+                    </template>
+                </v-layout>
+            </v-card-text>
+        </v-card>
     </div>
 </template>
 
@@ -113,17 +132,17 @@
                 table: {
                     loading: false,
                     headers: [
-                        {text: 'Tiêu đề', value: 'title'},
-                        {text: 'Tổng quát', value: 'summary', width: '25%'},
-                        {text: 'Dự án', value: 'project.name'},
-                        {text: 'Thời gian tạo', value: 'createdTime'},
-                        {text: 'Thời gian bắt đầu', value: 'startTime'},
-                        {text: 'Thời gian kết thúc', value: 'endTime'},
-                        {text: 'Thời gian hoàn tất', value: 'completedTime'},
-                        {text: 'Người tạo', value: 'creator.displayName'},
-                        {text: 'Người thực hiện', value: 'executor.displayName'},
-                        {text: 'Độ ưu tiên', value: 'priority'},
-                        {text: 'Trạng thái', value: 'status'},
+                        {text: 'Tiêu đề', value: 'title', selected: true},
+                        {text: 'Tổng quát', value: 'summary', selected: false},
+                        {text: 'Dự án', value: 'project.name', selected: true},
+                        {text: 'Thời gian tạo', value: 'createdTime', selected: false},
+                        {text: 'Thời gian bắt đầu', value: 'startTime', selected: false},
+                        {text: 'Thời gian kết thúc', value: 'endTime', selected: false},
+                        {text: 'Thời gian hoàn tất', value: 'completedTime', selected: false},
+                        {text: 'Người tạo', value: 'creator.displayName', selected: false},
+                        {text: 'Người thực hiện', value: 'executor.displayName', selected: false},
+                        {text: 'Độ ưu tiên', value: 'priority', selected: true},
+                        {text: 'Trạng thái', value: 'status', selected: true},
                     ]
                 },
             }
@@ -147,6 +166,18 @@
                 isStaff: state => state.isStaff,
                 isAdmin: state => state.isAdmin,
             }),
+            filteredHeaders() {
+                return this.table.headers.filter(h => h.selected);
+            },
+            filteredTasks() {
+                return this.tasks.map(item => {
+                    const filtered = Object.assign({}, item);
+                    this.table.headers.forEach(header => {
+                        if (!header.selected) delete filtered[header.value]
+                    });
+                    return filtered;
+                })
+            },
         },
         mounted() {
             this.$store.commit('TASK_STORE/SET_TASK_FORM', {id: 0, executor: {}});
@@ -201,6 +232,18 @@
                         this.table.loading = false;
                     })
             },
+            showColumn(col) {
+                return this.table.headers.find(h => h.value === col).selected
+            },
+            priorityColor(priority) {
+                if (priority < 3)
+                    return 'primary--text';
+                if (priority < 4)
+                    return 'yellow--text';
+                if (priority < 5)
+                    return 'warning--text';
+                return 'red--text';
+            }
         },
         watch: {
             pagination: function () {

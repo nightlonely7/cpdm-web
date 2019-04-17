@@ -25,12 +25,13 @@
                         <UploadButton
                                 :fileChangedCallback="handleFileUpload" @click="uploadFile" title="Chọn tệp tin"
                         ></UploadButton>
-                        <span>Tệp tin sẽ tải: {{file.name || 'Chưa xác định'}}</span>
-                        <v-btn v-if="!!file.name" color="primary" @click="uploadFile" :loading="uploadFileLoading">Tải
+                        <span>Tệp tin sẽ tải: {{(!!file && file.name) || 'Chưa xác định'}}</span>
+                        <v-btn v-if="!!file && !!file.name" color="primary" @click="uploadFile"
+                               :loading="uploadFileLoading">Tải
                             lên
                         </v-btn>
-                        <span v-if="!!file.status"> | </span>
-                        <b>{{file.status || ''}}</b>
+                        <span v-if="(!!file && !!file.status)"> | </span>
+                        <b>{{(!!file && file.status) || ''}}</b>
                     </v-card-text>
                 </v-card>
             </div>
@@ -89,6 +90,7 @@
                     this.file.status = 'Tải lên thất bại';
                 }).finally(() => {
                     this.uploadFileLoading = false;
+                    this.file = null;
                 });
             },
             handleFileUpload: function (file) {

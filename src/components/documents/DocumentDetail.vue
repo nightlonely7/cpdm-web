@@ -5,7 +5,7 @@
         <template v-if="isServerError">
             <p style="color: blue">Tên tài liệu: {{document.title || 'Chưa xác định'}}</p>
             <p style="color: blue">Tóm tắt tài liệu: {{document.summary || 'Chưa xác định'}}</p>
-            <p style="color: blue">Mô tả tài liệu: {{document.description || 'Chưa xác định'}}</p>
+            <span v-html="document.description"></span>
             <p style="color: blue">Tên dự án: {{document.project.name || 'Chưa xác định'}}</p>
             <p style="color: blue">Thời gian tạo: {{moment(document.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
             <p style="color: blue">Thời gian hiệu lực: {{moment(document.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
