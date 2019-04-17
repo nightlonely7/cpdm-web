@@ -35,36 +35,40 @@
 
                     </v-list-tile>
                     <template v-for="issue in issues">
-                        <hr>
-                        <v-list-tile :key="issue.id">
-                            <v-list-tile-content>
-                                <v-list-tile-title>{{issue.summary}}</v-list-tile-title>
-                                <v-list-tile-sub-title>{{issue.description}}</v-list-tile-sub-title>
-                                <v-list-tile-sub-title>
-                                    <span>Trạng thái :</span>
-                                    <v-chip :color="`${issue.completed ? 'success' : ''}`">
-                                        {{issue.completed ? 'Hoàn tất' : 'Chưa hoàn tất'}}
-                                    </v-chip>
-                                </v-list-tile-sub-title>
-                            </v-list-tile-content>
-                            <v-list-tile-action-text>
-                                <v-btn v-if="!issue.completed && task.status !== 'Waiting' && task.executor.id === userId"
-                                       @click="completeIssue(issue.id)" color="success">Báo cáo hoàn tất
-                                </v-btn>
-                            </v-list-tile-action-text>
-                            <v-list-tile-action-text v-if="(task.creator.id === userId || task.executor.id === userId)">
-                                <TaskIssueForm @refresh="refreshIssues" :task-id="task.id" :form="{...issue}"
-                                               v-if="!issue.completed"
-                                >
-                                    <template #activator="{ on }">
-                                        <v-btn v-on="on" color="primary">Sửa</v-btn>
-                                    </template>
-                                </TaskIssueForm>
-                            </v-list-tile-action-text>
-                            <v-list-tile-action-text>
-                                <v-btn v-if="!issue.completed && (task.creator.id === userId || task.executor.id === userId)" color="error" @click="deleteIssue(issue.id)">Xóa</v-btn>
-                            </v-list-tile-action-text>
-                        </v-list-tile>
+                        <div :key="issue.id">
+                            <v-list-tile>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>{{issue.summary}}</v-list-tile-title>
+                                    <v-list-tile-sub-title>{{issue.description}}</v-list-tile-sub-title>
+                                    <v-list-tile-sub-title>
+                                        <span>Trạng thái :</span>
+                                        <v-chip :color="`${issue.completed ? 'success' : ''}`">
+                                            {{issue.completed ? 'Hoàn tất' : 'Chưa hoàn tất'}}
+                                        </v-chip>
+                                    </v-list-tile-sub-title>
+                                </v-list-tile-content>
+                                <v-list-tile-action-text>
+                                    <v-btn v-if="!issue.completed && task.status !== 'Waiting' && task.executor.id === userId"
+                                           @click="completeIssue(issue.id)" color="success">Báo cáo hoàn tất
+                                    </v-btn>
+                                </v-list-tile-action-text>
+                                <v-list-tile-action-text
+                                        v-if="(task.creator.id === userId || task.executor.id === userId)">
+                                    <TaskIssueForm @refresh="refreshIssues" :task-id="task.id" :form="{...issue}"
+                                                   v-if="!issue.completed"
+                                    >
+                                        <template #activator="{ on }">
+                                            <v-btn v-on="on" color="primary">Sửa</v-btn>
+                                        </template>
+                                    </TaskIssueForm>
+                                </v-list-tile-action-text>
+                                <v-list-tile-action-text>
+                                    <v-btn v-if="!issue.completed && (task.creator.id === userId || task.executor.id === userId)"
+                                           color="error" @click="deleteIssue(issue.id)">Xóa
+                                    </v-btn>
+                                </v-list-tile-action-text>
+                            </v-list-tile>
+                        </div>
                     </template>
                 </v-list>
             </div>

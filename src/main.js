@@ -16,6 +16,7 @@ import './validators/validateProjectName';
 import 'vuetify/dist/vuetify.min.css'
 import 'animate.css'
 import moment from 'moment'
+import CKEditor from '@ckeditor/ckeditor5-vue';
 
 Vue.config.productionTip = false;
 
@@ -23,6 +24,8 @@ Vue.use(VeeValidate);
 Vue.use(Vuetify, {
     iconfont: "mdi"
 });
+Vue.use(CKEditor);
+
 axios.interceptors.request.use(
     (config) => {
         console.log(config);
