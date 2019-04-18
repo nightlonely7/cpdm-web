@@ -113,7 +113,7 @@
         methods: {
             refreshIssues() {
                 this.getIssues();
-                this.$emit("refresh-issues-status");
+                this.$emit("refresh");
             },
             getIssues() {
                 console.log('get issue');

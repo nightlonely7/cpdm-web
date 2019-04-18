@@ -15,10 +15,11 @@
                     <v-card-text>
                         <p v-if="!taskFiles.length">Chưa có tệp tin</p>
                         <template v-for="taskFile in taskFiles">
-                            <a @click.prevent="downloadFile(taskFile.filename)"
-                               :key="taskFile.id">
-                                {{taskFile.filename}}</a>
-                            <br :key="taskFile.id">
+                            <div :key="taskFile.id">
+                                <a @click.prevent="downloadFile(taskFile.filename)">
+                                    {{taskFile.filename}}</a>
+                                <br>
+                            </div>
                         </template>
                         <br>
                         <p>TẢI LÊN TỆP TIN</p>

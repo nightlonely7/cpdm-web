@@ -83,7 +83,7 @@
             <v-divider></v-divider>
             <br>
 
-            <TaskIssue :task="{...task}" @refresh-issues-status="refreshIssuesStatus"></TaskIssue>
+            <TaskIssue :task="{...task}" @refresh="refreshIssues"></TaskIssue>
 
             <br>
             <v-divider></v-divider>
@@ -249,7 +249,7 @@
             })
         },
         methods: {
-            refreshIssuesStatus() {
+            refreshIssues() {
                 this.getIssuesStatus();
             },
             refreshRelatives: function () {
