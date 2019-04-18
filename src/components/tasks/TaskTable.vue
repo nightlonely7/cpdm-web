@@ -94,7 +94,7 @@
             <v-card-text>
                 <v-layout wrap>
                     <template v-for="header in table.headers">
-                        <v-flex xs3 :key="header.value">
+                        <v-flex xs2 :key="header.value">
                             <v-checkbox :label="header.text"
                                         v-model="header.selected"
                                         :value="header.selected"
