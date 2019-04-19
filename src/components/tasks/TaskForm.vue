@@ -480,7 +480,13 @@
                         .then(response => {
                             this.projectOptions = response.data;
                         })
-                        .catch(console.error)
+                        .catch(error => {
+                            if (error.response) {
+                                console.log(error.response.data);
+                            } else {
+                                console.log(error.response);
+                            }
+                        })
                         .finally(() => {
                             this.projectOptionsLoading = false;
                         });

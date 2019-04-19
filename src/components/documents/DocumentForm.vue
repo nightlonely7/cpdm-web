@@ -19,7 +19,7 @@
                             </v-flex>
                             <v-flex md12>
                                 <v-text-field v-model="documentForm.summary"
-                                              label="Nội dung tổng quát"
+                                              label="Tóm tắt"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12>
@@ -50,11 +50,14 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12 sm12>
-                                <v-textarea v-model="documentForm.description"
-                                            label="Nội dung chi tiết"
-                                            height="500"
-                                            outline
-                                ></v-textarea>
+                                <br>
+                                <br>
+                                <br>
+                                <span class="font-weight-bold">Nội dung chi tiết:</span>
+                                <br>
+                                <br>
+                                <ckeditor style="height: 500px" :editor="editor" v-model="documentForm.description"
+                                          :config="editorConfig"></ckeditor>
                             </v-flex>
                             <v-flex md12 sm12>
                                 <v-autocomplete chips deletable-chips cache-items multiple
@@ -68,9 +71,7 @@
                                                 clearable
                                                 hide-no-data
                                 >
-
                                     <template #item="{item}">
-
                                         {{item.email}} - {{item.fullName}} - Phòng ban:
                                         {{item.department.name}}
                                     </template>
@@ -104,6 +105,8 @@
 <script>
     import axios from 'axios';
     import _ from 'lodash';
+    import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+    import '@ckeditor/ckeditor5-build-classic/build/translations/vi'
 
     export default {
         name: "DocumentForm",
@@ -116,10 +119,17 @@
                 viewerOptionsSearch: null,
                 dialog: false,
                 projectOptions: [],
+                editor: ClassicEditor,
+                editorConfig: {
+                    language: 'vi',
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList',
+                        'numberedList', 'blockQuote', 'undo', 'redo'],
+                    removePlugins: ['imageUpload'],
+                },
             }
         },
         props: {
-            form: {
+            documentForm: {
                 type: Object,
                 default: function () {
                     return {
@@ -130,9 +140,6 @@
             }
         },
         computed: {
-            documentForm() {
-                return {...this.form};
-            },
         },
         methods: {
             close() {
@@ -151,7 +158,7 @@
                 const url = `http://localhost:8080/documents`;
                 axios({url, method, data})
                     .then(() => {
-                        this.close();
+                        this.dialog = false;
                         this.$emit('refresh');
                     })
                     .catch(error => {
@@ -166,7 +173,7 @@
                     });
             },
             getProjectOptions() {
-                axios.get(`http://localhost:8080/projects`)
+                axios.get(`http://localhost:8080/projects/search/all`)
                     .then(response => {
                         this.projectOptions = response.data;
                     })
@@ -223,5 +230,7 @@
 </script>
 
 <style scoped>
-
+    .ck-editor__editable {
+        min-height: 500px;
+    }
 </style>

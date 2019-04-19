@@ -1,6 +1,5 @@
 const projectStoreDefaultState = () => {
     return {
-        showForm: false,
         projects: [],
         projectForm: {},
         isEdit: true,
@@ -27,9 +26,6 @@ export default {
         },
         SET_CURRENT_PROJECT(state, currentProject){
             state.currentProject = currentProject;
-        },
-        SET_SHOW_FORM(state, showForm) {
-            state.showForm = showForm;
         },
         SET_PROJECT_FORM(state, projectForm){
             state.projectForm = projectForm;

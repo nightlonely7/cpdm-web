@@ -14,6 +14,8 @@
                         <v-flex md12>
                             <v-text-field v-model="form.summary"
                                           label="Nội dung tổng quát"
+                                          :rules="summaryRules"
+                                          validate-on-blur
                             ></v-text-field>
                         </v-flex>
                         <v-flex md12>
@@ -51,6 +53,9 @@
             return {
                 dialog: false,
                 loading: false,
+                summaryRules: [
+                    val => (!!val && val.length >= 4) || "Ít nhất 4 kí tự",
+                ]
             }
         },
         props: {

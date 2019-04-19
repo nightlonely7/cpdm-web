@@ -27,13 +27,18 @@
                 {{pageStart}} - {{pageStop}} của tổng cộng {{itemsLength}}
             </template>
             <template #items="{item}">
-                <td class="text-xs-left">{{item.title}}</td>
-                <td class="text-xs-left">{{item.summary}}</td>
-                <td class="text-xs-left">{{item.project.name}}</td>
-                <td class="text-xs-left">{{moment(item.createdTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
-                <td class="text-xs-left">{{moment(item.startTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
-                <td class="text-xs-left">{{moment(item.endTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
-                <td class="text-xs-left">{{item.status}}</td>
+                <router-link tag="tr" :to="`/documents/${item.id}`"
+                             onmouseover="this.style.cursor='pointer'"
+                             onmouseout="this.style.cursor='none'"
+                >
+                    <td class="text-xs-left">{{item.title}}</td>
+                    <td class="text-xs-left">{{item.summary}}</td>
+                    <td class="text-xs-left">{{item.project.name}}</td>
+                    <td class="text-xs-left">{{moment(item.createdTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
+                    <td class="text-xs-left">{{moment(item.startTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
+                    <td class="text-xs-left">{{moment(item.endTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
+                    <td class="text-xs-left">{{item.status}}</td>
+                </router-link>
             </template>
         </v-data-table>
     </div>
@@ -42,7 +47,7 @@
 <script>
     import axios from 'axios';
     import _ from 'lodash';
-    import {mapGetters} from 'vuex'
+    import {mapGetters, mapState} from 'vuex'
     import DocumentForm from "./DocumentForm";
 
     export default {

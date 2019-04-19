@@ -1,16 +1,17 @@
 const userStoreDefaultState = () => {
     return {
         showForm: false,
-        titleSearchValue: '',
-        summarySearchValue: '',
+        emailSearchValue: '',
+        displayNameSearchValue: '',
+        fullNameSearchValue: '',
         users: [],
         userForm: {
             department: {},
             role: {},
         },
+        currentUser: {}
     }
 };
-
 
 export default {
     namespaced: true,
@@ -24,6 +25,18 @@ export default {
         },
         SET_USER_FORM(state, userForm) {
             state.userForm = userForm;
+        },
+        SET_EMAIL_SEARCH_VALUE(state, emailSearchValue) {
+            state.emailSearchValue = emailSearchValue;
+        },
+        SET_DISPLAY_NAME_SEARCH_VALUE(state, displayNameSearchValue) {
+            state.displayNameSearchValue = displayNameSearchValue;
+        },
+        SET_FULL_NAME_SEARCH_VALUE(state, fullNameSearchValue) {
+            state.fullNameSearchValue = fullNameSearchValue;
+        },
+        SET_CURRENT_USER(state, currentUser) {
+            state.currentUser = currentUser;
         },
     }
 };

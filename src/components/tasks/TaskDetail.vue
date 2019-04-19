@@ -83,7 +83,7 @@
             <v-divider></v-divider>
             <br>
 
-            <TaskIssue :task="{...task}" @refresh-issues-status="refreshIssuesStatus"></TaskIssue>
+            <TaskIssue :task="{...task}" @refresh="refreshIssues"></TaskIssue>
 
             <br>
             <v-divider></v-divider>
@@ -152,8 +152,6 @@
                             </v-list-tile-action>
                         </v-list-tile>
                     </v-list>
-
-
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
@@ -171,7 +169,6 @@
                     </template>
                 </TaskForm>
             </v-layout>
-
 
         </div>
     </div>
@@ -254,7 +251,7 @@
             })
         },
         methods: {
-            refreshIssuesStatus() {
+            refreshIssues() {
                 this.getIssuesStatus();
             },
             refreshRelatives: function () {

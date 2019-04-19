@@ -11,25 +11,22 @@
                     </v-list-tile-title>
                 </v-list-tile>
                 <v-divider/>
-
-                <v-list-tile to="/departments">
+                <v-list-tile to="/departments" v-if="isAdmin">
                     <v-list-tile-action>
-                        <v-icon>account_circle</v-icon>
+                        <v-icon>mdi-home</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                        <v-list-tile-title>Quản lý phòng ban</v-list-tile-title>
+                        <v-list-tile-title>Quản lý phòng ban</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-
-                <v-list-tile to="/projects">
+                <v-list-tile to="/projects" v-if="isAdmin || isManager">
                     <v-list-tile-action>
-                        <v-icon>account_circle</v-icon>
+                        <v-icon>mdi-file-document</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
-                        <v-list-tile-title>Quản lý dự án</v-list-tile-title>
+                        <v-list-tile-title>Quản lý dự án</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-
                 <v-list-tile to="/documents">
                     <v-list-tile-action>
                         <v-icon>account_circle</v-icon>
@@ -187,8 +184,7 @@
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>{{ title }}</v-toolbar-title>
             <v-spacer/>
-            <span>{{ displayName }}</span>
-            &nbsp; &nbsp; &nbsp;
+            <span>{{ displayName }}&nbsp; &nbsp; &nbsp;</span>
             <v-menu
                     v-show="isLoggedIn"
                     bottom
@@ -197,7 +193,6 @@
                     offset-y
                     transition="slide-y-transition"
             >
-
                 <v-btn icon slot="activator">
                     <v-badge
                             color="error"
@@ -315,6 +310,7 @@
                 isAdmin: 'isAdmin',
                 isManager: 'isManager',
                 isStaff: 'isStaff',
+                displayName: 'displayName'
             }),
         },
         methods: {

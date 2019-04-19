@@ -141,6 +141,7 @@ const router = new Router({
             name: 'Xét duyệt đơn xin ủy quyền',
             component: () => import('@/views/assignRequests/ApproverAssignRequestPage.vue')
         },
+        ,
         {
             path: '/createAskingRequests',
             name: 'Xin ý kiến lãnh đạo',
@@ -181,7 +182,6 @@ router.beforeEach((to, from, next) => {
             .catch(() => next('/login'));
         return;
     }
-    console.log('router');
     next();
 });
 

@@ -13,8 +13,11 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="showForm">Tạo mới dự án</v-btn>
-            <ProjectForm></ProjectForm>
+            <ProjectForm>
+                <template #activator="{on}">
+                    <v-btn v-on="on" color="primary">Tạo mới dự án</v-btn>
+                </template>
+            </ProjectForm>
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
@@ -108,7 +111,6 @@
                 this.getProjects();
             },
             showForm: function () {
-                this.$store.commit('PROJECT_STORE/SET_SHOW_FORM', true);
                 this.$store.commit('PROJECT_STORE/SET_IS_EDIT', false);
                 this.$store.commit('PROJECT_STORE/SET_PROJECT_NAME', '');
                 this.$store.commit('PROJECT_STORE/SET_PROJECT_FORM', {

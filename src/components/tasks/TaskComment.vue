@@ -4,7 +4,6 @@
             <v-list>
                 <v-toolbar color="indigo" dark>
                     <v-toolbar-title>Bình luận</v-toolbar-title>
-
                     <v-spacer></v-spacer>
                 </v-toolbar>
                 <v-subheader></v-subheader>
@@ -198,6 +197,7 @@
                 };
                 axios.get(`http://localhost:8080/comments/findByTask`, {params})
                     .then(response => {
+                            // this.$store.commit('COMMENT_STORE/SET_COMMENT', response.data.content);
                             this.comments = response.data.content;
                             for (var i in this.comments) {
                                 this.$set(this.comments[i], 'editDisable', true);

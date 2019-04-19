@@ -42,6 +42,7 @@ export default {
         isAdmin: state => state.role === 'ADMIN',
         isManager: state => state.role === 'MANAGER',
         isStaff: state => state.role === 'STAFF',
+        displayName: state => state.displayName
     },
     actions: {
         LOGIN({commit}, user) {

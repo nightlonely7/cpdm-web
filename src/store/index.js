@@ -13,13 +13,13 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     modules: {
-        DEPARTMENT_STORE,
-        PROJECT_STORE,
-        DOCUMENT_STORE,
         TASK_STORE,
         AUTHENTICATION,
         USER_STORE,
         ASSIGN_REQUEST_STORE,
         ASKING_REQUEST_STORE,
+        DEPARTMENT_STORE,
+        PROJECT_STORE,
+        DOCUMENT_STORE
     }
 })
