@@ -42,6 +42,8 @@
 
 <script>
     import axios from 'axios';
+    import {mapState} from 'vuex';
+    import {pushNotif} from "@/firebase.js";
 
     export default {
         name: "TaskIssueForm",
@@ -63,8 +65,14 @@
                     };
                 }
             },
+            task: Object,
         },
-        computed: {},
+        computed: {
+            ...mapState('AUTHENTICATION', {
+                userId: state => state.id,
+                displayName: state => state.displayName,
+            }),
+        },
         methods: {
             close() {
                 this.dialog = false;
@@ -79,6 +87,17 @@
                 console.log(url, method, data);
                 axios({url, method, data})
                     .then((response) => {
+                        var title = 'Một vấn đề đã được thêm bởi ' + this.displayName;
+                        var detail = '';
+                        var url = '/tasks';
+                        var users = [];
+                        if(this.displayName === this.task.executor.displayName){
+                            users.push(this.task.cretor);
+                        }
+                        else{
+                            users.push(this.task.executor);
+                        }
+                        pushNotif(title,detail,url,users);
                         console.log(response.data);
                         this.dialog = false;
                         this.$emit("refresh");

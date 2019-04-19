@@ -26,7 +26,7 @@
                             v-if="(task.status === 'Waiting'|| isTaskRunning)
                                     && (task.creator.id === userId || task.executor.id === userId)">
                         <v-list-tile-content>
-                            <TaskIssueForm @refresh="refreshIssues" :task-id="task.id">
+                            <TaskIssueForm @refresh="refreshIssues" :task-id="task.id" :task="task">
                                 <template #activator="{ on }">
                                     <v-btn v-on="on" color="primary">Thêm vấn đề</v-btn>
                                 </template>
@@ -76,6 +76,7 @@
     import axios from 'axios';
     import TaskIssueForm from "@/components/tasks/TaskIssueForm";
     import {mapState} from "vuex";
+    import {pushNotif} from "@/firebase.js";
 
     export default {
         name: "TaskIssue",
@@ -103,7 +104,8 @@
                     || this.task.status === 'Near deadline'
             },
             ...mapState('AUTHENTICATION', {
-                userId: state => state.id
+                userId: state => state.id,
+                displayName: state => state.displayName,
             }),
         },
         methods: {
@@ -137,6 +139,17 @@
                 if (confirm('Bạn muốn xóa vấn đề này chứ?')) {
                     axios.delete(`http://localhost:8080/task-issues/${id}`)
                         .then(() => {
+                            var title = 'Một vấn đề đã hủy bởi ' + this.displayName;
+                            var detail = '';
+                            var url = '/tasks';
+                            var users = [];
+                            if(this.displayName === this.task.executor.displayName){
+                                users.push(this.task.cretor);
+                            }
+                            else{
+                                users.push(this.task.executor);
+                            }
+                            pushNotif(title,detail,url,users);
                             this.refreshIssues();
                         })
                         .catch(error => {
@@ -152,6 +165,12 @@
                 if (confirm('Bạn muốn báo cáo hoàn tất Vấn Đề này chứ?')) {
                     axios.patch(`http://localhost:8080/task-issues/${id}/complete`)
                         .then(() => {
+                            var title = 'Một vấn đề đã hoàn thành bởi ' + this.displayName;
+                            var detail = '';
+                            var url = '/tasks';
+                            var users = [];
+                            users.push(this.task.cretor);
+                            pushNotif(title,detail,url,users);
                             this.refreshIssues();
                         })
                         .catch(error => {

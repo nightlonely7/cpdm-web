@@ -95,7 +95,7 @@
                 <td class="text-xs-left" v-if="props.item.status === 0">
                     <v-card-actions>
                         <!--<v-btn outline fab small color="indigo" @click="editAskingRequest(props.item)">-->
-                            <!--<v-icon>edit</v-icon>-->
+                        <!--<v-icon>edit</v-icon>-->
                         <!--</v-btn>-->
                         <v-btn outline fab small color="red" @click="deleteAskingRequest(props.item.id)">
                             <v-icon>delete</v-icon>
@@ -122,6 +122,7 @@
 <script>
     import axios from 'axios';
     import {mapGetters, mapState} from "vuex";
+    import {pushNotif} from "@/firebase.js";
 
     export default {
         name: "SenderAskingRequestTable",
@@ -204,7 +205,7 @@
                         this.status = 1;
                         this.table.headers.pop();
                         this.table.headers.push({text: 'Phản hồi', value: 'response'});
-                        this.table.headers.push( {text: 'Tác vụ liên quan', value: 'task'});
+                        this.table.headers.push({text: 'Tác vụ liên quan', value: 'task'});
                         break;
                 }
                 this.refresh();
@@ -277,6 +278,14 @@
                 if (confirm('Bạn muốn xóa đơn này?')) {
                     axios.delete(`http://localhost:8080/askingRequests/` + id)
                         .then(() => {
+                                //create and send notification
+                                var title = "Một yêu cầu chỉ đạo đã xóa bởi " + this.displayName;
+                                var detail = '';
+                                var url = "/receiverAskingRequests";
+                                var users = [];
+                                users.push(this.receivers[0]);
+                                pushNotif(title, detail, url, users);
+                                //refresh and dialog
                                 this.refresh();
                                 this.snackbar = true;
                                 this.snackBarText = "Thành công";
@@ -335,6 +344,7 @@
                         data: this.editItem
                     }
                 ).then(() => {
+                        this.pushnotification(this.editItem);
                         this.close();
                         this.refresh();
                         this.snackBarText = 'Thành công';
@@ -353,6 +363,17 @@
                         }
                     }
                 );
+            },
+            pushnotification(item) {
+                var title = "Yêu cầu chỉ đạo mới từ " + this.displayName;
+                if (item.id != 0) {
+                    title = "Yêu cầu chỉnh sửa từ " + this.displayName;
+                }
+                var url = "/receiverAskingRequests";
+                var detail = item.content;
+                var users = [];
+                users.push(item.receiver);
+                pushNotif(title, detail, url, users);
             }
         },
         watch: {

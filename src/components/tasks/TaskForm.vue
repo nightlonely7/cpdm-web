@@ -194,9 +194,9 @@
                                     </v-dialog>
                                 </v-flex>
 
-<!--                                <v-flex md12 sm12>-->
-<!--                                    <span>Thời lượng: {{duration}} ngày</span>-->
-<!--                                </v-flex>-->
+                                <!--                                <v-flex md12 sm12>-->
+                                <!--                                    <span>Thời lượng: {{duration}} ngày</span>-->
+                                <!--                                </v-flex>-->
 
                                 <v-flex md12 sm12>
                                     <v-textarea v-model="taskForm.description"
@@ -308,7 +308,8 @@
 <script>
     import axios from 'axios';
     import _ from 'lodash';
-    import {mapGetters} from "vuex";
+    import {mapState, mapGetters} from "vuex";
+    import {pushNotif} from '@/firebase.js'
     import moment from 'moment';
 
     export default {
@@ -349,6 +350,9 @@
             taskForm: function () {
                 return {...this.form};
             },
+            ...mapState('AUTHENTICATION', {
+                displayName: state => state.displayName,
+            }),
             ...mapGetters('AUTHENTICATION', {
                 isAdmin: 'isAdmin',
                 isManager: 'isManager'
@@ -381,6 +385,7 @@
                     console.log('form validate');
                     return;
                 }
+                console.log(this.taskForm);
                 const data = {
                     ...this.taskForm,
                     relatives: this.relatives.map(value => {
@@ -397,7 +402,9 @@
                 const url = `http://localhost:8080/tasks/${this.taskForm.id === 0 ? '' : this.taskForm.id}`;
                 const method = `${this.taskForm.id === 0 ? 'POST' : 'PUT'}`;
                 axios({url, method, data})
-                    .then(() => {
+                    .then((response) => {
+                            console.log(response.data);
+                            this.pushnotification(response.data, data.id);
                             this.close();
                             this.$emit('refresh');
                         }
@@ -407,6 +414,20 @@
                         }
                     }
                 )
+            },
+            pushnotification(data, id) {
+                var title = "Tác vụ mới từ " + this.displayName;
+                if (id != 0) {
+                    title = "Tác vụ chỉnh sửa từ " + this.displayName;
+                }
+                var url = "/tasks";
+                var detail = data.title;
+                var users = [];
+                if(data.relatives){
+                  users = data.relatives;
+                }
+                users.push(data.executor);
+                pushNotif(title, detail, url, users);
             },
             close: function () {
                 this.dialog = false;
