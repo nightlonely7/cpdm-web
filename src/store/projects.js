@@ -1,13 +1,7 @@
 const projectStoreDefaultState = () => {
     return {
-        projects: [],
-        projectForm: {},
-        isEdit: true,
         titleSearchValue: '',
         summarySearchValue: '',
-        currentProject: {},
-        projectName: '',
-        projectAlias: '',
     }
 };
 
@@ -20,24 +14,6 @@ export default {
         },
         SET_SUMMARY_SEARCH_VALUE(state, summarySearchValue) {
             state.summarySearchValue = summarySearchValue
-        },
-        SET_PROJECTS(state, projects){
-            state.projects = projects;
-        },
-        SET_CURRENT_PROJECT(state, currentProject){
-            state.currentProject = currentProject;
-        },
-        SET_PROJECT_FORM(state, projectForm){
-            state.projectForm = projectForm;
-        },
-        SET_IS_EDIT(state, isEdit){
-            state.isEdit = isEdit;
-        },
-        SET_PROJECT_NAME(state, projectName){
-            state.projectName = projectName;
-        },
-        SET_PROJECT_ALIAS(state, projectAlias){
-            state.projectAlias = projectAlias;
         },
     }
 };

@@ -10,7 +10,7 @@
             <p style="color: blue">Thời gian tạo: {{moment(document.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
             <p style="color: blue">Thời gian hiệu lực: {{moment(document.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
             <p style="color: blue">Thời gian hết hạn: {{moment(document.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
-            <DocumentForm :document-form="{...document}">
+            <DocumentForm :form="{...document}">
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary">Sửa</v-btn>
                 </template>
@@ -73,15 +73,9 @@
             },
             deleteDocument: function () {
                 if (confirm('Xóa tài liệu này?')) {
-                    const document = {...this.document};
-                    document.isAvailable = false;
-                    axios.patch(`http://localhost:8080/documents/${document.id}`, {})
+                    axios.delete(`http://localhost:8080/documents/${this.document.id}`)
                         .then(
-                            response => {
-                                this.document = response.data;
-                                console.log(this.document);
-                                this.$store.commit('DOCUMENT_STORE/SET_IS_EDIT', false);
-                                this.$store.commit('DOCUMENT_STORE/SET_DOCUMENT_NAME', '');
+                            () => {
                                 this.$router.push("/documents");
                             }
                         ).catch(

@@ -23,7 +23,7 @@
                                                   counter="30"
                                                   v-model="departmentForm.name"
                                                   :rules="nameRule"
-                                                  v-validate="{depNameValidator: [departmentName, isEdit]}"
+                                                  v-validate="{depNameValidator: [departmentName, creating]}"
                                                   name="name"
                                                   validate-on-blur>
                                     ></v-text-field>
@@ -34,7 +34,7 @@
                                                   counter="30"
                                                   :rules="aliasRule"
                                                   name="alias"
-                                                  v-validate="{depAliasValidator: [departmentAlias, isEdit]}"
+                                                  v-validate="{depAliasValidator: [departmentAlias, creating]}"
                                                   v-model="departmentForm.alias"
                                                   validate-on-blur
                                     ></v-text-field>
@@ -61,7 +61,6 @@
 
 <script>
     import axios from 'axios'
-    import {mapState} from 'vuex'
     import 'vee-validate';
 
     export default {
@@ -78,15 +77,18 @@
                 snackbar: false,
                 serverErrorText: 'Lưu thông tin thất bại!',
                 timeout: 10000,
-                dialog: false
+                dialog: false,
+                departmentName: '',
+                departmentAlias: '',
             }
         },
         computed: {
-            ...mapState('DEPARTMENT_STORE', {
-                departmentName: state => state.departmentName,
-                departmentAlias: state => state.departmentAlias,
-                isEdit: state => state.isEdit
-            }),
+        },
+        mounted(){
+            if(this.departmentForm.id !== 0){
+                this.departmentName = this.departmentForm.name;
+                this.departmentAlias = this.departmentForm.alias;
+            }
         },
         props: {
             departmentForm: {
@@ -96,40 +98,37 @@
                         id: 0,
                         name: '',
                         alias: '',
-                        available: true,
                     };
                 }
             },
+            creating: {
+                type: Boolean,
+                default: function () {
+                    return false;
+                }
+            }
         },
         methods: {
             close: function () {
                 this.snackbar = false;
-                this.departmentForm.name = this.$store.state.DEPARTMENT_STORE.departmentName;
-                this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_NAME', '');
-                const currentDepartment =
-                    this.$store.state.DEPARTMENT_STORE.currentDepartment;
-                this.departmentForm.id = currentDepartment.id;
-                this.departmentForm.name = currentDepartment.name;
-                this.departmentForm.alias = currentDepartment.alias;
                 this.dialog = false;
             },
             save: function () {
+                const departmentForm = {...this.departmentForm};
                 if(typeof this.errors.first('name') !== 'undefined'){
                     this.snackbar = true;
                 }
                 if (this.$refs.form.validate() && (typeof this.errors.first('name') === 'undefined')) {
-                    const url = `http://localhost:8080/departments${this.departmentForm.id === 0 ? `` : ('/' + this.departmentForm.id)}`;
-                    const method = this.departmentForm.id === 0 ? 'POST' : 'PUT';
+                    const url = `http://localhost:8080/departments${departmentForm.id === 0 ? `` : ('/' + departmentForm.id)}`;
+                    const method = departmentForm.id === 0 ? 'POST' : 'PUT';
                     axios({
                         url: url,
                         method: method,
-                        data: this.departmentForm
+                        data: departmentForm
                     }).then(
-                        response => {
-                            this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_FORM', response.data);
-                            this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_NAME', '');
-                            this.$router.push(`/departments/${this.departmentForm.id}`);
+                        () => {
                             this.close();
+                            this.$emit("refresh");
                         }
                     ).catch(
                         err => {

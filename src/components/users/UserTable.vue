@@ -15,8 +15,11 @@
             <br>
             <v-btn color="primary" @click="refresh">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="showForm">Tạo mới nhân viên</v-btn>
-            <UserForm @refresh="refresh"></UserForm>
+            <UserForm @refresh="refresh">
+                <template #activator="{on}">
+                    <v-btn v-on="on" color="primary">Tạo mới nhân viên</v-btn>
+                </template>
+            </UserForm>
         </v-toolbar>
         <v-data-table
                 :headers="table.headers"
@@ -53,6 +56,7 @@
     import {mapGetters} from 'vuex';
     import UserForm from "@/components/users/UserForm";
     import UserSearch from "./UserSearch";
+    import _ from 'lodash';
 
     export default {
         name: "UserTable",
@@ -76,12 +80,10 @@
                         {text: 'Chức vụ', value: 'role.name'},
                     ]
                 },
+                users: []
             }
         },
         computed: {
-            ...mapState('USER_STORE', {
-                users: 'users'
-            }),
             ...mapGetters('AUTHENTICATION', {
                 isAdmin: 'isAdmin'
             })
@@ -93,10 +95,6 @@
                 this.pagination.descending = true;
                 //this.canLoadData = false;
                 this.getUsers();
-            },
-            showForm: function () {
-                this.$store.commit('USER_STORE/SET_USER_FORM', {id: 0, department: {}, role: {}});
-                this.$store.commit('USER_STORE/SET_SHOW_FORM', true);
             },
             getUsers() {
                 if (!this.canLoadData) {
@@ -118,10 +116,9 @@
                     }
                 ).then(response => {
                         if (response.status === 204) {
-                            this.$store.commit('USER_STORE/SET_USERS', []);
                             this.pagination.totalItems = 0;
                         } else {
-                            this.$store.commit('USER_STORE/SET_USERS', response.data.content);
+                            this.users = response.data.content;
                             this.pagination.totalItems = response.data.totalElements;
                         }
                         this.table.loading = false;
@@ -142,7 +139,6 @@
                         response => {
                             this.departments = response.data.content;
                             // this.pagination = response.data.pageable;
-                            this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENTS', this.departments);
                             this.pagination.totalItems = response.data.totalElements;
                         }
                     )
@@ -164,6 +160,9 @@
                 this.getUsers();
             }
         },
+        created() {
+            this.debouncedGetUsers = _.debounce(this.getUsers, 500);
+        }
     }
 </script>
 

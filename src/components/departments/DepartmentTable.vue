@@ -5,7 +5,7 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <DepartmentForm>
+            <DepartmentForm :creating="false" @refresh="getDepartments">
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary">Tạo mới phòng ban</v-btn>
                 </template>
@@ -59,20 +59,13 @@
                         {text: 'Mã phòng ban', value: 'alias'}
                     ]
                 },
+                departments: []
             }
         },
         mounted() {
             this.getDepartments();
         },
         computed: {
-            departments: {
-                get() {
-                    return this.$store.state.DEPARTMENT_STORE.departments;
-                },
-                set(value) {
-                    this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENTS', value);
-                }
-            }
         },
         methods: {
             getDepartments: function () {
@@ -87,8 +80,6 @@
                     .then(
                         response => {
                             this.departments = response.data.content;
-                            // this.pagination = response.data.pageable;
-                            this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENTS', this.departments);
                             this.pagination.totalItems = response.data.totalElements;
                         }
                     )

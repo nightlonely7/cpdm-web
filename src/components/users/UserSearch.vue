@@ -51,7 +51,8 @@
                 maxAge: 80,
                 searchEmailDepartment: [],
                 searchDisplayNameDepartment: [],
-                searchFullNameDepartment: []
+                searchFullNameDepartment: [],
+                departments: [],
             }
         },
         computed: {
@@ -79,14 +80,10 @@
                     this.$store.commit('USER_STORE/SET_FULL_NAME_SEARCH_VALUE', val)
                 }
             },
-            departments: {
-                get() {
-                    return this.$store.state.DEPARTMENT_STORE.departments
-                }
-            }
         },
         mounted(){
             this.getMaxMinAge();
+            this.getDepartments();
         },
         methods: {
             getSearchValue: function () {
@@ -139,6 +136,19 @@
                             console.log(err)
                         }
                     )
+            },
+            getDepartments: function () {
+                axios.get('http://localhost:8080/departments')
+                    .then(
+                        response => {
+                            this.departments = response.data.content;
+                        }
+                    )
+                    .catch(
+                        err => {
+                            console.log(err);
+                        }
+                    );
             },
             getSearchUserAge: function () {
                 const birthDateFrom = this.moment().year() - this.age[1];

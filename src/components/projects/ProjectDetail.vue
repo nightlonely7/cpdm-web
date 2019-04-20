@@ -4,7 +4,7 @@
         <br/><br/>
         <p style="color: blue">Tên dự án: {{project.name || 'Chưa xác định'}}</p>
         <p style="color: blue">Mã dự án: {{project.alias || 'Chưa xác định'}}</p>
-        <v-list class="elevation-1">
+        <v-list three-line class="elevation-1">
             <v-subheader>
                 <h4>Danh sách tác vụ</h4>
             </v-subheader>
@@ -15,14 +15,44 @@
                     :key="taskIssue.id"
             >
                 <v-list-tile-content>
-                    <router-link :to="`/tasks/${taskIssue.id}`">
-                        <v-list-tile-title v-text="taskIssue.title">
-                        </v-list-tile-title>
-                    </router-link>
+                    <v-list-tile-title>
+                        Tên tác vụ: {{taskIssue.title}}
+                    </v-list-tile-title>
+                    <v-list-tile-sub-title>Tóm tắt: {{taskIssue.description}}</v-list-tile-sub-title>
+                    <v-list-tile-sub-title>
+                        <span>Trạng thái :</span>
+                        <v-chip :color="`${taskIssue.completed ? 'success' : ''}`">
+                            {{taskIssue.completed ? 'Hoàn tất' : 'Chưa hoàn tất'}}
+                        </v-chip>
+                    </v-list-tile-sub-title>
                 </v-list-tile-content>
+                &nbsp; &nbsp; &nbsp;
+                <v-list-tile-action-text>
+                    <v-btn @click="viewTask(taskIssue.id)" color="primary">Xem chi tiết</v-btn>
+                </v-list-tile-action-text>
+            </v-list-tile>
+            <v-subheader>
+                <h4>Danh sách tài liệu</h4>
+            </v-subheader>
+            <v-divider></v-divider>
+            <v-spacer></v-spacer>
+            <v-list-tile
+                    v-for="document in documents"
+            >
+                <v-list-tile-content>
+                    <v-list-tile-title>
+                        Tiêu đề: {{document.title}}
+                    </v-list-tile-title>
+                    <v-list-tile-sub-title>
+                        Tóm tắt: {{document.summary}}
+                    </v-list-tile-sub-title>
+                </v-list-tile-content>
+                <v-list-tile-action-text>
+                    <v-btn @click="viewDocument(document.id)" color="primary">Xem chi tiết</v-btn>
+                </v-list-tile-action-text>
             </v-list-tile>
         </v-list>
-        <ProjectForm :project-form="{...project}">
+        <ProjectForm :project-form="{...project}" @refresh="getProjectDetail(id)">
             <template #activator="{on}">
                 <v-btn v-on="on" color="primary">Sửa</v-btn>
             </template>
@@ -39,10 +69,11 @@
     export default {
         name: "ProjectDetail",
         components: {ProjectForm},
-        data(){
+        data() {
             return {
                 project: {},
-                taskIssues: []
+                taskIssues: [],
+                documents: []
             }
         },
         props: {
@@ -50,8 +81,9 @@
 
         },
         mounted() {
-            this.getTaskIssueDetail(this.id);
             this.getProjectDetail(this.id);
+            this.getTaskIssueDetail(this.id);
+            this.getDocumentDetail(this.id);
         },
         methods: {
             getProjectDetail: async function (id) {
@@ -84,13 +116,45 @@
                     }
                 );
             },
+            getDocumentDetail: async function (id) {
+                await axios.get(`http://localhost:8080/documents/search/all`, {
+                    params: {
+                        projectId: id
+                    }
+                })
+                    .then(
+                        response => {
+                            this.documents = response.data;
+                        }
+                    )
+                    .catch(
+                        err => {
+                            console.log(err);
+                        }
+                    );
+            },
             goBack: function () {
                 this.$router.push('/projects');
             },
             deleteProject: function () {
-                if (confirm('Xóa?')) {
-
+                if (confirm('Xóa dự án này?')) {
+                    axios.delete(`http://localhost:8080/projects/${this.project.id}`)
+                        .then(
+                            () => {
+                                this.$router.push("/projects");
+                            }
+                        ).catch(
+                        err => {
+                            console.log(err);
+                        }
+                    )
                 }
+            },
+            viewTask: function (id) {
+                this.$router.push(`/tasks/${id}`);
+            },
+            viewDocument: function (id) {
+                this.$router.push(`/documents/${id}`);
             }
         },
     }

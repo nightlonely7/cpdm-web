@@ -13,7 +13,7 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <ProjectForm>
+            <ProjectForm :creating="false" @refresh="getProjects">
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary">Tạo mới dự án</v-btn>
                 </template>
@@ -68,20 +68,13 @@
                         {text: 'Mã dự án', value: 'alias'}
                     ]
                 },
+                projects: []
             }
         },
         mounted() {
             this.getProjects();
         },
         computed: {
-            projects: {
-                get() {
-                    return this.$store.state.PROJECT_STORE.projects;
-                },
-                set(value) {
-                    this.$store.commit('PROJECT_STORE/SET_PROJECTS', value);
-                }
-            }
         },
         methods: {
             getProjects: function () {
@@ -96,7 +89,6 @@
                     .then(
                         response => {
                             this.projects = response.data.content;
-                            this.$store.commit('PROJECT_STORE/SET_PROJECTS', this.projects);
                             this.pagination.totalItems = response.data.totalElements;
                         }
                     )
@@ -109,15 +101,6 @@
             refresh: function () {
                 this.setPaging();
                 this.getProjects();
-            },
-            showForm: function () {
-                this.$store.commit('PROJECT_STORE/SET_IS_EDIT', false);
-                this.$store.commit('PROJECT_STORE/SET_PROJECT_NAME', '');
-                this.$store.commit('PROJECT_STORE/SET_PROJECT_FORM', {
-                    id: 0,
-                    name: '',
-                    alias: ''
-                });
             },
             setPaging: function () {
                 this.pagination.page = 1;

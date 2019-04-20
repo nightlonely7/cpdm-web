@@ -4,8 +4,74 @@
         <br/><br/>
         <p style="color: blue">Tên phòng ban: {{department.name || 'Chưa xác định'}}</p>
         <p style="color: blue">Mã phòng ban: {{department.alias || 'Chưa xác định'}}</p>
-        <DepartmentForm :department-form="{...department}">
-            <template #activator="{on}" >
+        <v-list three-line class="elevation-1">
+            <v-subheader>
+                <h4>Quản lý</h4>
+            </v-subheader>
+            <v-divider></v-divider>
+            <v-spacer></v-spacer>
+            <v-list-tile
+                    v-for="user in users"
+                    :key="user.id"
+                    v-if="user.role.name === 'ROLE_MANAGER'"
+            >
+                <v-list-tile-content>
+                    <router-link :to="`/users/${user.id}`">
+                        <v-list-tile-title>
+                            Tên hiển thị: {{user.displayName}}
+                        </v-list-tile-title>
+                    </router-link>
+                    <v-list-tile-sub-title>
+                        Tên đầy đủ: {{user.fullName}}
+                    </v-list-tile-sub-title>
+                    <v-list-tile-sub-title>
+                        Email: {{user.email}}
+                    </v-list-tile-sub-title>
+                </v-list-tile-content>
+            </v-list-tile>
+            <v-list-tile v-else>
+                <v-list-tile-content>
+                    <v-list-tile-title>
+                        Không có quản lí trong danh sách này!
+                    </v-list-tile-title>
+                </v-list-tile-content>
+            </v-list-tile>
+            <v-divider></v-divider>
+            <v-spacer></v-spacer>
+            <v-subheader>
+                <h4>Danh sách nhân viên</h4>
+            </v-subheader>
+            <v-divider></v-divider>
+            <v-spacer></v-spacer>
+            <v-list-tile
+                    v-for="user in users"
+                    :key="user.id"
+                    v-if="user.role.name === 'ROLE_STAFF'"
+            >
+                <v-list-tile-content>
+                    <router-link :to="`/users/${user.id}`">
+                        <v-list-tile-title>
+                            Tên: {{user.displayName}}
+                        </v-list-tile-title>
+                        <v-list-tile-sub-title>
+                            Tên đầy đủ: {{user.fullName}}
+                        </v-list-tile-sub-title>
+                        <v-list-tile-sub-title>
+                            Email: {{user.email}}
+                        </v-list-tile-sub-title>
+                    </router-link>
+                </v-list-tile-content>
+            </v-list-tile>
+            <v-list-tile v-else>
+                <v-list-tile-content>
+                    <v-list-tile-title>
+                        Không có nhân viên trong danh sách này!
+                    </v-list-tile-title>
+                </v-list-tile-content>
+            </v-list-tile>
+        </v-list>
+        <DepartmentForm :department-form="{...department}" :creating="true" @refresh="getDepartmentDetail(id)">
+            <template #activator="{on}">
                 <v-btn v-on="on" color="primary">Sửa</v-btn>
             </template>
         </DepartmentForm>
@@ -21,9 +87,10 @@
     export default {
         name: "DepartmentDetail",
         components: {DepartmentForm},
-        data(){
+        data() {
             return {
-                department: {}
+                department: {},
+                users: []
             }
         },
         props: {
@@ -32,12 +99,14 @@
         mounted() {
             this.getDepartmentDetail(this.id);
         },
+        computed: {},
         methods: {
             getDepartmentDetail: async function (id) {
                 await axios.get(`http://localhost:8080/departments/${id}`)
                     .then(
                         response => {
-                             this.department = response.data;
+                            this.department = response.data;
+                            this.getRelatedUserList(id);
                         }
                     )
                     .catch(
@@ -46,17 +115,24 @@
                         }
                     );
             },
+            getRelatedUserList: async function (id) {
+                await axios.get(`http://localhost:8080/users/findAllSummaryByDepartmentId/${id}`)
+                    .then(
+                        response => {
+                            this.users = response.data;
+                        }
+                    )
+                    .catch(
+                        err => {
+                            console.log(err);
+                        }
+                    )
+            },
             deleteDepartment: function () {
-                if (confirm('Xóa?')) {
-                    const department = {...this.department};
-                    department.isAvailable = false;
-                    axios.patch(`http://localhost:8080/departments/${department.id}`, {})
+                if (confirm('Xóa phòng ban?')) {
+                    axios.delete(`http://localhost:8080/departments/${this.department.id}`)
                         .then(
-                            response => {
-                                this.department = response.data;
-                                console.log(this.department);
-                                this.$store.commit('DEPARTMENT_STORE/SET_IS_EDIT', false);
-                                this.$store.commit('DEPARTMENT_STORE/SET_DEPARTMENT_NAME', '');
+                            () => {
                                 this.$router.push("/departments");
                             }
                         )

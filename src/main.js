@@ -8,11 +8,12 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import Vuetify from 'vuetify'
 import VeeValidate from 'vee-validate';
-import './validators/validateDepAlias';
-import './validators/validateDepName';
+import './validators/validateDepartmentAlias';
+import './validators/validateDepartmentName';
 import './validators/validateEmail';
 import './validators/validateProjectAlias';
 import './validators/validateProjectName';
+import './validators/validateDocumentTitle';
 import 'vuetify/dist/vuetify.min.css'
 import 'animate.css'
 import moment from 'moment'

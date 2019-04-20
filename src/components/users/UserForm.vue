@@ -1,6 +1,9 @@
 <template>
     <div>
-        <v-dialog v-model="showForm" persistent max-width="500">
+        <v-dialog v-model="dialog" persistent max-width="500">
+            <template #activator="{on}">
+                <slot name="activator" :on="on"></slot>
+            </template>
             <v-card>
                 <v-card-title>
                     <span class="headline">FORM NHÂN VIÊN</span>
@@ -72,6 +75,7 @@
     import axios from 'axios';
     import {mapState} from 'vuex'
     import {mapGetters} from 'vuex'
+    import moment from 'moment'
 
     export default {
         name: "UserForm",
@@ -79,17 +83,42 @@
             return {
                 departmentOptions: [],
                 snackbar: false,
-                serverErrorText: 'Lưu thông tin thất bại!'
+                serverErrorText: 'Lưu thông tin thất bại!',
+                dialog: false
             }
         },
         computed: {
-            ...mapState('USER_STORE', {
-                showForm: state => state.showForm,
-                userForm: state => state.userForm
-            }),
             ...mapGetters('AUTHENTICATION', {
                 isAdmin: 'isAdmin',
             })
+        },
+        props: {
+            userForm: {
+                type: Object,
+                default: function () {
+                    return {
+                        id: 0,
+                        displayName: '',
+                        fullName: '',
+                        email: '',
+                        password: '',
+                        gender: false,
+                        birthDay: moment().format("YYYY-MM-DD"),
+                        phone: '',
+                        address: '',
+                        role: {
+                            id: 1,
+                            name: 'ROLE_STAFF'
+                        },
+                        department: {
+                            id: 1,
+                            name: 'New Department 1',
+                            alias: 'NEW1',
+                            available: true
+                        }
+                    }
+                }
+            }
         },
         methods: {
             save: function () {
@@ -115,7 +144,7 @@
                 );
             },
             close: function () {
-                this.$store.commit('USER_STORE/SET_SHOW_FORM', false);
+                this.dialog = false;
             },
             loadDepartmentOptions: function () {
                 axios.get(`http://localhost:8080/departments/search/all`)
