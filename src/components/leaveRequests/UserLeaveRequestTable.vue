@@ -161,7 +161,7 @@
     import axios from 'axios';
     import {mapGetters, mapState} from "vuex";
     import moment from "moment";
-    import {db} from '@/firebase.js'
+    import {pushNotif} from '@/firebase.js'
 
     var notAllowedDate = [];
 
@@ -229,6 +229,7 @@
         computed: {
             ...mapState('AUTHENTICATION', {
                 role: state => state.role,
+                displayName: state => state.displayName,
             }),
             ...mapGetters('AUTHENTICATION', {
                 isInit: 'isInit',
@@ -366,6 +367,14 @@
                 if (confirm('Bạn muốn xóa đơn này?')) {
                     axios.delete(`http://localhost:8080/leaveRequests/` + id)
                         .then(() => {
+                                //create and send notification
+                                var title = "Một đơn nghỉ phép đã xóa bởi " + this.displayName;
+                                var detail = '';
+                                var url = "/approverLeaveRequests";
+                                var users = [];
+                                users.push(this.approvers[0]);
+                                pushNotif(title, detail, url, users);
+                                //refresh and dialog
                                 this.refresh();
                                 this.snackbar = true;
                                 this.snackBarText = "Thành công";
@@ -439,7 +448,19 @@
                         data: this.editItem
                     }
                 ).then(() => {
-                        this.pushnotification(this.editItem);
+                        //create and send notification
+                        var title = "Đơn xin nghỉ phép mới từ " + this.displayName;
+                        //reset title for edit request
+                        console.log(this.editItem.status);
+                        if (this.editItem.id != 0) {
+                            title = "Đơn nghỉ phép chỉnh sửa từ" + this.displayName;
+                        }
+                        var detail = this.editItem.content;
+                        var url = "/approverLeaveRequests";
+                        var users = [];
+                        users.push(this.editItem.approver);
+                        pushNotif(title, detail, url, users);
+                        //refresh and dialog
                         this.close();
                         this.refresh();
                         this.snackBarText = 'Thành công';
@@ -462,47 +483,6 @@
                         }
                     }
                 );
-            },
-            pushnotification(item) {
-                var keys = [];
-                var title = "Đơn xin nghỉ phép";
-                var url = "/approverLeaveRequests";
-                axios.post('http://localhost:8080/notifications', {
-                        title: title,
-                        detail: item.content,
-                        url: url,
-                        user: item.approver
-                    }
-                ).then(() => {
-                    db.ref('users/' + item.approver.displayName).once('value').then(function (snapshot) {
-                        keys.push(snapshot.val());
-                        axios.post('http://localhost:8080/notifications/push',
-                            {
-                                keys: keys,
-                                title: title,
-                                detail: item.content,
-                                url: url
-                            }
-                        ).then(response => {
-                            console.log(response.status);
-                        }).catch(error => {
-                            if (error.response) {
-                                console.log(error.response.data);
-                            } else {
-                                console.log(error.response);
-                            }
-                        });
-                    }).catch(error => {
-                        console.log(error.response);
-                    });
-                }).catch(error => {
-                    if (error.response) {
-                        console.log(error.response.data);
-                    } else {
-                        console.log(error.response);
-                    }
-                });
-
             },
             allowedDates: val => notAllowedDate.indexOf(val) == -1
         },

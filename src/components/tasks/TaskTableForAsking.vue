@@ -179,6 +179,7 @@
     import axios from 'axios';
     import moment from 'moment';
     import {mapState, mapGetters} from 'vuex';
+    import {pushNotif} from '@/firebase.js';
 
     export default {
         name: "TaskTableForAsking",
@@ -365,6 +366,7 @@
                         data: this.editItem
                     }
                 ).then(() => {
+                        this.pushnotification(this.editItem);
                         this.close();
                         this.$emit('refresh');
                         this.refresh();
@@ -381,6 +383,14 @@
                         this.snackbar = true;
                     }
                 );
+            },
+            pushnotification(item){
+                var title = "Yêu cầu chỉ đạo mới từ " + this.displayName;
+                var url = "/receiverAskingRequests";
+                var detail = item.content;
+                var users = [];
+                users.push(item.receiver);
+                pushNotif(title,detail,url,users);
             },
             storeSelectedTasks() {
                 this.$store.commit('ASKING_REQUEST_STORE/SET_SELECTED_TASK', this.selected);

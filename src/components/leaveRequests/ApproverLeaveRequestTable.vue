@@ -55,6 +55,8 @@
 
 <script>
     import axios from 'axios';
+    import {pushNotif} from '@/firebase.js';
+    import {mapState} from 'vuex';
 
     export default {
         name: "ApproverLeaveRequestTable",
@@ -86,6 +88,11 @@
                     ]
                 },
             }
+        },
+        computed: {
+            ...mapState('AUTHENTICATION', {
+                displayName: state => state.displayName,
+            })
         },
         mounted() {
             this.$nextTick()
@@ -157,6 +164,7 @@
                             data: updateRequest
                         }
                     ).then(() => {
+                            this.pushnotification(updateRequest);
                             this.getApproverLeveRequests();
                             this.snackBarText = 'Thành công';
                             this.snackbar = true;
@@ -170,6 +178,14 @@
                         }
                     );
                 }
+            }
+            ,pushnotification(item) {
+                var title = "Đơn xin nghỉ phép đã xử lý bởi " + this.displayName;
+                var url = "/userLeaveRequests";
+                var detail = item.content;
+                var users = [];
+                users.push(item.user);
+                pushNotif(title,detail,url,users);
             }
         },
         watch: {

@@ -83,7 +83,7 @@
             <v-divider></v-divider>
             <br>
 
-            <TaskIssue :task="{...task}" @refresh-issues-status="refreshIssuesStatus"></TaskIssue>
+            <TaskIssue :task="{...task}" @refresh="refreshIssues"></TaskIssue>
 
             <br>
             <v-divider></v-divider>
@@ -133,7 +133,7 @@
                     </div>
                     <v-list three-line>
                         <v-list-tile v-if="task.creator.id === userId">
-                            <TaskDocumentForm :task-id="id" :project-id="task.project.id" @refresh="getTaskDocuments">
+                            <TaskDocumentForm :task="task" :task-id="id" :project-id="task.project.id" @refresh="getTaskDocuments">
                                 <template #activator="{on}">
                                     <v-btn v-on="on" color="primary">Thêm tài liệu liên quan</v-btn>
                                 </template>
@@ -183,6 +183,7 @@
     import moment from 'moment';
     import TaskDocumentForm from "@/components/tasks/TaskDocumentForm";
     import TaskIssue from "@/components/tasks/TaskIssue";
+    import {pushNotif} from "@/firebase.js";
 
     export default {
         name: "TaskDetail",
@@ -239,7 +240,8 @@
                 isStaff: 'isStaff',
             }),
             ...mapState('AUTHENTICATION', {
-                userId: state => state.id
+                userId: state => state.id,
+                displayName: state => state.displayName,
             }),
         },
         mounted() {
@@ -249,7 +251,7 @@
             })
         },
         methods: {
-            refreshIssuesStatus() {
+            refreshIssues() {
                 this.getIssuesStatus();
             },
             refreshRelatives: function () {
@@ -297,6 +299,12 @@
                 if (confirm('Xóa?')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}`)
                         .then(() => {
+                            var title = 'Một tác vụ đã hủy ' + this.displayName;
+                            var detail = '';
+                            var url = '/tasks';
+                            var users = [];
+                            users.push(this.task.executor);
+                            pushNotif(title,detail,url,users);
                                 this.$router.push("/tasks");
                             }
                         )
@@ -306,6 +314,12 @@
                 if (confirm('Bạn muốn báo cáo hoàn tất tác vụ này chứ?')) {
                     axios.patch(`http://localhost:8080/tasks/${this.id}/complete`)
                         .then(() => {
+                            var title = 'Một tác vụ đã hoàn thành bởi ' + this.displayName;
+                            var detail = '';
+                            var url = '/tasks';
+                            var users = [];
+                            users.push(this.task.creator);
+                            pushNotif(title,detail,url,users);
                             this.getTask();
                         })
                         .catch(error => {
@@ -321,6 +335,17 @@
                 if (confirm('Bạn muốn xóa vấn đề này chứ?')) {
                     axios.delete(`http://localhost:8080/task-issues/${id}`)
                         .then(() => {
+                            var title = 'Một vấn đề đã hủy bởi ' + this.displayName;
+                            var detail = '';
+                            var url = '/tasks';
+                            var users = [];
+                            if(this.displayName === this.task.executor.displayName){
+                                users.push(this.task.cretor);
+                            }
+                            else{
+                                users.push(this.task.executor);
+                            }
+                            pushNotif(title,detail,url,users);
                             this.refreshIssues();
                         })
                         .catch(error => {
@@ -336,6 +361,12 @@
                 if (confirm('Bạn muốn báo cáo hoàn tất Vấn Đề này chứ?')) {
                     axios.patch(`http://localhost:8080/task-issues/${id}/complete`)
                         .then(() => {
+                            var title = 'Một vấn đề đã hoàn thành bởi ' + this.displayName;
+                            var detail = '';
+                            var url = '/tasks';
+                            var users = [];
+                            users.push(this.task.cretor);
+                            pushNotif(title,detail,url,users);
                             this.refreshIssues();
                         })
                         .catch(error => {
@@ -366,6 +397,12 @@
                 if (confirm('Bạn muốn xóa bỏ liên kết này chứ ?')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}/documents/${documentId}`)
                         .then(() => {
+                            var title = 'Tài liệu đã bị loại bỏ bởi ' + this.displayName;
+                            var detail = '';
+                            var url = '/tasks';
+                            var users = [];
+                            users.push(this.task.executor);
+                            pushNotif(title,detail,url,users);
                             this.getTaskDocuments();
                         })
                         .catch(error => {

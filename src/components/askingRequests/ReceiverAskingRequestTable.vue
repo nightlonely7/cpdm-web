@@ -130,6 +130,8 @@
 
 <script>
     import axios from 'axios';
+    import {mapState} from 'vuex';
+    import {pushNotif} from "@/firebase.js";
 
     export default {
         name: "ReceiverAskingRequestTable",
@@ -184,6 +186,11 @@
                     ]
                 },
             }
+        },
+        computed: {
+            ...mapState('AUTHENTICATION', {
+                displayName: state => state.displayName,
+            })
         },
         mounted() {
             this.$nextTick()
@@ -276,6 +283,7 @@
                         data: this.editItem
                     }
                 ).then(() => {
+                        this.pushnotification(this.editItem);
                         this.getReceiverAskingRequests();
                         this.snackBarText = 'Thành công';
                         this.snackbar = true;
@@ -289,6 +297,14 @@
                         this.snackbar = true;
                     }
                 );
+            },
+            pushnotification(item) {
+                var title = "Yêu cầu đã xử lý bởi " + this.displayName;
+                var url = "/senderAskingRequests";
+                var detail = item.response;
+                var users = [];
+                users.push(item.user);
+                pushNotif(title,detail,url,users);
             }
         },
         watch: {

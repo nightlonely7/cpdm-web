@@ -137,15 +137,14 @@
                             </v-list-tile-content>
                         </v-list-tile>
                     </template>
-
-                    <v-list-tile v-if="isAdmin" to="/viewLeaveCalendar">
-                        <v-list-tile-action>
-                            <v-icon></v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Lịch nghỉ phép</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
+                    <!--<v-list-tile v-if="isAdmin" to="/viewLeaveCalendar">-->
+                    <!--<v-list-tile-action>-->
+                    <!--<v-icon></v-icon>-->
+                    <!--</v-list-tile-action>-->
+                    <!--<v-list-tile-content>-->
+                    <!--<v-list-tile-title>Lịch nghỉ phép</v-list-tile-title>-->
+                    <!--</v-list-tile-content>-->
+                    <!--</v-list-tile>-->
                     <v-list-tile v-if="isAdmin" to="/viewUserLeaves">
                         <v-list-tile-action>
                             <v-icon></v-icon>
@@ -199,22 +198,36 @@
                             color="error"
                             overlap
                     >
-                        <template slot="badge" v-if="notifications.length > 0">
-                            {{ notifications.length }}
+                        <template slot="badge" v-if="newNotifCount > 0">
+                            {{ newNotifCount }}
                         </template>
                         <v-icon color="white">mdi-bell</v-icon>
                     </v-badge>
                 </v-btn>
-                <v-card v-if="notifications.length > 0">
-                    <v-list dense>
-                        <v-list-tile
-                                v-for="notification in notifications"
-                                :key="notification.id"
-                                @click="goTo(notification.url)"
-                        >
-                            <v-list-tile-title v-text="notification.title"/>
-                        </v-list-tile>
-                    </v-list>
+                <v-card
+                        v-if="notifications.length > 0"
+                        style="max-height: 200px"
+                >
+                        <v-list dense>
+                            <v-list-tile
+                                    v-for="notification in notifications"
+                                    :key="notification.id"
+                                    @click="goTo(notification)"
+                                    :class="(notification.read) ? '' : 'light-blue yellow--text'"
+                            >
+                                <v-list-tile-content>
+                                    <v-list-tile-title v-text="notification.title"/>
+                                    <v-list-tile-action-text
+                                            v-text="notification.createdTime"
+                                    />
+                                </v-list-tile-content>
+                                <!--<v-icon class="v-btn&#45;&#45;icon"-->
+                                        <!--:class="(notification.read) ? '' : 'yellow&#45;&#45;text'"-->
+                                        <!--@click="hide(notification)">-->
+                                    <!--delete-->
+                                <!--</v-icon>-->
+                            </v-list-tile>
+                        </v-list>
                 </v-card>
             </v-menu>
             <v-menu
@@ -271,6 +284,7 @@
         data: () => ({
             logo: './assets/logo.png',
             notifications: [],
+            newNotifCount: 0,
             title: '',
             drawer: true
         }),
@@ -282,7 +296,7 @@
                 this.getNotifications();
             });
             mes.onMessage(() => {
-               this.getNotifications();
+                this.getNotifications();
             });
         },
         computed: {
@@ -310,18 +324,54 @@
             getNotifications() {
                 axios.get("http://localhost:8080/notifications"
                 ).then(response => {
-                    this.notifications = response.data.content;
-                }).catch(error => {
-                    if(error.response){
-                        console.log(error.response.data);
+                    this.notifications = response.data;
+                    if (this.notifications.length > 0) {
+                        this.newNotifCount = 0;
+                        for (var i in this.notifications) {
+                            if (this.notifications[i].read === false) {
+                                this.newNotifCount++;
+                            }
+                        }
                     }
-                    else{
+                    console.log('getted');
+                }).catch(error => {
+                    if (error.response) {
+                        console.log(error.response.data);
+                    } else {
                         console.log(error.response);
                     }
                 })
             },
-            goTo(url){
-                this.$router.push(url);
+            goTo(notification) {
+                let updateNotification = Object.assign({}, notification)
+                updateNotification.read = true;
+                axios.put("http://localhost:8080/notifications/" + updateNotification.id, updateNotification
+                ).then(() => {
+                    this.getNotifications();
+                }).catch(error => {
+                    if (error.response) {
+                        console.log(error.response.data);
+                    } else {
+                        console.log(error.response);
+                    }
+                })
+                this.$router.push(notification.url);
+            },
+            hide(notification) {
+                if (confirm('Bạn muốn ẩn thông báo này?'))
+                {
+                    let updateNotification = Object.assign({}, notification)
+                    updateNotification.hidden = true;
+                    axios.put("http://localhost:8080/notifications/" + updateNotification.id, updateNotification
+                    ).then(() => {
+                    }).catch(error => {
+                        if (error.response) {
+                            console.log(error.response.data);
+                        } else {
+                            console.log(error.response);
+                        }
+                    })
+                }
             }
         },
         watch: {

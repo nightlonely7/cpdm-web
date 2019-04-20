@@ -42,6 +42,8 @@
 <script>
     import axios from 'axios';
     import _ from 'lodash';
+    import {pushNotif} from "@/firebase";
+    import {mapState} from 'vuex';
 
     export default {
         name: "TaskDocumentForm",
@@ -58,8 +60,13 @@
         props: {
             taskId: Number,
             projectId: Number,
+            task: Object,
         },
-        computed: {},
+        computed: {
+            ...mapState('AUTHENTICATION', {
+                displayName: state => state.displayName
+            }),
+        },
         methods: {
             documentSelect(id) {
                 if (_.includes(this.documents, id)) {
@@ -77,8 +84,13 @@
                 const method = 'PUT';
                 console.log(url, method);
                 axios({url, method})
-                    .then((response) => {
-                        console.log(response.data);
+                    .then(() => {
+                        var title = 'Tài liệu đã được bổ sung bởi ' + this.displayName;
+                        var detail = '';
+                        var url = '/tasks';
+                        var users = [];
+                        users.push(this.task.executor);
+                        pushNotif(title,detail,url,users);
                         this.close();
                         this.$emit("refresh");
                     })

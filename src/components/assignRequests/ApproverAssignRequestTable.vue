@@ -67,6 +67,8 @@
 
 <script>
     import axios from 'axios';
+    import {mapState} from 'vuex';
+    import {pushNotif} from "@/firebase.js";
 
     export default {
         name: "ApproverAssignRequestTable",
@@ -99,6 +101,11 @@
                     ]
                 },
             }
+        },
+        computed: {
+            ...mapState('AUTHENTICATION', {
+                displayName: state => state.displayName,
+            })
         },
         mounted() {
             this.$nextTick()
@@ -170,6 +177,7 @@
                             data: updateRequest
                         }
                     ).then(() => {
+                            this.pushnotification(updateRequest);
                             this.getApproverLeveRequests();
                             this.snackBarText = 'Thành công';
                             this.snackbar = true;
@@ -183,6 +191,14 @@
                         }
                     );
                 }
+            }
+            ,pushnotification(item){
+                var title = "Đơn xin ủy quyền đã xử lý bởi " + this.displayName;
+                var url = "/userAssignRequests";
+                var detail = item.content;
+                var users = [];
+                users.push(item.user);
+                pushNotif(title,detail,url,users);
             }
         },
         watch: {
