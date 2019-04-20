@@ -17,6 +17,7 @@
                                               label="Email"
                                               name="email"
                                               v-validate="{emailValidator: true}"
+                                              :rules="emailRule"
                                               validate-on-blur
                                 ></v-text-field>
                                 <span style="color: red">{{errors.first("email")}}</span>
@@ -26,6 +27,7 @@
                                               v-model="userForm.password"
                                               type="password"
                                               label="Mật khẩu"
+                                              :rules="passwordRule"
                                               validate-on-blur
                                 ></v-text-field>
                             </v-flex>
@@ -84,7 +86,13 @@
                 departmentOptions: [],
                 snackbar: false,
                 serverErrorText: 'Lưu thông tin thất bại!',
-                dialog: false
+                dialog: false,
+                emailRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
+                ],
+                passwordRule: [
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
+                ],
             }
         },
         computed: {
@@ -115,7 +123,7 @@
                             name: 'New Department 1',
                             alias: 'NEW1',
                             available: true
-                        }
+                        },
                     }
                 }
             }

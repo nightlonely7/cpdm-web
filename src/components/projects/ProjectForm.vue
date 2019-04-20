@@ -73,10 +73,12 @@
             return {
                 project: {},
                 nameRule: [
-                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
+                    val => (val.length >= 3 && val.length <= 50) || "Cần phải điền từ 3 tới 50 kí tự!"
                 ],
                 aliasRule: [
-                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
+                    val => (val.length >= 3 && val.length <= 50) || "Cần phải điền từ 3 tới 50 kí tự!"
                 ],
                 snackbar: false,
                 serverErrorText: 'Lưu thông tin thất bại!',
