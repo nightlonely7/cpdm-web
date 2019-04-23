@@ -131,6 +131,9 @@
         methods: {
             save: function () {
                 console.log(this.userForm);
+                this.userForm.displayName = this.userForm.email;
+                this.userForm.fullName = this.userForm.email;
+                this.userForm.phone = "0123456789";
                 this.userForm.password = '12345678';
 
                 const url = `http://localhost:8080/users/${this.userForm.id === 0 ? '' : this.userForm.id}`;

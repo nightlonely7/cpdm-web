@@ -120,6 +120,8 @@
                         } else {
                             this.users = response.data.content;
                             this.pagination.totalItems = response.data.totalElements;
+                            this.pagination.page = response.pageable.pageNumber;
+                            this.pagination.rowsPerPage = response.pageable.pageSize;
                         }
                         this.table.loading = false;
                         console.log(response.data.content);
