@@ -91,6 +91,7 @@
                 this.departmentName = this.departmentForm.name;
                 this.departmentAlias = this.departmentForm.alias;
             }
+            console.log(this.departmentForm);
         },
         props: {
             departmentForm: {

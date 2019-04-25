@@ -29,7 +29,7 @@
                     </v-list-tile-sub-title>
                 </v-list-tile-content>
             </v-list-tile>
-            <v-list-tile v-else>
+            <v-list-tile v-else-if="users.length === 0">
                 <v-list-tile-content>
                     <v-list-tile-title>
                         Không có quản lí trong danh sách này!
@@ -62,7 +62,7 @@
                     </router-link>
                 </v-list-tile-content>
             </v-list-tile>
-            <v-list-tile v-else>
+            <v-list-tile v-else-if="users.length === 0">
                 <v-list-tile-content>
                     <v-list-tile-title>
                         Không có nhân viên trong danh sách này!
@@ -89,7 +89,11 @@
         components: {DepartmentForm},
         data() {
             return {
-                department: {},
+                department: {
+                    id: 0,
+                    name: '',
+                    alias: ''
+                },
                 users: []
             }
         },

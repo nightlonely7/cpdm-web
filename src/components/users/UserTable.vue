@@ -86,6 +86,15 @@
         computed: {
             ...mapGetters('AUTHENTICATION', {
                 isAdmin: 'isAdmin'
+            }),
+            ...mapState('USER_STORE', {
+                emailSearchValue: state => state.emailSearchValue,
+                displayNameSearchValue: state => state.displayNameSearchValue,
+                fullNameSearchValue: state => state.fullNameSearchValue,
+                departmentId: state => state.departmentId,
+                birthDateTo: state => state.birthDateTo,
+                birthDateFrom: state => state.birthDateFrom,
+                gender: state => state.gender
             })
         },
         methods: {
@@ -93,7 +102,6 @@
                 this.pagination.page = 1;
                 this.pagination.sortBy = 'displayName';
                 this.pagination.descending = true;
-                //this.canLoadData = false;
                 this.getUsers();
             },
             getUsers() {
@@ -102,16 +110,25 @@
                     return;
                 }
                 console.log(this.isAdmin);
+                console.log(this.emailSearchValue + "-" + this.displayNameSearchValue + "-" + this.fullNameSearchValue);
                 this.table.loading = true;
-                const url = this.isAdmin ?
-                    `http://localhost:8080/users/search/all` :
-                    `http://localhost:8080/users/findAllStaffSummaryByDepartmentOfCurrentLoggedManager`;
+                // const url = this.isAdmin ?
+                //     `http://localhost:8080/users/search/all` :
+                //     `http://localhost:8080/users/findAllStaffSummaryByDepartmentOfCurrentLoggedManager`;
+                const url = `http://localhost:8080/users/search/advancedSearch`;
                 axios.get(url,
                     {
                         params: {
                             page: this.pagination.page - 1,
                             size: this.pagination.rowsPerPage,
                             sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
+                            email: this.emailSearchValue,
+                            displayName: this.displayNameSearchValue,
+                            fullName: this.fullNameSearchValue,
+                            departmentId: this.departmentId,
+                            birthDateTo: this.birthDateTo,
+                            birthDateFrom: this.birthDateFrom,
+                            gender: this.gender,
                         }
                     }
                 ).then(response => {
@@ -120,17 +137,19 @@
                         } else {
                             this.users = response.data.content;
                             this.pagination.totalItems = response.data.totalElements;
-                            this.pagination.page = response.pageable.pageNumber;
-                            this.pagination.rowsPerPage = response.pageable.pageSize;
+                            // this.pagination.page = response.data.pageable.pageNumber;
+                            // this.pagination.rowsPerPage = response.data.pageable.pageSize;
                         }
-                        this.table.loading = false;
                         console.log(response.data.content);
                     }
                 ).catch(error => {
-                        this.alert = 'Không thể truy cập';
+                        this.alert = 'Không thể truy cập!';
                         if (error.response) {
                             console.log(error.response.data)
                         }
+                    }
+                ).finally(
+                    () => {
                         this.table.loading = false;
                     }
                 );
@@ -160,6 +179,34 @@
         watch: {
             pagination: function () {
                 this.getUsers();
+            },
+            emailSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetUsers();
+            },
+            displayNameSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetUsers();
+            },
+            fullNameSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetUsers();
+            },
+            departmentId: function () {
+                this.pagination.page = 1;
+                this.debouncedGetUsers();
+            },
+            birthDateTo: function () {
+                this.pagination.page = 1;
+                this.debouncedGetUsers();
+            },
+            birthDateFrom: function () {
+                this.pagination.page = 1;
+                this.debouncedGetUsers();
+            },
+            gender: function () {
+                this.pagination.page = 1;
+                this.debouncedGetUsers();
             }
         },
         created() {
