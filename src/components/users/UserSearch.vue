@@ -31,8 +31,7 @@
                     <v-select :items="departments" item-text="name" v-model="departmentId"
                               :item-value="department => department.id" label="Danh sách phòng ban"
                               validate-on-blur
-                    >
-                    </v-select>
+                    ></v-select>
                 </v-form>
             </v-card-text>
         </v-card>

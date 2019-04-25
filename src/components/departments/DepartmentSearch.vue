@@ -2,17 +2,13 @@
     <div>
         <v-card>
             <v-card-text v-if="showing">
-                <v-text-field v-model="titleSearchValue"
-                              label="Tìm bởi tên phòng ban"
+                <v-text-field v-model="nameSearchValue"
+                              label="Tìm theo tên phòng ban"
                               clearable
-                              @input="findTitleSearchValue"
-                              validate-on-blur
                 ></v-text-field>
-                <v-text-field v-model="summarySearchValue"
-                              label="Tìm bởi nội dung tổng quát"
+                <v-text-field v-model="aliasSearchValue"
+                              label="Tìm theo mã phòng ban"
                               clearable
-                              @input="findSummarySearchValue"
-                              validate-on-blur
                 ></v-text-field>
             </v-card-text>
         </v-card>
@@ -20,7 +16,6 @@
 </template>
 
 <script>
-    import axios from 'axios'
 
     export default {
         name: "DepartmentSearch",
@@ -30,67 +25,28 @@
             }
         },
         computed: {
-            titleSearchValue: {
+            nameSearchValue: {
                 get() {
-                    return this.$store.state.DEPARTMENT_STORE.titleSearchValue
+                    return this.$store.state.DEPARTMENT_STORE.nameSearchValue
                 },
                 set(val) {
-                    this.$store.commit('DEPARTMENT_STORE/SET_TITLE_SEARCH_VALUE', val)
+                    this.$store.commit('DEPARTMENT_STORE/SET_NAME_SEARCH_VALUE', val === null ? '' : val);
                 }
             },
-            summarySearchValue: {
+            aliasSearchValue: {
                 get() {
-                    return this.$store.state.DEPARTMENT_STORE.summarySearchValue
+                    return this.$store.state.DEPARTMENT_STORE.aliasSearchValue
                 },
                 set(val) {
-                    this.$store.commit('DEPARTMENT_STORE/SET_SUMMARY_SEARCH_VALUE', val)
+                    this.$store.commit('DEPARTMENT_STORE/SET_ALIAS_SEARCH_VALUE', val === null ? '' : val);
                 }
             }
         },
         methods: {
             show: function () {
                 this.showing = !this.showing;
-                this.$store.commit('DEPARTMENT_STORE/SET_TITLE_SEARCH_VALUE', '');
-                this.$store.commit('DEPARTMENT_STORE/SET_SUMMARY_SEARCH_VALUE', '');
-            },
-            findTitleSearchValue: function () {
-                if (this.titleSearchValue === null) {
-                    this.titleSearchValue = '';
-                }
-                axios.get("http://localhost:8080/departments/search/name",
-                    {
-                        params: {
-                            name: this.titleSearchValue
-                        }
-                    })
-                    .then(
-                        response => {
-                            this.$store.commit("DEPARTMENT_STORE/SET_DEPARTMENTS", response.data.content);
-                        }
-                    )
-                    .catch(
-                        err => console.log(err)
-                    )
-            },
-            findSummarySearchValue: function () {
-                if (this.summarySearchValue === null) {
-                    this.summarySearchValue = '';
-                }
-                axios.get("http://localhost:8080/departments/search/nameAndAlias",
-                    {
-                        params: {
-                            name: this.summarySearchValue,
-                            alias: this.summarySearchValue
-                        }
-                    })
-                    .then(
-                        response => {
-                            this.$store.commit("DEPARTMENT_STORE/SET_DEPARTMENTS", response.data.content);
-                        }
-                    )
-                    .catch(
-                        err => console.log(err)
-                    )
+                this.$store.commit('DEPARTMENT_STORE/SET_NAME_SEARCH_VALUE', '');
+                this.$store.commit('DEPARTMENT_STORE/SET_ALIAS_SEARCH_VALUE', '');
             }
         }
     }
