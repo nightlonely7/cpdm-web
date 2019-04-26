@@ -31,6 +31,13 @@
                     <v-btn @click="viewTask(taskIssue.id)" color="primary">Xem chi tiết</v-btn>
                 </v-list-tile-action-text>
             </v-list-tile>
+            <v-list-tile v-if="taskIssues.length === 0">
+                <v-list-tile-content>
+                    <v-list-tile-title>
+                        Không có tác vụ trong danh sách này!
+                    </v-list-tile-title>
+                </v-list-tile-content>
+            </v-list-tile>
             <v-subheader>
                 <h4>Danh sách tài liệu</h4>
             </v-subheader>
@@ -50,6 +57,13 @@
                 <v-list-tile-action-text>
                     <v-btn @click="viewDocument(document.id)" color="primary">Xem chi tiết</v-btn>
                 </v-list-tile-action-text>
+            </v-list-tile>
+            <v-list-tile v-if="documents.length === 0">
+                <v-list-tile-content>
+                    <v-list-tile-title>
+                        Không có tài liệu trong danh sách này!
+                    </v-list-tile-title>
+                </v-list-tile-content>
             </v-list-tile>
         </v-list>
         <ProjectForm :project-form="{...project}" @refresh="getProjectDetail(id)">
@@ -71,7 +85,11 @@
         components: {ProjectForm},
         data() {
             return {
-                project: {},
+                project: {
+                    id: 0,
+                    name: '',
+                    alias: ''
+                },
                 taskIssues: [],
                 documents: []
             }

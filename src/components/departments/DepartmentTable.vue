@@ -39,7 +39,7 @@
 <script>
     import axios from 'axios';
     import DepartmentForm from "./DepartmentForm";
-    import 'vuex';
+    import {mapState} from 'vuex';
     import _ from 'lodash';
 
     export default {
@@ -66,15 +66,21 @@
             this.getDepartments();
         },
         computed: {
+            ...mapState('DEPARTMENT_STORE', {
+                nameSearchValue: state => state.nameSearchValue,
+                aliasSearchValue: state => state.aliasSearchValue,
+            })
         },
         methods: {
             getDepartments: function () {
-                axios.get('http://localhost:8080/departments',
+                axios.get('http://localhost:8080/departments/search/nameAndAlias',
                     {
                         params: {
                             page: this.pagination.page - 1,
                             size: this.pagination.rowsPerPage,
                             sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
+                            name: this.nameSearchValue,
+                            alias: this.aliasSearchValue
                         }
                     })
                     .then(
@@ -102,10 +108,16 @@
         watch: {
             pagination: function () {
                 this.getDepartments();
+            },
+            nameSearchValue: function () {
+                this.debouncedGetDepartments();
+            },
+            aliasSearchValue: function () {
+                this.debouncedGetDepartments();
             }
         },
         created() {
-            this.debouncedGetTasks = _.debounce(this.getDepartments, 500);
+            this.debouncedGetDepartments = _.debounce(this.getDepartments, 500);
         }
     }
 </script>

@@ -47,7 +47,7 @@
 
 <script>
     import axios from 'axios';
-    import 'vuex';
+    import {mapState} from 'vuex';
     import ProjectForm from "./ProjectForm";
     import ProjectSearch from "./ProjectSearch";
 
@@ -75,15 +75,21 @@
             this.getProjects();
         },
         computed: {
+            ...mapState('PROJECT_STORE', {
+                nameSearchValue: state => state.nameSearchValue,
+                aliasSearchValue: state => state.aliasSearchValue,
+            })
         },
         methods: {
             getProjects: function () {
-                axios.get('http://localhost:8080/projects',
+                axios.get('http://localhost:8080/projects/search/nameAndAlias',
                     {
                         params: {
                             page: this.pagination.page - 1,
                             size: this.pagination.rowsPerPage,
                             sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
+                            name: this.nameSearchValue,
+                            alias: this.aliasSearchValue
                         }
                     })
                     .then(
@@ -111,10 +117,16 @@
         watch: {
             pagination: function () {
                 this.getProjects();
+            },
+            nameSearchValue: function () {
+                this.debouncedGetProjects();
+            },
+            aliasSearchValue: function () {
+                this.debouncedGetProjects();
             }
         },
         created() {
-            this.debouncedGetTasks = _.debounce(this.getProjects, 500);
+            this.debouncedGetProjects = _.debounce(this.getProjects, 500);
         }
     }
 </script>

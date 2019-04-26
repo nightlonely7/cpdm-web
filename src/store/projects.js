@@ -1,7 +1,7 @@
 const projectStoreDefaultState = () => {
     return {
-        titleSearchValue: '',
-        summarySearchValue: '',
+        nameSearchValue: '',
+        aliasSearchValue: '',
     }
 };
 
@@ -9,11 +9,11 @@ export default {
     namespaced: true,
     state: projectStoreDefaultState(),
     mutations: {
-        SET_TITLE_SEARCH_VALUE(state, titleSearchValue) {
-            state.titleSearchValue = titleSearchValue
+        SET_NAME_SEARCH_VALUE(state, nameSearchValue) {
+            state.nameSearchValue = nameSearchValue
         },
-        SET_SUMMARY_SEARCH_VALUE(state, summarySearchValue) {
-            state.summarySearchValue = summarySearchValue
+        SET_ALIAS_SEARCH_VALUE(state, aliasSearchValue) {
+            state.aliasSearchValue = aliasSearchValue
         },
     }
 };
