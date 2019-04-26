@@ -116,8 +116,8 @@ export default {
                                         list.push(token);
                                     }
                                     db.ref("users/" + id).set(list)
-                                        .then(() => resolve(response)
-                                        );
+                                        // .then(() => resolve(response)
+                                        .then();
                                 });
                             }).catch((error) =>
                                 console.log("Get token fail " + error)
@@ -125,6 +125,7 @@ export default {
                         }).catch(() =>
                             console.log("Grant fail")
                         );
+                        resolve(response);
                     })
                     .catch(error => {
                         commit('ERROR');
