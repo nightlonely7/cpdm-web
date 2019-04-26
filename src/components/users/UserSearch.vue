@@ -89,15 +89,13 @@
                 },
                 set(value) {
                     // this.$store.commit('USER_STORE/SET_DISPLAY_NAME_SEARCH_VALUE', value === null ? '' : value);
-                    console.log("displayNameSearchValue: " + value);
                     if (value !== null) {
                         if (value === '' || value.match(this.charNumberRegex)) {
                             this.$store.commit('USER_STORE/SET_DISPLAY_NAME_SEARCH_VALUE', value);
                         }
                     } else {
-                        this.$refs.form.resetValidation();
                         this.$store.commit('USER_STORE/SET_DISPLAY_NAME_SEARCH_VALUE', '');
-                        console.log(this.displayNameSearchValue.match(this.charNumberRegex));
+                        this.$refs.form.resetValidation();
                     }
                 }
             },

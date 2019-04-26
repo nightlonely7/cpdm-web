@@ -2,14 +2,16 @@
     <div>
         <v-card>
             <v-card-text v-if="showing">
-                <v-text-field v-model="nameSearchValue"
-                              label="Tìm theo tên phòng ban"
-                              clearable
-                ></v-text-field>
-                <v-text-field v-model="aliasSearchValue"
-                              label="Tìm theo mã phòng ban"
-                              clearable
-                ></v-text-field>
+                <v-form ref="form">
+                    <v-text-field v-model="nameSearchValue"
+                                  label="Tìm theo tên phòng ban"
+                                  clearable
+                    ></v-text-field>
+                    <v-text-field v-model="aliasSearchValue"
+                                  label="Tìm theo mã phòng ban"
+                                  clearable
+                    ></v-text-field>
+                </v-form>
             </v-card-text>
         </v-card>
     </div>
@@ -21,7 +23,16 @@
         name: "DepartmentSearch",
         data() {
             return {
-                showing: true
+                showing: true,
+                charNumberRegex: /^[a-zA-Z0-9_.-]*$/,
+                nameSearchRules: [
+                    val => (val !== null && (val === '' || (val.match(this.charNumberRegex) !== null)))
+                        || "Chỉ được điền kí tự chữ cái, không được điền các dấu câu hay kí tự khác!"
+                ],
+                aliasSearchRules: [
+                    val => (val !== null && (val === '' || (val.match(this.charNumberRegex) !== null)))
+                        || "Chỉ được điền kí tự chữ cái, không được điền các dấu câu hay kí tự khác!"
+                ],
             }
         },
         computed: {
@@ -30,7 +41,14 @@
                     return this.$store.state.DEPARTMENT_STORE.nameSearchValue
                 },
                 set(val) {
-                    this.$store.commit('DEPARTMENT_STORE/SET_NAME_SEARCH_VALUE', val === null ? '' : val);
+                    if (val !== null) {
+                        if (val === '' || val.match(this.charNumberRegex)) {
+                            this.$store.commit('DEPARTMENT_STORE/SET_NAME_SEARCH_VALUE', val);
+                        }
+                    } else {
+                        this.$store.commit('DEPARTMENT_STORE/SET_NAME_SEARCH_VALUE', '');
+                        this.$refs.form.resetValidation();
+                    }
                 }
             },
             aliasSearchValue: {
@@ -38,7 +56,14 @@
                     return this.$store.state.DEPARTMENT_STORE.aliasSearchValue
                 },
                 set(val) {
-                    this.$store.commit('DEPARTMENT_STORE/SET_ALIAS_SEARCH_VALUE', val === null ? '' : val);
+                    if (val !== null) {
+                        if (val === '' || val.match(this.charNumberRegex)) {
+                            this.$store.commit('DEPARTMENT_STORE/SET_ALIAS_SEARCH_VALUE', val);
+                        }
+                    } else {
+                        this.$store.commit('DEPARTMENT_STORE/SET_ALIAS_SEARCH_VALUE', '');
+                        this.$refs.form.resetValidation();
+                    }
                 }
             }
         },
