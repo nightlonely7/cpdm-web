@@ -137,14 +137,14 @@
                             </v-list-tile-content>
                         </v-list-tile>
                     </template>
-                    <!--<v-list-tile v-if="isAdmin" to="/viewLeaveCalendar">-->
-                    <!--<v-list-tile-action>-->
-                    <!--<v-icon></v-icon>-->
-                    <!--</v-list-tile-action>-->
-                    <!--<v-list-tile-content>-->
-                    <!--<v-list-tile-title>Lịch nghỉ phép</v-list-tile-title>-->
-                    <!--</v-list-tile-content>-->
-                    <!--</v-list-tile>-->
+                    <v-list-tile v-if="isAdmin" to="/viewLeaveCalendar">
+                    <v-list-tile-action>
+                    <v-icon></v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                    <v-list-tile-title>Lịch nghỉ phép tuần</v-list-tile-title>
+                    </v-list-tile-content>
+                    </v-list-tile>
                     <v-list-tile v-if="isAdmin" to="/viewUserLeaves">
                         <v-list-tile-action>
                             <v-icon></v-icon>
@@ -208,26 +208,26 @@
                         v-if="notifications.length > 0"
                         style="max-height: 200px"
                 >
-                        <v-list dense>
-                            <v-list-tile
-                                    v-for="notification in notifications"
-                                    :key="notification.id"
-                                    @click="goTo(notification)"
-                                    :class="(notification.read) ? '' : 'light-blue yellow--text'"
-                            >
-                                <v-list-tile-content>
-                                    <v-list-tile-title v-text="notification.title"/>
-                                    <v-list-tile-action-text
-                                            v-text="notification.createdTime"
-                                    />
-                                </v-list-tile-content>
-                                <!--<v-icon class="v-btn&#45;&#45;icon"-->
-                                        <!--:class="(notification.read) ? '' : 'yellow&#45;&#45;text'"-->
-                                        <!--@click="hide(notification)">-->
-                                    <!--delete-->
-                                <!--</v-icon>-->
-                            </v-list-tile>
-                        </v-list>
+                    <v-list dense>
+                        <v-list-tile
+                                v-for="notification in notifications"
+                                :key="notification.id"
+                                @click="goTo(notification)"
+                                :class="(notification.read) ? '' : 'light-blue yellow--text'"
+                        >
+                            <v-list-tile-content>
+                                <v-list-tile-title v-text="notification.title"/>
+                                <v-list-tile-action-text
+                                        v-text="notification.createdTime"
+                                />
+                            </v-list-tile-content>
+                            <!--<v-icon class="v-btn&#45;&#45;icon"-->
+                            <!--:class="(notification.read) ? '' : 'yellow&#45;&#45;text'"-->
+                            <!--@click="hide(notification)">-->
+                            <!--delete-->
+                            <!--</v-icon>-->
+                        </v-list-tile>
+                    </v-list>
                 </v-card>
             </v-menu>
             <v-menu
@@ -272,6 +272,16 @@
         <v-footer color="indigo" app>
             <span class="white--text">&copy; 2019</span>
         </v-footer>
+        <!--Vue-notification-->
+        <notifications group="foo" position="top right">
+            <template slot="body" slot-scope="props">
+                <div style="background-color: yellow" @click="read(props.item.data.id, props.item.data.url)">
+                    <a class="caption" v-html="props.item.title"/>
+                    <br/>
+                    <a class="title" v-html="props.item.text"/>
+                </div>
+            </template>
+        </notifications>
     </v-app>
 </template>
 
@@ -314,6 +324,9 @@
             }),
         },
         methods: {
+            test(data) {
+                console.log(data);
+            },
             logout: function () {
                 this.$store.dispatch('AUTHENTICATION/LOGOUT')
                     .then(() => {
@@ -357,9 +370,21 @@
                 })
                 this.$router.push(notification.url);
             },
+            read(id, url) {
+                axios.put("http://localhost:8080/notifications/read/" + id
+                ).then(() => {
+                    this.getNotifications();
+                }).catch(error => {
+                    if (error.response) {
+                        console.log(error.response.data);
+                    } else {
+                        console.log(error.response);
+                    }
+                })
+                this.$router.push(url);
+            },
             hide(notification) {
-                if (confirm('Bạn muốn ẩn thông báo này?'))
-                {
+                if (confirm('Bạn muốn ẩn thông báo này?')) {
                     let updateNotification = Object.assign({}, notification)
                     updateNotification.hidden = true;
                     axios.put("http://localhost:8080/notifications/" + updateNotification.id, updateNotification

@@ -6,7 +6,7 @@
             <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
             <v-spacer></v-spacer>
             <v-menu
-                    v-model="fromDateMenu"
+                    v-model="menu"
                     :close-on-content-click="false"
                     :nudge-right="40"
                     lazy
@@ -17,37 +17,15 @@
             >
                 <template v-slot:activator="{ on }">
                     <v-text-field
-                            v-model="fromDate"
-                            label="Ngày bắt đầu"
+                            v-model="date"
+                            label="Ngày trong tuần"
                             prepend-icon="event"
                             readonly
                             v-on="on"
                     ></v-text-field>
                 </template>
-                <v-date-picker v-model="fromDate"
-                               @input="fromDateMenu = false"></v-date-picker>
-            </v-menu>
-            <v-menu
-                    v-model="toDateMenu"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    lazy
-                    transition="scale-transition"
-                    offset-y
-                    full-width
-                    min-width="290px"
-            >
-                <template v-slot:activator="{ on }">
-                    <v-text-field
-                            v-model="toDate"
-                            label="Ngày kết thúc"
-                            prepend-icon="event"
-                            readonly
-                            v-on="on"
-                    ></v-text-field>
-                </template>
-                <v-date-picker v-model="toDate"
-                               @input="toDateMenu = false"></v-date-picker>
+                <v-date-picker v-model="date"
+                               @input="menu = false"></v-date-picker>
             </v-menu>
         </v-toolbar>
         <v-data-table
@@ -106,10 +84,10 @@
                 dates: [],
                 snackbar: false,
                 snackBarText: '',
-                fromDateMenu: false,
-                toDateMenu: false,
-                fromDate: new Date().toISOString().substr(0, 10),
-                toDate: moment(this.fromDate).add(6,'days').toISOString().substr(0, 10),
+                menu: false,
+                date: new Date().toISOString().substr(0, 10),
+                fromDate: moment().isoWeekday(1).toISOString().substr(0, 10),
+                toDate: moment().isoWeekday(7).toISOString().substr(0, 10),
                 viewleaves: [],
                 canLoadData: true,
                 alert: '',
@@ -144,6 +122,8 @@
             },
             getViewLeaves: function () {
                 this.table.loading = true;
+                this.fromDate = moment(this.date).isoWeekday(1).toISOString().substr(0,10);
+                this.toDate = moment(this.date).isoWeekday(7).toISOString().substr(0,10);
                 this.enumerateDaysBetweenDates(this.fromDate, this.toDate);
                 this.table.headers = [];
                 this.table.headers.push({text: 'Tên', value: 'displayName'});
@@ -187,6 +167,9 @@
         },
         watch: {
             pagination: function () {
+                this.getViewLeaves();
+            },
+            date: function () {
                 this.getViewLeaves();
             }
         }

@@ -19,10 +19,14 @@ import 'animate.css'
 import moment from 'moment'
 import CKEditor from '@ckeditor/ckeditor5-vue';
 import './assets/ckeditor.css';
+import VueTruncate from 'vue-truncate-filter';
+import Notifications from 'vue-notification';
 
 Vue.config.productionTip = false;
 
 Vue.use(VeeValidate);
+Vue.use(VueTruncate);
+Vue.use(Notifications);
 Vue.use(Vuetify, {
     iconfont: "mdi"
 });
