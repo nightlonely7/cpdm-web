@@ -5,10 +5,14 @@
                 <v-form ref="form">
                     <v-text-field v-model="nameSearchValue"
                                   label="Tìm theo tên phòng ban"
+                                  :rules="nameSearchRules"
+                                  validation-on-blur
                                   clearable
                     ></v-text-field>
                     <v-text-field v-model="aliasSearchValue"
                                   label="Tìm theo mã phòng ban"
+                                  :rules="aliasSearchRules"
+                                  validation-on-blur
                                   clearable
                     ></v-text-field>
                 </v-form>

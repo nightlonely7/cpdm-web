@@ -6,13 +6,13 @@
                     <v-text-field v-model="nameSearchValue"
                                   label="Tìm bởi tên dự án"
                                   :rules="nameSearchRules"
-                                  validate-on-blur
+                                  validation-on-blur
                                   clearable
                     ></v-text-field>
                     <v-text-field v-model="aliasSearchValue"
                                   label="Tìm bởi nội dung tổng quát"
                                   :rules="aliasSearchRules"
-                                  validate-on-blur
+                                  validation-on-blur
                                   clearable
                     ></v-text-field>
                 </v-form>

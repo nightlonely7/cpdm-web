@@ -6,13 +6,13 @@
                     <v-text-field v-model="titleSearchValue"
                                   label="Tìm theo tên phòng ban"
                                   :rules="titleSearchRules"
-                                  validate-on-blur
+                                  validation-on-blur
                                   clearable
                     ></v-text-field>
                     <v-text-field v-model="summarySearchValue"
                                   label="Tìm theo mã phòng ban"
                                   :rules="summarySearchRules"
-                                  validate-on-blur
+                                  validation-on-blur
                                   clearable
                     ></v-text-field>
                 </v-form>
