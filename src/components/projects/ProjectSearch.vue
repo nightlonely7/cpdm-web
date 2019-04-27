@@ -31,18 +31,18 @@
                 charNumberRegex: /^[a-zA-Z0-9_.-]*$/,
                 nameSearchRules: [
                     val => (val !== null && (val === '' || (val.match(this.charNumberRegex) !== null)))
-                        || "Chỉ được điền kí tự chữ cái, không được điền các dấu câu hay kí tự khác!"
+                        || "Chỉ được điền kí tự chữ cái và chữ số, không được điền các dấu câu hay kí tự khác!"
                 ],
                 aliasSearchRules: [
                     val => (val !== null && (val === '' || (val.match(this.charNumberRegex) !== null)))
-                        || "Chỉ được điền kí tự chữ cái, không được điền các dấu câu hay kí tự khác!"
+                        || "Chỉ được điền kí tự chữ cái và chữ số, không được điền các dấu câu hay kí tự khác!"
                 ],
             }
         },
         computed: {
             nameSearchValue: {
                 get() {
-                    return this.$store.state.PROJECT_STORE.nameSearchValue
+                    return this.$store.state.PROJECT_STORE.nameSearchValue;
                 },
                 set(val) {
                     if (val !== null) {
@@ -57,7 +57,7 @@
             },
             aliasSearchValue: {
                 get() {
-                    return this.$store.state.PROJECT_STORE.aliasSearchValue
+                    return this.$store.state.PROJECT_STORE.aliasSearchValue;
                 },
                 set(val) {
                     if (val !== null) {
