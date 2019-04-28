@@ -348,8 +348,9 @@
                 data.startTime = `${this.startDate} ${this.startTime}:00`;
                 data.endTime = `${this.endDate} ${this.endTime}:00`;
                 console.log(data.startTime + "/" + data.endTime);
-                const method = 'POST';
-                const url = `http://localhost:8080/documents`;
+                const method = data.id === 0 ? 'POST' : 'PUT';
+                const url = `http://localhost:8080/documents` + (data.id === 0 ? `` : `/${data.id}`);
+                console.log(data.id);
                 axios({url, method, data})
                     .then(() => {
                         this.dialog = false;
