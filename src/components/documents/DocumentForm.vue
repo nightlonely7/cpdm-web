@@ -131,8 +131,8 @@
                                     <template #activator="{ on }">
                                         <v-text-field
                                                 v-model="startTime"
-                                                label="Ngày kết thúc"
-                                                prepend-inner-icon="mdi-calendar"
+                                                label="Thời gian bắt đầu"
+                                                prepend-inner-icon="access_time"
                                                 readonly
                                                 clearable
                                                 v-on="on"
@@ -150,7 +150,8 @@
                                         <v-spacer></v-spacer>
                                         <v-btn flat color="primary" @click="startTimeMenu = false">Hủy</v-btn>
                                         <v-btn flat color="primary"
-                                               @click="$refs.startTimeDialog.save(startTime)">Lưu</v-btn>
+                                               @click="$refs.startTimeDialog.save(startTime)">Lưu
+                                        </v-btn>
                                     </v-time-picker>
                                 </v-dialog>
                             </v-flex>
@@ -206,17 +207,25 @@
                                 <ckeditor style="height: 500px" :editor="editor" v-model="documentForm.description"
                                           :config="editorConfig"></ckeditor>
                             </v-flex>
-                            <v-flex md4 sm4>
-                                <v-checkbox v-model="selectAll" label="Chọn tất cả phòng ban" color="blue">
+                            <v-flex md12 sm12>
+                                <v-checkbox v-model="selectAll" label="Chọn tất cả" color="blue" hide-details>
                                 </v-checkbox>
                             </v-flex>
-                            <v-flex md4 sm4>
-                                <v-checkbox label="Mọi phòng ban">
-                                </v-checkbox>
+                            <v-flex md12 sm12 v-if="selectAll">
+                                <span class="font-weight-bold">Danh sách phòng ban:</span>
+                                <div v-for="department in departments">
+                                    <v-checkbox v-model="selectedDepartments" :label="department.name"
+                                                :value="department.id" hide-details disabled color="blue">
+                                    </v-checkbox>
+                                </div>
                             </v-flex>
-                            <v-flex md4 sm4>
-                                <v-checkbox label="Mọi quản lí">
-                                </v-checkbox>
+                            <v-flex md12 sm12 v-else>
+                                <span class="font-weight-bold">Danh sách phòng ban:</span>
+                                <div v-for="department in departments">
+                                    <v-checkbox v-model="selectedDepartments" :label="department.name"
+                                                :value="department.id" hide-details color="blue">
+                                    </v-checkbox>
+                                </div>
                             </v-flex>
                             <v-flex md12 sm12>
                                 <v-autocomplete label="Người liên quan"
@@ -308,7 +317,9 @@
                 dateRules: [
                     val => !!val || "Không được để trống!",
                 ],
-                selectAll: false
+                selectAll: false,
+                departments: [],
+                selectedDepartments: []
             }
         },
         props: {
@@ -330,7 +341,7 @@
                 default: function () {
                     return false;
                 }
-            }
+            },
         },
         computed: {
             documentForm: function () {
@@ -347,6 +358,8 @@
             if (this.documentForm.id !== 0) {
                 this.documentTitle = this.documentForm.title;
             }
+            this.getProjectOptions();
+            this.getDepartments();
         },
         methods: {
             close() {
@@ -367,12 +380,14 @@
                 const method = data.id === 0 ? 'POST' : 'PUT';
                 const url = `http://localhost:8080/documents` + (data.id === 0 ? `` : `/${data.id}`);
                 console.log(data.id);
+                console.log(this.selectedDepartments.join(','));
                 axios({
                     url: url,
                     method: method,
                     data: data,
                     params: {
-                        selectAll: this.selectAll
+                        selectAll: this.selectAll,
+                        departmentList: this.selectedDepartments.join(',')
                     }
                 })
                     .then(() => {
@@ -403,7 +418,7 @@
                         }
                     });
             },
-            getViewerOptions: function (email) {
+            getViewerOptions(email) {
                 this.viewerOptionsLoading = true;
                 setTimeout(() => {
                     axios.get(`http://localhost:8080/users/search/findAllForSelectByEmailContaining`, {
@@ -427,9 +442,16 @@
                     });
                 }, 500);
             },
-        },
-        mounted() {
-            this.getProjectOptions();
+            getDepartments() {
+                axios.get(`http://localhost:8080/departments`).then(
+                    response => {
+                        this.departments = response.data.content;
+                        console.log(response.data.content);
+                    }
+                ).catch(
+                    err => console.log(err)
+                )
+            }
         },
         created() {
             this.debouncedGetViewerOptions = _.debounce(this.getViewerOptions, 500);

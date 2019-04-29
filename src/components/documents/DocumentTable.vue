@@ -13,7 +13,7 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <DocumentForm @refresh="refresh">
+            <DocumentForm @refresh="refresh" v-if="isAdmin">
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary">Tạo mới tài liệu</v-btn>
                 </template>
@@ -97,7 +97,6 @@
             }),
         },
         mounted() {
-
         },
         methods: {
             showForm: function () {
