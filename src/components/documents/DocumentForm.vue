@@ -25,8 +25,6 @@
                             <v-flex md12>
                                 <v-text-field v-model="documentForm.summary"
                                               label="Tóm tắt"
-                                              :rules="summaryRule"
-                                              validate-on-blur
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12>
@@ -208,7 +206,24 @@
                                 <ckeditor style="height: 500px" :editor="editor" v-model="documentForm.description"
                                           :config="editorConfig"></ckeditor>
                             </v-flex>
+                            <v-flex md4 sm4>
+                                <v-checkbox v-model="selectAll" label="Chọn tất cả phòng ban" color="blue">
+                                </v-checkbox>
+                            </v-flex>
+                            <v-flex md4 sm4>
+                                <v-checkbox label="Mọi phòng ban">
+                                </v-checkbox>
+                            </v-flex>
+                            <v-flex md4 sm4>
+                                <v-checkbox label="Mọi quản lí">
+                                </v-checkbox>
+                            </v-flex>
                             <v-flex md12 sm12>
+                                <v-autocomplete label="Người liên quan"
+                                                hide-no-data
+                                                disabled
+                                                v-if="selectAll"
+                                ></v-autocomplete>
                                 <v-autocomplete chips deletable-chips cache-items multiple
                                                 v-model="relatives"
                                                 :items="viewerOptions"
@@ -219,6 +234,7 @@
                                                 label="Người liên quan"
                                                 clearable
                                                 hide-no-data
+                                                v-else
                                 >
                                     <template #item="{item}">
                                         {{item.email}} - {{item.fullName}} - Phòng ban:
@@ -277,10 +293,8 @@
                     removePlugins: ['imageUpload'],
                 },
                 titleRule: [
-                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
-                ],
-                summaryRule: [
-                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
+                    val => (val.length >= 4 && val.length <= 50) || "Phải điền từ 4 tới 50 kí tự!"
                 ],
                 documentTitle: '',
                 startDate: '',
@@ -294,6 +308,7 @@
                 dateRules: [
                     val => !!val || "Không được để trống!",
                 ],
+                selectAll: false
             }
         },
         props: {
@@ -302,6 +317,7 @@
                 default: function () {
                     return {
                         id: 0,
+                        title: '',
                         project: {id: null},
                         endTime: '',
                         startTime: '',
@@ -341,7 +357,7 @@
                 console.log(this.documentForm);
                 const data = {
                     ...this.documentForm,
-                    relatives: this.relatives.map(value => {
+                    relatives: this.selectAll ? null : this.relatives.map(value => {
                         return {id: value};
                     }),
                 };
@@ -351,7 +367,14 @@
                 const method = data.id === 0 ? 'POST' : 'PUT';
                 const url = `http://localhost:8080/documents` + (data.id === 0 ? `` : `/${data.id}`);
                 console.log(data.id);
-                axios({url, method, data})
+                axios({
+                    url: url,
+                    method: method,
+                    data: data,
+                    params: {
+                        selectAll: this.selectAll
+                    }
+                })
                     .then(() => {
                         this.dialog = false;
                         this.$emit('refresh');
@@ -419,7 +442,7 @@
             },
             relatives: function () {
                 this.viewerOptionsSearch = '';
-            }
+            },
         }
     }
 </script>

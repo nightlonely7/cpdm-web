@@ -37,6 +37,7 @@
         data(){
             return {
                 document: {
+                    title: '',
                     project: {
                         id: 0,
                         name: ''
