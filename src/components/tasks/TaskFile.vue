@@ -12,20 +12,19 @@
                 <v-toolbar-items>
                     <v-divider vertical inset></v-divider>
                     <v-btn flat color="primary" @click="getTaskFiles">
-                        <v-icon>cached</v-icon>
-                        <span>&nbsp;Tải lại</span>
+                        <v-icon left>cached</v-icon>
+                        <span>Tải lại</span>
                     </v-btn>
                     <v-divider vertical inset></v-divider>
                     <TaskFileForm :task="{...task}" @refresh="getTaskFiles" creating>
                         <template #activator="{ on }">
                             <v-btn v-on="on" flat color="primary">
-                                <v-icon>add</v-icon>
-                                <span>&nbsp;Thêm tệp tin</span>
+                                <v-icon left>add</v-icon>
+                                <span>Thêm tệp tin</span>
                             </v-btn>
                         </template>
                     </TaskFileForm>
                     <v-divider vertical inset></v-divider>
-                    <v-btn flat>Link Three</v-btn>
                 </v-toolbar-items>
                 <!--<template #extension>-->
                 <!--<hr>-->
@@ -46,7 +45,7 @@
                 <br>
                 <span>Không có tệp tin nào</span>
             </div>
-            <v-container>
+            <v-container v-if="taskFiles.length">
                 <template v-for="taskFile in taskFiles">
                     <div :key="taskFile.id">
                         <v-card>
@@ -132,29 +131,35 @@
 
                             </v-card-text>
                             <v-card-actions>
-                                <v-btn color="success" @click="downloadFile(taskFile.detailFilename)">
-                                    <v-icon left>mdi-download</v-icon>
-                                    <span>Tải về</span>
-                                </v-btn>
-                                <TaskFileForm :task="{...task}" :form="{...taskFile}" @refresh="getTaskFiles">
-                                    <template #activator="{ on }">
-                                        <v-btn color="primary" v-on="on">
-                                            <v-icon left>mdi-pencil</v-icon>
-                                            <span>Sửa</span>
-                                        </v-btn>
-                                    </template>
-                                </TaskFileForm>
-                                <v-btn color="error" @click="deleteFile(taskFile.id)">
-                                    <v-icon left>mdi-delete</v-icon>
-                                    <span>Xóa</span>
-                                </v-btn>
+                                <v-flex>
+                                    <v-btn color="success" @click="downloadFile(taskFile.detailFilename)">
+                                        <v-icon left>mdi-download</v-icon>
+                                        <span>Tải về</span>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
+                                    <TaskFileForm :task="{...task}" :form="{...taskFile}"
+                                                  @refresh="getTaskFiles">
+                                        <template #activator="{ on }">
+                                            <v-btn color="primary" v-on="on">
+                                                <v-icon left>mdi-pencil</v-icon>
+                                                <span>Sửa</span>
+                                            </v-btn>
+                                        </template>
+                                    </TaskFileForm>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn color="error" @click="deleteFile(taskFile.id)">
+                                        <v-icon left>mdi-delete</v-icon>
+                                        <span>Xóa</span>
+                                    </v-btn>
+                                </v-flex>
                             </v-card-actions>
                         </v-card>
-                        <br>
                     </div>
-
                 </template>
             </v-container>
+            <br v-if="!taskFiles.length">
         </v-expansion-panel-content>
     </v-expansion-panel>
 </template>

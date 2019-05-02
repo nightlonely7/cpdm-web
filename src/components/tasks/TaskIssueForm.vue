@@ -59,7 +59,6 @@
             }
         },
         props: {
-            taskId: Number,
             form: {
                 type: Object,
                 default: function () {
@@ -85,7 +84,7 @@
             save() {
                 this.loading = true;
                 const url = this.form.id === 0
-                    ? `http://localhost:8080/tasks/${this.taskId}/issues`
+                    ? `http://localhost:8080/tasks/${this.task.id}/issues`
                     : `http://localhost:8080/task-issues/${this.form.id}`;
                 const method = this.form.id === 0 ? 'POST' : 'PUT';
                 const data = {...this.form};
