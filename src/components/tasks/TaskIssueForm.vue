@@ -70,6 +70,7 @@
                 }
             },
             task: Object,
+            creating: Boolean,
         },
         computed: {
             ...mapState('AUTHENTICATION', {
@@ -83,10 +84,10 @@
             },
             save() {
                 this.loading = true;
-                const url = this.form.id === 0
+                const url = this.creating
                     ? `http://localhost:8080/tasks/${this.task.id}/issues`
                     : `http://localhost:8080/task-issues/${this.form.id}`;
-                const method = this.form.id === 0 ? 'POST' : 'PUT';
+                const method = this.creating ? 'POST' : 'PUT';
                 const data = {...this.form};
                 console.log(url, method, data);
                 axios({url, method, data})

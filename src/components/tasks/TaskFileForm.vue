@@ -97,9 +97,9 @@
                 data.append('filename', this.form.filename);
                 data.append('description', this.form.description);
                 const method = this.creating ? 'POST' : 'PUT';
-                const url = this.creating ?
-                    `http://localhost:8080/tasks/${this.task.id}/files` :
-                    `http://localhost:8080/tasks/files/${this.form.id}`;
+                const url = this.creating
+                    ? `http://localhost:8080/tasks/${this.task.id}/files`
+                    : `http://localhost:8080/tasks/files/${this.form.id}`;
                 axios({
                     url, method, data,
                     config: {
