@@ -21,7 +21,7 @@
                                         label="Mô tả"
                             ></v-textarea>
                         </v-flex>
-                        <v-flex xs12 v-if="creating">
+                        <v-flex xs12>
                             <UploadButton :fileChangedCallback="handleFileUpload"
                                           title="Chọn tệp tin"
                                           light
@@ -31,10 +31,10 @@
                                 </template>
                             </UploadButton>
                         </v-flex>
-                        <v-flex xs12 v-if="creating">
+                        <v-flex xs12>
                             <p>Tệp tin sẽ tải: {{(!!file && file.name) || 'Chưa xác định'}}</p>
                         </v-flex>
-                        <v-flex xs12 v-if="creating">
+                        <v-flex xs12>
                             <v-alert dismissible type="error" v-model="taskFileAlert">Tải lên thất bại</v-alert>
                         </v-flex>
 
@@ -92,13 +92,20 @@
             },
             save() {
                 this.taskFileLoading = true;
-                const formData = new FormData();
-                formData.append('file', this.file);
-                formData.append('filename', this.form.filename);
-                formData.append('description', this.form.description);
-                axios.post(`http://localhost:8080/tasks/${this.task.id}/files`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
+                const data = new FormData();
+                data.append('file', this.file);
+                data.append('filename', this.form.filename);
+                data.append('description', this.form.description);
+                const method = this.creating ? 'POST' : 'PUT';
+                const url = this.creating ?
+                    `http://localhost:8080/tasks/${this.task.id}/files` :
+                    `http://localhost:8080/tasks/files/${this.form.id}`;
+                axios({
+                    url, method, data,
+                    config: {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        }
                     }
                 }).then((response) => {
                     console.log(response.data);
@@ -113,9 +120,11 @@
                 });
             },
             handleFileUpload(file) {
-                this.file = file;
-
-                console.log(file);
+                if (file) {
+                    this.file = file;
+                    this.form.filename = file.name.substring(0, file.name.lastIndexOf('.'));
+                    console.log(file);
+                }
             },
         },
     }

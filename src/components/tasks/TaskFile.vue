@@ -34,6 +34,7 @@
                 <!--</template>-->
             </v-toolbar>
             <div class="text-xs-center" v-if="taskFileLoading">
+                <br>
                 <v-progress-circular indeterminate
                                      size="64"
                                      width="8"
@@ -87,9 +88,9 @@
                                 <br>
 
                                 <p>
-                                    <span style="width: 25%; float: left">Người thêm vào</span>
+                                    <span style="width: 25%; float: left">Thời điểm thêm vào</span>
                                     <span style="width: 25%; float: left">
-                                        {{taskFile.creator.displayName}} - {{taskFile.creator.email}}
+                                        {{moment(taskFile.createdTime).format('DD/MM/YYYY HH:mm:ss')}}
                                     </span>
                                 </p>
 
@@ -98,9 +99,9 @@
                                 <br>
 
                                 <p>
-                                    <span style="width: 25%; float: left">Thời điểm thêm vào</span>
+                                    <span style="width: 25%; float: left">Người thêm vào</span>
                                     <span style="width: 25%; float: left">
-                                        {{moment(taskFile.createdTime).format('DD/MM/YYYY HH:mm:ss')}}
+                                        {{taskFile.creator.displayName}} - {{taskFile.creator.email}}
                                     </span>
                                 </p>
 
@@ -117,6 +118,17 @@
 
                                 <br>
                                 <v-divider></v-divider>
+                                <br>
+
+                                <p>
+                                    <span style="width: 25%; float: left">Người chỉnh sửa gần nhất</span>
+                                    <span style="width: 25%; float: left">
+                                        {{taskFile.lastEditor.displayName}} - {{taskFile.lastEditor.email}}
+                                    </span>
+                                </p>
+
+                                <br>
+                                <v-divider></v-divider>
 
                             </v-card-text>
                             <v-card-actions>
@@ -124,7 +136,7 @@
                                     <v-icon left>mdi-download</v-icon>
                                     <span>Tải về</span>
                                 </v-btn>
-                                <TaskFileForm :task="{...task}" :form="{...taskFile}">
+                                <TaskFileForm :task="{...task}" :form="{...taskFile}" @refresh="getTaskFiles">
                                     <template #activator="{ on }">
                                         <v-btn color="primary" v-on="on">
                                             <v-icon left>mdi-pencil</v-icon>
@@ -132,6 +144,10 @@
                                         </v-btn>
                                     </template>
                                 </TaskFileForm>
+                                <v-btn color="error" @click="deleteFile(taskFile.id)">
+                                    <v-icon left>mdi-delete</v-icon>
+                                    <span>Xóa</span>
+                                </v-btn>
                             </v-card-actions>
                         </v-card>
                         <br>
@@ -183,7 +199,17 @@
                     .then(response => {
                         download(response.data, filename, response.headers['Content-Type']);
                     })
+                    .catch(error => console.log(error.response));
             },
+            deleteFile(id) {
+                if (confirm('Bạn muốn xóa tệp tin này chứ ?')) {
+                    axios.delete(`http://localhost:8080/tasks/files/${id}`)
+                        .then(() => {
+                            this.getTaskFiles();
+                        })
+                        .catch(error => console.log(error.response));
+                }
+            }
         },
         mounted() {
 
