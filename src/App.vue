@@ -3,10 +3,10 @@
         <v-navigation-drawer fixed app v-model="drawer" v-if="isLoggedIn && isInit">
             <v-list>
                 <v-list-tile avatar>
-                    <v-list-tile-avatar color="white">
-                        <img src='./assets/logo.png' alt="logo">
+                    <v-list-tile-avatar color="white" tile>
+                        <img style="width: auto; margin-left: 100%" src='./assets/logo.png' alt="logo">
                     </v-list-tile-avatar>
-                    <v-list-tile-title>
+                    <v-list-tile-title style="margin-left: 20%">
                         SAIGON XUÂN PHÁT
                     </v-list-tile-title>
                 </v-list-tile>

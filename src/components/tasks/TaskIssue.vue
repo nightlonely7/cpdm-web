@@ -25,7 +25,7 @@
                         v-if="(task.status === 'Waiting'|| isTaskRunning)
                                     && (task.creator.id === userId || task.executor.id === userId)">
                     <v-list-tile-content>
-                        <TaskIssueForm @refresh="refreshIssues" :task-id="task.id" :task="task">
+                        <TaskIssueForm @refresh="refreshIssues" :task="{...task}">
                             <template #activator="{ on }">
                                 <v-btn v-on="on" color="primary">Thêm vấn đề</v-btn>
                             </template>
@@ -52,7 +52,7 @@
                         </v-list-tile-action-text>
                         <v-list-tile-action-text
                                 v-if="(task.creator.id === userId || task.executor.id === userId)">
-                            <TaskIssueForm @refresh="refreshIssues" :task-id="task.id" :form="{...issue}"
+                            <TaskIssueForm @refresh="refreshIssues" :task={...task} :form="{...issue}"
                                            v-if="!issue.completed"
                             >
                                 <template #activator="{ on }">
