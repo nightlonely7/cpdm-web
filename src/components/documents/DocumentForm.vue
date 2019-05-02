@@ -15,7 +15,7 @@
                             <v-flex md12>
                                 <v-text-field v-model="documentForm.title"
                                               label="Tiêu đề"
-                                              v-validate="{depNameValidator: [documentTitle, creating]}"
+                                              v-validate="{documentNameValidator: [documentTitle, creating]}"
                                               name="title"
                                               :rules="titleRule"
                                               validate-on-blur
@@ -227,6 +227,15 @@
                                     </v-checkbox>
                                 </div>
                             </v-flex>
+                            <v-flex md12 sm12 v-if="selectAll">
+                                <v-checkbox label="Chọn tất cả quản lý" color="blue" hide-details>
+                                </v-checkbox>
+                            </v-flex>
+                            <v-flex md12 sm12 v-else>
+                                <v-checkbox v-model="selectAllManager" label="Chọn tất cả quản lý" color="blue"
+                                            hide-details>
+                                </v-checkbox>
+                            </v-flex>
                             <v-flex md12 sm12>
                                 <v-autocomplete label="Người liên quan"
                                                 hide-no-data
@@ -305,7 +314,6 @@
                     val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
                     val => (val.length >= 4 && val.length <= 50) || "Phải điền từ 4 tới 50 kí tự!"
                 ],
-                documentTitle: '',
                 startDate: '',
                 startTime: '',
                 endDate: '',
@@ -318,6 +326,7 @@
                     val => !!val || "Không được để trống!",
                 ],
                 selectAll: false,
+                selectAllManager: false,
                 departments: [],
                 selectedDepartments: []
             }
@@ -342,6 +351,12 @@
                     return false;
                 }
             },
+            documentTitle: {
+                type: String,
+                default: function () {
+                    return '';
+                }
+            }
         },
         computed: {
             documentForm: function () {
@@ -355,9 +370,6 @@
             },
         },
         mounted() {
-            if (this.documentForm.id !== 0) {
-                this.documentTitle = this.documentForm.title;
-            }
             this.getProjectOptions();
             this.getDepartments();
         },
@@ -387,7 +399,8 @@
                     data: data,
                     params: {
                         selectAll: this.selectAll,
-                        departmentList: this.selectedDepartments.join(',')
+                        departmentList: this.selectedDepartments.join(','),
+                        selectAllManager: this.selectAllManager
                     }
                 })
                     .then(() => {
