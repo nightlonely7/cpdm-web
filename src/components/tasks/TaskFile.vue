@@ -26,11 +26,6 @@
                     </TaskFileForm>
                     <v-divider vertical inset></v-divider>
                 </v-toolbar-items>
-                <!--<template #extension>-->
-                <!--<hr>-->
-                <!--<hr>-->
-                <!--<span>Tìm kiếm</span>-->
-                <!--</template>-->
             </v-toolbar>
             <div class="text-xs-center" v-if="taskFileLoading">
                 <br>
@@ -41,10 +36,12 @@
                 ></v-progress-circular>
                 <br>
             </div>
+
             <div class="text-xs-center" v-if="!taskFileLoading && !taskFiles.length">
                 <br>
                 <span>Không có tệp tin nào</span>
             </div>
+
             <v-container v-if="taskFiles.length">
                 <template v-for="taskFile in taskFiles">
                     <div :key="taskFile.id">
@@ -156,6 +153,7 @@
                                 </v-flex>
                             </v-card-actions>
                         </v-card>
+                        <br>
                     </div>
                 </template>
             </v-container>
