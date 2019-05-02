@@ -20,58 +20,54 @@
                 <span>Không có vấn đề nào</span>
             </div>
 
-            <div v-if="!issueLoading">
-                <v-list three-line>
-                    <v-list-tile
-                            v-if="(task.status === 'Waiting'|| isTaskRunning)
+            <v-list three-line>
+                <v-list-tile
+                        v-if="(task.status === 'Waiting'|| isTaskRunning)
                                     && (task.creator.id === userId || task.executor.id === userId)">
+                    <v-list-tile-content>
+                        <TaskIssueForm @refresh="refreshIssues" :task-id="task.id" :task="task">
+                            <template #activator="{ on }">
+                                <v-btn v-on="on" color="primary">Thêm vấn đề</v-btn>
+                            </template>
+                        </TaskIssueForm>
+                    </v-list-tile-content>
+
+                </v-list-tile>
+                <template v-for="issue in issues">
+                    <v-list-tile :key="issue.id">
                         <v-list-tile-content>
-                            <TaskIssueForm @refresh="refreshIssues" :task-id="task.id" :task="task">
+                            <v-list-tile-title>{{issue.summary}}</v-list-tile-title>
+                            <v-list-tile-sub-title>{{issue.description}}</v-list-tile-sub-title>
+                            <v-list-tile-sub-title>
+                                <span>Trạng thái :</span>
+                                <v-chip :color="`${issue.completed ? 'success' : ''}`">
+                                    {{issue.completed ? 'Hoàn tất' : 'Chưa hoàn tất'}}
+                                </v-chip>
+                            </v-list-tile-sub-title>
+                        </v-list-tile-content>
+                        <v-list-tile-action-text>
+                            <v-btn v-if="!issue.completed && task.status !== 'Waiting' && task.executor.id === userId"
+                                   @click="completeIssue(issue.id)" color="success">Báo cáo hoàn tất
+                            </v-btn>
+                        </v-list-tile-action-text>
+                        <v-list-tile-action-text
+                                v-if="(task.creator.id === userId || task.executor.id === userId)">
+                            <TaskIssueForm @refresh="refreshIssues" :task-id="task.id" :form="{...issue}"
+                                           v-if="!issue.completed"
+                            >
                                 <template #activator="{ on }">
-                                    <v-btn v-on="on" color="primary">Thêm vấn đề</v-btn>
+                                    <v-btn v-on="on" color="primary">Sửa</v-btn>
                                 </template>
                             </TaskIssueForm>
-                        </v-list-tile-content>
-
+                        </v-list-tile-action-text>
+                        <v-list-tile-action-text>
+                            <v-btn v-if="!issue.completed && (task.creator.id === userId || task.executor.id === userId)"
+                                   color="error" @click="deleteIssue(issue.id)">Xóa
+                            </v-btn>
+                        </v-list-tile-action-text>
                     </v-list-tile>
-                    <template v-for="issue in issues">
-                        <div :key="issue.id">
-                            <v-list-tile>
-                                <v-list-tile-content>
-                                    <v-list-tile-title>{{issue.summary}}</v-list-tile-title>
-                                    <v-list-tile-sub-title>{{issue.description}}</v-list-tile-sub-title>
-                                    <v-list-tile-sub-title>
-                                        <span>Trạng thái :</span>
-                                        <v-chip :color="`${issue.completed ? 'success' : ''}`">
-                                            {{issue.completed ? 'Hoàn tất' : 'Chưa hoàn tất'}}
-                                        </v-chip>
-                                    </v-list-tile-sub-title>
-                                </v-list-tile-content>
-                                <v-list-tile-action-text>
-                                    <v-btn v-if="!issue.completed && task.status !== 'Waiting' && task.executor.id === userId"
-                                           @click="completeIssue(issue.id)" color="success">Báo cáo hoàn tất
-                                    </v-btn>
-                                </v-list-tile-action-text>
-                                <v-list-tile-action-text
-                                        v-if="(task.creator.id === userId || task.executor.id === userId)">
-                                    <TaskIssueForm @refresh="refreshIssues" :task-id="task.id" :form="{...issue}"
-                                                   v-if="!issue.completed"
-                                    >
-                                        <template #activator="{ on }">
-                                            <v-btn v-on="on" color="primary">Sửa</v-btn>
-                                        </template>
-                                    </TaskIssueForm>
-                                </v-list-tile-action-text>
-                                <v-list-tile-action-text>
-                                    <v-btn v-if="!issue.completed && (task.creator.id === userId || task.executor.id === userId)"
-                                           color="error" @click="deleteIssue(issue.id)">Xóa
-                                    </v-btn>
-                                </v-list-tile-action-text>
-                            </v-list-tile>
-                        </div>
-                    </template>
-                </v-list>
-            </div>
+                </template>
+            </v-list>
         </v-expansion-panel-content>
     </v-expansion-panel>
 </template>
@@ -87,7 +83,7 @@
         components: {TaskIssueForm},
         data() {
             return {
-                issuePanel: [false],
+                issuePanel: null,
                 issueLoaded: false,
                 issueLoading: false,
                 issues: [{
@@ -147,13 +143,12 @@
                             var detail = '';
                             var url = '/tasks';
                             var users = [];
-                            if(this.displayName === this.task.executor.displayName){
+                            if (this.displayName === this.task.executor.displayName) {
                                 users.push(this.task.cretor);
-                            }
-                            else{
+                            } else {
                                 users.push(this.task.executor);
                             }
-                            pushNotif(title,detail,url,users);
+                            pushNotif(title, detail, url, users);
                             this.refreshIssues();
                         })
                         .catch(error => {
@@ -174,7 +169,7 @@
                             var url = '/tasks';
                             var users = [];
                             users.push(this.task.cretor);
-                            pushNotif(title,detail,url,users);
+                            pushNotif(title, detail, url, users);
                             this.refreshIssues();
                         })
                         .catch(error => {
