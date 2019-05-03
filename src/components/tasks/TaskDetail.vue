@@ -301,7 +301,7 @@
                         .then(() => {
                             var title = 'Một tác vụ đã hủy ' + this.displayName;
                             var detail = '';
-                            var url = '/tasks';
+                            var url = '/tasks/' + this.id;
                             var users = [];
                             users.push(this.task.executor);
                             pushNotif(title,detail,url,users);
@@ -316,7 +316,7 @@
                         .then(() => {
                             var title = 'Một tác vụ đã hoàn thành bởi ' + this.displayName;
                             var detail = '';
-                            var url = '/tasks';
+                            var url = '/tasks/' + this.id;
                             var users = [];
                             users.push(this.task.creator);
                             pushNotif(title,detail,url,users);
@@ -337,7 +337,7 @@
                         .then(() => {
                             var title = 'Một vấn đề đã hủy bởi ' + this.displayName;
                             var detail = '';
-                            var url = '/tasks';
+                            var url = '/tasks/' + this.id;
                             var users = [];
                             if(this.displayName === this.task.executor.displayName){
                                 users.push(this.task.cretor);
@@ -363,7 +363,7 @@
                         .then(() => {
                             var title = 'Một vấn đề đã hoàn thành bởi ' + this.displayName;
                             var detail = '';
-                            var url = '/tasks';
+                            var url = '/tasks/' + this.id;
                             var users = [];
                             users.push(this.task.cretor);
                             pushNotif(title,detail,url,users);
@@ -399,7 +399,7 @@
                         .then(() => {
                             var title = 'Tài liệu đã bị loại bỏ bởi ' + this.displayName;
                             var detail = '';
-                            var url = '/tasks';
+                            var url = '/tasks/' + this.id;
                             var users = [];
                             users.push(this.task.executor);
                             pushNotif(title,detail,url,users);

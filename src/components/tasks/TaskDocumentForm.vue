@@ -87,7 +87,7 @@
                     .then(() => {
                         var title = 'Tài liệu đã được bổ sung bởi ' + this.displayName;
                         var detail = '';
-                        var url = '/tasks';
+                        var url = '/tasks/' + this.taskId;
                         var users = [];
                         users.push(this.task.executor);
                         pushNotif(title,detail,url,users);
