@@ -21,6 +21,15 @@
         <template v-else>
             <h3 style="color:red;">Không tìm thấy tài liệu cần tìm!</h3>
         </template>
+        <DocumentFile :document="{...document}"></DocumentFile>
+        <p>Thời gian chỉnh sửa gần nhất:
+            {{moment(document.lastModifiedTime,'DD-MM-YYYY HH:mm:ss' ).format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
+            <DocumentHistory :document="document" ref="documentHistory">
+                <template #activator="{ on }">
+                    <v-btn v-on="on" color="primary">Xem lịch sử chỉnh sửa</v-btn>
+                </template>
+            </DocumentHistory>
+        </p>
         <br>
     </div>
 </template>
@@ -30,10 +39,12 @@
     import 'vuex';
     import 'moment';
     import DocumentForm from "./DocumentForm";
+    import DocumentFile from "./DocumentFile";
+    import DocumentHistory from "./DocumentHistory";
 
     export default {
         name: "DocumentDetail",
-        components: {DocumentForm},
+        components: {DocumentHistory, DocumentFile, DocumentForm},
         data(){
             return {
                 document: {
@@ -46,7 +57,7 @@
                     startTime: '',
                     endTime: '',
                 },
-                isServerError: true
+                isServerError: true,
             }
         },
         computed: {
