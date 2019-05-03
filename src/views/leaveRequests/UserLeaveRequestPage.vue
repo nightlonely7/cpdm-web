@@ -1,6 +1,17 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="elevation-5">
-        <v-toolbar  tabs fixed-tabs class="elevation-0">
+        <v-toolbar class="elevation-0">
+            <v-toolbar-title>THÔNG TIN NGHỈ PHÉP TÓM TẮT</v-toolbar-title>
+            <template slot="extension">
+                <v-subheader>Số ngày nghỉ tối đa một năm</v-subheader>
+                <v-text-field v-text="userYearLeaveSummary.dayOffPerYear"></v-text-field>
+                <v-subheader>Số ngày nghỉ đã sử dụng trong năm</v-subheader>
+                <v-text-field v-text="userYearLeaveSummary.dayOffApproved"></v-text-field>
+                <v-subheader>Số ngày nghỉ còn lại trong năm</v-subheader>
+                <v-text-field v-text="userYearLeaveSummary.dayOffRemain"></v-text-field>
+            </template>
+        </v-toolbar>
+        <v-toolbar tabs fixed-tabs class="elevation-0">
             <v-toolbar-title>QUẢN LÝ ĐƠN XIN NGHỈ</v-toolbar-title>
             <template slot="extension">
                 <v-tabs
@@ -23,13 +34,13 @@
         </v-toolbar>
         <v-tabs-items v-model="tags">
             <v-tab-item>
-                <UserLeaveRequestTable type="waiting" :refreshFlag="refreshWaiting"></UserLeaveRequestTable>
+                <UserLeaveRequestTable type="waiting" :refreshFlag="refreshWaiting" :yearSummary="userYearLeaveSummary" @refresh="getUserYearLeaveSummary"></UserLeaveRequestTable>
             </v-tab-item>
             <v-tab-item>
-                <UserLeaveRequestTable type="approved" :refreshFlag="refreshApproved"></UserLeaveRequestTable>
+                <UserLeaveRequestTable type="approved" :refreshFlag="refreshApproved" :yearSummary="userYearLeaveSummary" @refresh="getUserYearLeaveSummary"></UserLeaveRequestTable>
             </v-tab-item>
             <v-tab-item>
-                <UserLeaveRequestTable type="declined" :refreshFlag="refreshDeclined"></UserLeaveRequestTable>
+                <UserLeaveRequestTable type="declined" :refreshFlag="refreshDeclined" :yearSummary="userYearLeaveSummary" @refresh="getUserYearLeaveSummary"></UserLeaveRequestTable>
             </v-tab-item>
         </v-tabs-items>
     </div>
@@ -48,13 +59,19 @@
             return {
                 tags: null,
                 userLeaveRequests: [],
+                userYearLeaveSummary: {
+                    dayOffPerYear: 12,
+                    dayOffApproved: 0,
+                    dayOffRemain: 12,
+                },
+                year: new Date().toISOString().substr(0,4),
                 pagination: {
                     sortBy: 'createdDate',
                     descending: true
                 },
-                refreshWaiting : false,
-                refreshApproved : false,
-                refreshDeclined : false,
+                refreshWaiting: false,
+                refreshApproved: false,
+                refreshDeclined: false,
             }
         },
         computed: {
@@ -69,37 +86,30 @@
                 isStaff: 'isStaff',
             }),
         },
-        methos: {
-            getUserLeveRequests: function (status) {
-                this.table.loading = true;
-                axios.get(`http://localhost:8080/leaveRequests/search/findByUser`,
+        mounted() {
+            this.$nextTick(function() {
+                this.getUserYearLeaveSummary();
+            });
+        },
+        methods: {
+            getUserYearLeaveSummary: function() {
+                axios.get(`http://localhost:8080/leaveRequests/search/findYearSummary/self`,
                     {
                         params: {
-                            page: this.pagination.page - 1,
-                            size: this.pagination.rowsPerPage,
-                            sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
-                            status: status
+                            year: this.year
                         }
                     }
                 ).then(response => {
-                        if (response.status === 204) {
-                            this.userLeaveRequests = [];
-                            this.pagination.totalItems = 0;
-                        } else {
-                            this.userLeaveRequests = response.data.content;
-                            this.pagination.totalItems = response.data.totalElements;
-                        }
-                        this.table.loading = false;
+                        console.log(response.data);
+                        this.userYearLeaveSummary.dayOffPerYear = response.data.dayOffPerYear;
+                        this.userYearLeaveSummary.dayOffApproved = response.data.dayOffApproved;
+                        this.userYearLeaveSummary.dayOffRemain = response.data.dayOffRemain;
                     }
                 ).catch(error => {
-                        this.table.loading = false;
-                        this.alert = 'Không thể truy cập';
-                        if (error.response) {
-                            console.log(error.response.data)
-                        }
+                        console.log(error)
                     }
                 );
-            }
+            },
         }
     }
 </script>
