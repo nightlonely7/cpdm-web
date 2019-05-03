@@ -131,17 +131,18 @@
         methods: {
             save: function () {
                 console.log(this.userForm);
-                this.userForm.displayName = this.userForm.email;
-                this.userForm.fullName = this.userForm.email;
-                this.userForm.phone = "0123456789";
-                this.userForm.password = '12345678';
+                const userForm = {...this.userForm};
+                userForm.displayName = this.userForm.email;
+                userForm.fullName = this.userForm.email;
+                userForm.phone = "0123456789";
+                userForm.password = '12345678';
 
-                const url = `http://localhost:8080/users/${this.userForm.id === 0 ? '' : this.userForm.id}`;
-                const method = `${this.userForm.id === 0 ? 'POST' : 'PUT'}`;
+                const url = `http://localhost:8080/users/${userForm.id === 0 ? '' : userForm.id}`;
+                const method = `${userForm.id === 0 ? 'POST' : 'PUT'}`;
                 axios.request({
                     url: url,
                     method: method,
-                    data: this.userForm
+                    data: userForm
                 }).then(() => {
                     this.close();
                     this.$emit('refresh');

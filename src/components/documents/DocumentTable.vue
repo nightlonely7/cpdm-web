@@ -1,11 +1,19 @@
 <template>
     <div class="elevation-1">
+        <v-expansion-panel focusable class="elevation-1">
+            <v-expansion-panel-content>
+                <template slot="header">
+                    <div>Tìm kiếm</div>
+                </template>
+                <DocumentSearch></DocumentSearch>
+            </v-expansion-panel-content>
+        </v-expansion-panel>
         <v-toolbar flat color="white">
             <v-toolbar-title class="animated bounce delay-1s">Quản lý tài liệu</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <DocumentForm @refresh="refresh">
+            <DocumentForm @refresh="refresh" v-if="isAdmin" document-title="" :creating="true">
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary">Tạo mới tài liệu</v-btn>
                 </template>
@@ -49,10 +57,11 @@
     import _ from 'lodash';
     import {mapGetters, mapState} from 'vuex'
     import DocumentForm from "./DocumentForm";
+    import DocumentSearch from "./DocumentSearch";
 
     export default {
         name: "DocumentTable",
-        components: {DocumentForm},
+        components: {DocumentSearch, DocumentForm},
         props: {
             type: String
         },
@@ -81,10 +90,13 @@
         computed: {
             ...mapGetters('AUTHENTICATION', {
                 isAdmin: "isAdmin",
-            })
+            }),
+            ...mapState('DOCUMENT_STORE', {
+                titleSearchValue: state => state.titleSearchValue,
+                summarySearchValue: state => state.summarySearchValue
+            }),
         },
         mounted() {
-
         },
         methods: {
             showForm: function () {
@@ -98,12 +110,15 @@
             },
             getDocuments: function () {
                 this.table.loading = true;
-                const url = this.isAdmin ? `http://localhost:8080/documents` : `http://localhost:8080/documents/search/relatives`;
+                // const url = this.isAdmin ? `http://localhost:8080/documents` : `http://localhost:8080/documents/search/relatives`;
+                const url = "http://localhost:8080/documents/search/titleAndSummary";
                 const method = 'GET';
                 const params = {
                     page: this.pagination.page - 1,
                     size: this.pagination.rowsPerPage,
                     sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
+                    title: this.titleSearchValue,
+                    summary: this.summarySearchValue
                 };
                 axios({url, method, params})
                     .then(response => {
@@ -126,10 +141,16 @@
         watch: {
             pagination: function () {
                 this.getDocuments();
-            }
+            },
+            titleSearchValue: function () {
+                this.debouncedGetDocuments();
+            },
+            summarySearchValue: function () {
+                this.debouncedGetDocuments();
+            },
         },
         created() {
-            this.debouncedGetTasks = _.debounce(this.getDocuments, 500);
+            this.debouncedGetDocuments = _.debounce(this.getDocuments, 500);
         }
     }
 </script>

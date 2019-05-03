@@ -47,7 +47,7 @@
             <p>Người tạo: {{task.creator.displayName || 'Chưa xác định'}}</p>
             <p>Người xử lý: {{task.executor.displayName || 'Chưa xác định'}}</p>
             <p>Thời gian tạo:
-                {{moment(task.createdTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+                {{moment(task.createdTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
             </p>
             <p>Thời gian bắt đầu:
                 {{moment(task.startTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
@@ -57,6 +57,14 @@
             </p>
             <p v-if="task.status === 'Completed' || task.status === 'Complete outdated'">Thời gian hoàn thành:
                 {{moment(task.completedTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+            </p>
+            <p>Thời gian chỉnh sửa gần nhất:
+                {{moment(task.lastModifiedTime,'DD-MM-YYYY HH:mm:ss' ).format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
+                <TaskHistory :task="task" ref="taskHistory">
+                    <template #activator="{ on }">
+                        <v-btn v-on="on" color="primary">Xem lịch sử chỉnh sửa</v-btn>
+                    </template>
+                </TaskHistory>
             </p>
 
             <v-card>
@@ -159,6 +167,12 @@
             <v-divider></v-divider>
             <br>
 
+            <TaskFile :task="{...task}"></TaskFile>
+
+            <br>
+            <v-divider></v-divider>
+            <br>
+
             <v-layout row v-if="(isManager && isChild) || (isAdmin && !isChild)">
                 <v-btn @click="deleteTask" color="error">
                     Xóa
@@ -184,10 +198,12 @@
     import TaskDocumentForm from "@/components/tasks/TaskDocumentForm";
     import TaskIssue from "@/components/tasks/TaskIssue";
     import {pushNotif} from "@/firebase.js";
+    import TaskHistory from "./TaskHistory";
+    import TaskFile from "./TaskFile";
 
     export default {
         name: "TaskDetail",
-        components: {TaskIssue, TaskDocumentForm, TaskTable, TaskRelativeForm, TaskForm},
+        components: {TaskFile, TaskHistory, TaskIssue, TaskDocumentForm, TaskTable, TaskRelativeForm, TaskForm},
         props: {
             id: Number
         },
@@ -204,6 +220,7 @@
                     startTime: '',
                     createdTime: '',
                     completedTime: '',
+                    lastModifiedTime: '',
                 },
                 taskRelatives: [],
                 documents: [],
@@ -273,7 +290,7 @@
                         }
                     })
                     .finally(() => {
-                        console.log('detail')
+                        console.log('detail');
                         this.loading = false;
                     })
             },

@@ -15,7 +15,7 @@
                             <v-flex md12>
                                 <v-text-field v-model="documentForm.title"
                                               label="Tiêu đề"
-                                              v-validate="{depNameValidator: [documentTitle, creating]}"
+                                              v-validate="{documentNameValidator: [documentTitle, creating]}"
                                               name="title"
                                               :rules="titleRule"
                                               validate-on-blur
@@ -25,8 +25,6 @@
                             <v-flex md12>
                                 <v-text-field v-model="documentForm.summary"
                                               label="Tóm tắt"
-                                              :rules="summaryRule"
-                                              validate-on-blur
                                 ></v-text-field>
                             </v-flex>
                             <v-flex md12>
@@ -133,8 +131,8 @@
                                     <template #activator="{ on }">
                                         <v-text-field
                                                 v-model="startTime"
-                                                label="Ngày kết thúc"
-                                                prepend-inner-icon="mdi-calendar"
+                                                label="Thời gian bắt đầu"
+                                                prepend-inner-icon="access_time"
                                                 readonly
                                                 clearable
                                                 v-on="on"
@@ -152,7 +150,8 @@
                                         <v-spacer></v-spacer>
                                         <v-btn flat color="primary" @click="startTimeMenu = false">Hủy</v-btn>
                                         <v-btn flat color="primary"
-                                               @click="$refs.startTimeDialog.save(startTime)">Lưu</v-btn>
+                                               @click="$refs.startTimeDialog.save(startTime)">Lưu
+                                        </v-btn>
                                     </v-time-picker>
                                 </v-dialog>
                             </v-flex>
@@ -209,6 +208,40 @@
                                           :config="editorConfig"></ckeditor>
                             </v-flex>
                             <v-flex md12 sm12>
+                                <v-checkbox v-model="selectAll" label="Chọn tất cả" color="blue" hide-details>
+                                </v-checkbox>
+                            </v-flex>
+                            <v-flex md12 sm12 v-if="selectAll">
+                                <span class="font-weight-bold">Danh sách phòng ban:</span>
+                                <div v-for="department in departments">
+                                    <v-checkbox v-model="selectedDepartments" :label="department.name"
+                                                :value="department.id" hide-details disabled color="blue">
+                                    </v-checkbox>
+                                </div>
+                            </v-flex>
+                            <v-flex md12 sm12 v-else>
+                                <span class="font-weight-bold">Danh sách phòng ban:</span>
+                                <div v-for="department in departments">
+                                    <v-checkbox v-model="selectedDepartments" :label="department.name"
+                                                :value="department.id" hide-details color="blue">
+                                    </v-checkbox>
+                                </div>
+                            </v-flex>
+                            <v-flex md12 sm12 v-if="selectAll">
+                                <v-checkbox label="Chọn tất cả quản lý" color="blue" hide-details>
+                                </v-checkbox>
+                            </v-flex>
+                            <v-flex md12 sm12 v-else>
+                                <v-checkbox v-model="selectAllManager" label="Chọn tất cả quản lý" color="blue"
+                                            hide-details>
+                                </v-checkbox>
+                            </v-flex>
+                            <v-flex md12 sm12>
+                                <v-autocomplete label="Người liên quan"
+                                                hide-no-data
+                                                disabled
+                                                v-if="selectAll"
+                                ></v-autocomplete>
                                 <v-autocomplete chips deletable-chips cache-items multiple
                                                 v-model="relatives"
                                                 :items="viewerOptions"
@@ -219,6 +252,7 @@
                                                 label="Người liên quan"
                                                 clearable
                                                 hide-no-data
+                                                v-else
                                 >
                                     <template #item="{item}">
                                         {{item.email}} - {{item.fullName}} - Phòng ban:
@@ -277,12 +311,9 @@
                     removePlugins: ['imageUpload'],
                 },
                 titleRule: [
-                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
+                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
+                    val => (val.length >= 4 && val.length <= 50) || "Phải điền từ 4 tới 50 kí tự!"
                 ],
-                summaryRule: [
-                    val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
-                ],
-                documentTitle: '',
                 startDate: '',
                 startTime: '',
                 endDate: '',
@@ -294,6 +325,10 @@
                 dateRules: [
                     val => !!val || "Không được để trống!",
                 ],
+                selectAll: false,
+                selectAllManager: false,
+                departments: [],
+                selectedDepartments: []
             }
         },
         props: {
@@ -302,6 +337,7 @@
                 default: function () {
                     return {
                         id: 0,
+                        title: '',
                         project: {id: null},
                         endTime: '',
                         startTime: '',
@@ -313,6 +349,12 @@
                 type: Boolean,
                 default: function () {
                     return false;
+                }
+            },
+            documentTitle: {
+                type: String,
+                default: function () {
+                    return '';
                 }
             }
         },
@@ -328,9 +370,8 @@
             },
         },
         mounted() {
-            if (this.documentForm.id !== 0) {
-                this.documentTitle = this.documentForm.title;
-            }
+            this.getProjectOptions();
+            this.getDepartments();
         },
         methods: {
             close() {
@@ -341,16 +382,27 @@
                 console.log(this.documentForm);
                 const data = {
                     ...this.documentForm,
-                    relatives: this.relatives.map(value => {
+                    relatives: this.selectAll ? null : this.relatives.map(value => {
                         return {id: value};
                     }),
                 };
                 data.startTime = `${this.startDate} ${this.startTime}:00`;
                 data.endTime = `${this.endDate} ${this.endTime}:00`;
                 console.log(data.startTime + "/" + data.endTime);
-                const method = 'POST';
-                const url = `http://localhost:8080/documents`;
-                axios({url, method, data})
+                const method = data.id === 0 ? 'POST' : 'PUT';
+                const url = `http://localhost:8080/documents` + (data.id === 0 ? `` : `/${data.id}`);
+                console.log(data.id);
+                console.log(this.selectedDepartments.join(','));
+                axios({
+                    url: url,
+                    method: method,
+                    data: data,
+                    params: {
+                        selectAll: this.selectAll,
+                        departmentList: this.selectedDepartments.join(','),
+                        selectAllManager: this.selectAllManager
+                    }
+                })
                     .then(() => {
                         this.dialog = false;
                         this.$emit('refresh');
@@ -379,7 +431,7 @@
                         }
                     });
             },
-            getViewerOptions: function (email) {
+            getViewerOptions(email) {
                 this.viewerOptionsLoading = true;
                 setTimeout(() => {
                     axios.get(`http://localhost:8080/users/search/findAllForSelectByEmailContaining`, {
@@ -403,9 +455,16 @@
                     });
                 }, 500);
             },
-        },
-        mounted() {
-            this.getProjectOptions();
+            getDepartments() {
+                axios.get(`http://localhost:8080/departments`).then(
+                    response => {
+                        this.departments = response.data.content;
+                        console.log(response.data.content);
+                    }
+                ).catch(
+                    err => console.log(err)
+                )
+            }
         },
         created() {
             this.debouncedGetViewerOptions = _.debounce(this.getViewerOptions, 500);
@@ -418,7 +477,7 @@
             },
             relatives: function () {
                 this.viewerOptionsSearch = '';
-            }
+            },
         }
     }
 </script>

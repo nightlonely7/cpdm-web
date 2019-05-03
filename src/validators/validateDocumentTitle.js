@@ -14,7 +14,9 @@ async function checkDocumentNameExisted(value, obj) {
     let isDocumentNameExisted = true;
     let currentTitle = obj[0];
     let isEdit = obj[1];
-    if(isEdit && currentTitle === value){
+    console.log("Document title: " + obj[0]);
+    console.log("Changing: " + obj[1]);
+    if(isEdit && currentTitle !== '' && currentTitle === value){
         return true;
     }
     try {

@@ -11,7 +11,7 @@
             <p style="color: blue">Thời gian tạo: {{moment(document.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
             <p style="color: blue">Thời gian hiệu lực: {{moment(document.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
             <p style="color: blue">Thời gian hết hạn: {{moment(document.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
-            <DocumentForm :form="{...document}">
+            <DocumentForm :form="{...document}" :creating="true" :document-title="`${document.title}`">
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary">Sửa</v-btn>
                 </template>
@@ -37,6 +37,7 @@
         data(){
             return {
                 document: {
+                    title: '',
                     project: {
                         id: 0,
                         name: ''
