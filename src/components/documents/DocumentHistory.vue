@@ -54,7 +54,6 @@
                     axios.get(`http://localhost:8080/documents/${this.document.id}/histories`)
                         .then(response => {
                             this.documentHistories = response.data;
-                            console.log("Document history: " + response.data);
                             this.historiesLoaded = true;
                         })
                         .catch(error => {
@@ -68,7 +67,6 @@
                             this.historiesLoading = false;
                         })
                 }, 500);
-
             },
         },
         watch: {

@@ -7,14 +7,13 @@
         </div>
         <div v-if="documentHistoryLoaded">
             <v-container>
-                <p style="color: blue">Tên tài liệu: {{documentHistory.title || 'Chưa xác định'}}</p>
-                <p style="color: blue">Tóm tắt tài liệu: {{documentHistory.summary || 'Chưa xác định'}}</p>
+                <p style="color: blue">Tên tài liệu: {{documentHistory.data.title || 'Chưa xác định'}}</p>
+                <p style="color: blue">Tóm tắt tài liệu: {{documentHistory.data.summary || 'Chưa xác định'}}</p>
                 <p style="color: blue">Mô tả:</p>
-                <span v-html="documentHistory.description" style="color: blue"></span>
-                <p style="color: blue">Tên dự án: {{documentHistory.project.name || 'Chưa xác định'}}</p>
-                <p style="color: blue">Thời gian tạo: {{moment(documentHistory.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
-                <p style="color: blue">Thời gian hiệu lực: {{moment(documentHistory.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
-                <p style="color: blue">Thời gian hết hạn: {{moment(documentHistory.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
+                <span v-html="documentHistory.data.description" style="color: blue"></span>
+                <p style="color: blue">Thời gian tạo: {{moment(documentHistory.data.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
+                <p style="color: blue">Thời gian hiệu lực: {{moment(documentHistory.data.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
+                <p style="color: blue">Thời gian hết hạn: {{moment(documentHistory.data.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
             </v-container>
         </div>
     </div>
@@ -60,9 +59,9 @@
         },
         watch: {
             activate(val) {
-                console.log(this.documentHistory);
                 if (val) {
                     if (!this.documentHistoryLoaded) {
+                        console.log(this.documentHistory);
                         this.getDocumentHistoryDetail();
                     }
                 }

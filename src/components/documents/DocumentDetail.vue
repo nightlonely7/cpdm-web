@@ -56,6 +56,7 @@
                     createdTime: '',
                     startTime: '',
                     endTime: '',
+                    lastModifiedTime: '',
                 },
                 isServerError: true,
             }
