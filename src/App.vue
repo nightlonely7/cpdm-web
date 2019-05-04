@@ -145,7 +145,7 @@
                     <v-list-tile-title>Lịch nghỉ phép tuần</v-list-tile-title>
                     </v-list-tile-content>
                     </v-list-tile>
-                    <v-list-tile v-if="isAdmin" to="/viewUserLeaves">
+                    <v-list-tile v-if="isAdmin || isManager" to="/viewUserLeaves">
                         <v-list-tile-action>
                             <v-icon></v-icon>
                         </v-list-tile-action>

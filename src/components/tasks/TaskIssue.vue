@@ -232,7 +232,7 @@
                         .then(() => {
                             var title = 'Một vấn đề đã hủy bởi ' + this.displayName;
                             var detail = '';
-                            var url = '/tasks';
+                            var url = '/tasks/' + this.task.id;
                             var users = [];
                             if (this.displayName === this.task.executor.displayName) {
                                 users.push(this.task.cretor);
@@ -257,7 +257,7 @@
                         .then(() => {
                             var title = 'Một vấn đề đã hoàn thành bởi ' + this.displayName;
                             var detail = '';
-                            var url = '/tasks';
+                            var url = '/tasks/' + this.task.id;
                             var users = [];
                             users.push(this.task.cretor);
                             pushNotif(title, detail, url, users);

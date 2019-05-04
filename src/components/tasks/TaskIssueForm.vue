@@ -94,7 +94,7 @@
                     .then((response) => {
                         var title = 'Một vấn đề đã được thêm bởi ' + this.displayName;
                         var detail = '';
-                        var url = '/tasks';
+                        var url = '/tasks/' + this.task.id;
                         var users = [];
                         if(this.displayName === this.task.executor.displayName){
                             users.push(this.task.cretor);

@@ -130,9 +130,28 @@
                     <td class="text-xs-left">{{props.item.startTime}}</td>
                     <td class="text-xs-left">{{props.item.endTime}}</td>
                     <!--<td class="text-xs-left">{{props.item.creator.displayName}}</td>-->
-                    <td class="text-xs-left">{{props.item.executor.displayName}}</td>
+                    <!--<td class="text-xs-left">{{props.item.executor.displayName}}</td>-->
                     <td class="text-xs-left">{{props.item.priority}}</td>
-                    <!--<td class="text-xs-left">{{props.item.status}}</td>-->
+                    <td class="text-xs-left">
+                        <v-chip v-if="props.item.status === 'Waiting'">
+                            Đang chờ
+                        </v-chip>
+                        <v-chip v-if="props.item.status === 'Working'" color="primary" text-color="white">
+                            Đang thực hiện
+                        </v-chip>
+                        <v-chip v-if="props.item.status === 'Completed'" color="success" text-color="white">
+                            Hoàn tất
+                        </v-chip>
+                        <v-chip v-if="props.item.status === 'Complete outdated'" color="error" text-color="white">
+                            Hoàn tất quá hạn
+                        </v-chip>
+                        <v-chip v-if="props.item.status === 'Outdated'" color="error" text-color="white">
+                            Quá hạn
+                        </v-chip>
+                        <v-chip v-if="props.item.status === 'Near deadline'" color="warning" text-color="white">
+                            Gần tới hạn
+                        </v-chip>
+                    </td>
                 </tr>
                 <tr @click="showAssignRequest(props)" v-if="isAssigned">
                     <td>
@@ -172,7 +191,14 @@
                             <td class="text-xs-left">{{props.item.toDate}}</td>
                             <td class="text-xs-left">{{props.item.createdDate}}</td>
                             <td class="text-xs-left">{{props.item.approver.displayName}}</td>
-                            <td class="text-xs-left">{{props.item.status === 0 ? "Chờ xét duyệt" : "Đã duyệt"}}</td>
+                            <td class="text-xs-left">
+                                <v-chip v-if="props.item.status === 0">
+                                    Chờ duyệt
+                                </v-chip>
+                                <v-chip v-if="props.item.status === 1" color="success" text-color="white">
+                                    Đã duyệt
+                                </v-chip>
+                            </td>
                         </tr>
                     </template>
                 </v-data-table>
@@ -257,9 +283,9 @@
                         {text: 'Thời gian bắt đầu', value: 'startTime'},
                         {text: 'Thời gian kết thúc', value: 'endTime'},
                         // {text: 'Người tạo', value: 'creator.displayName'},
-                        {text: 'Người thực hiện', value: 'executor.displayName'},
+                        // {text: 'Người thực hiện', value: 'executor.displayName'},
                         {text: 'Độ ưu tiên', value: 'priority'},
-                        // {text: 'Trạng thái', value: 'status'},
+                        {text: 'Trạng thái', value: 'status'},
                     ]
                 },
                 subPagination: {
@@ -358,7 +384,6 @@
                     page: this.pagination.page - 1,
                     size: this.pagination.rowsPerPage,
                     sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
-                    status: 'Working',
                     fromDate: this.fromDate,
                     toDate: this.toDate
                 };

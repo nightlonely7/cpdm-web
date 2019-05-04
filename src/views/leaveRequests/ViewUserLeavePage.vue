@@ -41,30 +41,12 @@
                 </v-layout>
                 <v-layout row>
                     <v-flex xs1/>
-                    <v-flex xs4>
-                        <v-subheader>Số ngày nghỉ tối đa một năm</v-subheader>
-                    </v-flex>
-                    <v-flex xs3>
-                        <v-text-field v-text="userYearLeaveSummary.dayOffPerYear"></v-text-field>
-                    </v-flex>
-                </v-layout>
-                <v-layout row>
-                    <v-flex xs1/>
-                    <v-flex xs4>
-                        <v-subheader>Số ngày nghỉ đã sử dụng trong năm</v-subheader>
-                    </v-flex>
-                    <v-flex xs3>
-                        <v-text-field v-text="userYearLeaveSummary.dayOffApproved"></v-text-field>
-                    </v-flex>
-                </v-layout>
-                <v-layout row>
-                    <v-flex xs1/>
-                    <v-flex xs4>
-                        <v-subheader>Số ngày nghỉ còn lại trong năm</v-subheader>
-                    </v-flex>
-                    <v-flex xs3>
-                        <v-text-field v-text="userYearLeaveSummary.dayOffRemain"></v-text-field>
-                    </v-flex>
+                    <v-subheader>Số ngày nghỉ tối đa một năm</v-subheader>
+                    <v-text-field v-text="userYearLeaveSummary.dayOffPerYear"></v-text-field>
+                    <v-subheader>Số ngày nghỉ đã sử dụng trong năm</v-subheader>
+                    <v-text-field v-text="userYearLeaveSummary.dayOffApproved"></v-text-field>
+                    <v-subheader>Số ngày nghỉ còn lại trong năm</v-subheader>
+                    <v-text-field v-text="userYearLeaveSummary.dayOffRemain"></v-text-field>
                 </v-layout>
                 <v-layout row>
                     <v-subheader>Thông tin chi tiết</v-subheader>
@@ -82,11 +64,19 @@
                         <tr>
                             <td class="text-xs-left"></td>
                             <td class="text-xs-left">{{props.item.content | truncate(30)}}</td>
-                            <td class="text-xs-left">{{props.item.dayOff}}</td>
                             <td class="text-xs-left">{{props.item.fromDate}}</td>
-                            <td class="text-xs-left">{{props.item.toDate}}</td>
+                            <td class="text-xs-left">{{props.item.dayOff}}</td>
+                            <!--<td class="text-xs-left">{{props.item.toDate}}</td>-->
                             <!--<td class="text-xs-left">{{props.item.createdDate}}</td>-->
                             <td class="text-xs-left">{{props.item.approver.displayName}}</td>
+                            <td class="text-xs-left">
+                                <v-chip v-if="props.item.status === 0">
+                                    Chờ duyệt
+                                </v-chip>
+                                <v-chip v-if="props.item.status === 1" color="success" text-color="white">
+                                    Đã duyệt
+                                </v-chip>
+                            </td>
                             <td class="text-xs-left">
                                 <v-card-actions>
                                     <v-dialog v-model="dialog" max-width="500px">
@@ -169,7 +159,6 @@
                                     </v-dialog>
                                 </v-card-actions>
                             </td>
-                            <!--<td class="text-xs-left">{{props.item.status === 0 ? "Chờ xét duyệt" : "Đã duyệt"}}</td>-->
                         </tr>
                     </template>
                 </v-data-table>
@@ -192,6 +181,7 @@
 
 <script>
     import axios from "axios";
+    import {mapState,mapGetters} from 'vuex';
 
     export default {
         name: "ViewUserLeavePage",
@@ -237,28 +227,45 @@
                     headers: [
                         {text: '', sortable: false},
                         {text: 'Nội dung', value: 'content'},
-                        {text: 'Số ngày nghỉ', value: 'dayOff'},
                         {text: 'Ngày bắt đầu', value: 'fromDate'},
-                        {text: 'Ngày kết thúc', value: 'toDate'},
+                        {text: 'Số ngày nghỉ', value: 'dayOff'},
+                        // {text: 'Ngày kết thúc', value: 'toDate'},
                         // {text: 'Ngày tạo', value: 'createdDate'},
                         {text: 'Người xét duyệt', value: 'approver.displayName'},
-                        {text: 'Chi tiết', value: 'status'},
-                        // {text: 'Trạng thái', value: 'status'},
+                        {text: 'Trạng thái', value: 'status'},
+                        {text: 'Chi tiết', sortable: false},
                     ]
                 }
             }
         },
+        computed: {
+            ...mapState('AUTHENTICATION', {
+                role: state => state.role,
+                displayName: state => state.displayName,
+            }),
+            ...mapGetters('AUTHENTICATION', {
+                isInit: 'isInit',
+                isLoggedIn: 'isLoggedIn',
+                isAdmin: 'isAdmin',
+                isManager: 'isManager',
+                isStaff: 'isStaff',
+            }),
+        },
         mounted() {
             this.$nextTick()
             {
-                this.getUsersForAdmin();
+                this.getUser();
                 this.getYearSelectPicker();
             }
         },
         methods: {
-            getUsersForAdmin: function () {
+            getUser: function () {
                 this.table.loading = true;
-                axios.get(`http://localhost:8080/users/search/staff-and-manager`,
+                var url = 'http://localhost:8080/users/search/staff-and-manager';
+                if(this.isManager){
+                    url = 'http://localhost:8080/users/search/staff-for-manager';
+                }
+                axios.get(url,
                     {
                         params: {
                             page: this.pagination.page - 1,
@@ -295,7 +302,7 @@
                 });
             },
             refresh() {
-                this.getUsersForAdmin();
+                this.getUser();
                 if (this.userId != null) {
                     this.getUserLeveRequests(this.userId);
                 }
@@ -336,27 +343,13 @@
                     this.userId = null;
                 }
             },
-            save(date) {
-                this.year = date.substr(0, 4);
-                this.$refs.menu.save(date);
-                this.$refs.picker.activePicker = 'YEAR';
-                this.menu = false;
-            },
             close() {
                 this.dialog = false
-                setTimeout(() => {
-                    this.editItem = Object.assign({}, this.defaultItem)
-                }, 300)
             },
-            setYear() {
-                console.log(this.date);
-                this.date = new Date().setFullYear(this.year, 1, 1);
-                console.log(this.date);
-            }
         },
         watch: {
             pagination: function () {
-                this.getUsersForAdmin();
+                this.getUser();
             },
             year: function () {
                 this.refresh()

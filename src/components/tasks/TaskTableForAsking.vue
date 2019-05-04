@@ -7,50 +7,50 @@
                 <v-icon left>cached</v-icon>
                 <span>Làm mới</span>
             </v-btn>
-            <v-menu
-                    v-model="fromDateMenu"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    lazy
-                    transition="scale-transition"
-                    offset-y
-                    full-width
-                    min-width="290px"
-            >
-                <template v-slot:activator="{ on }">
-                    <v-text-field
-                            v-model="fromDate"
-                            label="Ngày bắt đầu"
-                            prepend-icon="event"
-                            readonly
-                            v-on="on"
-                    ></v-text-field>
-                </template>
-                <v-date-picker v-model="fromDate"
-                               @input="fromDateMenu = false"></v-date-picker>
-            </v-menu>
-            <v-menu
-                    v-model="toDateMenu"
-                    :close-on-content-click="false"
-                    :nudge-right="40"
-                    lazy
-                    transition="scale-transition"
-                    offset-y
-                    full-width
-                    min-width="290px"
-            >
-                <template v-slot:activator="{ on }">
-                    <v-text-field
-                            v-model="toDate"
-                            label="Ngày kết thúc"
-                            prepend-icon="event"
-                            readonly
-                            v-on="on"
-                    ></v-text-field>
-                </template>
-                <v-date-picker v-model="toDate"
-                               @input="toDateMenu = false"></v-date-picker>
-            </v-menu>
+            <!--<v-menu-->
+                    <!--v-model="fromDateMenu"-->
+                    <!--:close-on-content-click="false"-->
+                    <!--:nudge-right="40"-->
+                    <!--lazy-->
+                    <!--transition="scale-transition"-->
+                    <!--offset-y-->
+                    <!--full-width-->
+                    <!--min-width="290px"-->
+            <!--&gt;-->
+                <!--<template v-slot:activator="{ on }">-->
+                    <!--<v-text-field-->
+                            <!--v-model="fromDate"-->
+                            <!--label="Ngày bắt đầu"-->
+                            <!--prepend-icon="event"-->
+                            <!--readonly-->
+                            <!--v-on="on"-->
+                    <!--&gt;</v-text-field>-->
+                <!--</template>-->
+                <!--<v-date-picker v-model="fromDate"-->
+                               <!--@input="fromDateMenu = false"></v-date-picker>-->
+            <!--</v-menu>-->
+            <!--<v-menu-->
+                    <!--v-model="toDateMenu"-->
+                    <!--:close-on-content-click="false"-->
+                    <!--:nudge-right="40"-->
+                    <!--lazy-->
+                    <!--transition="scale-transition"-->
+                    <!--offset-y-->
+                    <!--full-width-->
+                    <!--min-width="290px"-->
+            <!--&gt;-->
+                <!--<template v-slot:activator="{ on }">-->
+                    <!--<v-text-field-->
+                            <!--v-model="toDate"-->
+                            <!--label="Ngày kết thúc"-->
+                            <!--prepend-icon="event"-->
+                            <!--readonly-->
+                            <!--v-on="on"-->
+                    <!--&gt;</v-text-field>-->
+                <!--</template>-->
+                <!--<v-date-picker v-model="toDate"-->
+                               <!--@input="toDateMenu = false"></v-date-picker>-->
+            <!--</v-menu>-->
             <v-spacer></v-spacer>
             <v-dialog v-model="dialog" max-width="500px">
                 <template v-slot:activator="{ on }">
@@ -154,8 +154,28 @@
                     <td class="text-xs-left">{{props.item.startTime}}</td>
                     <td class="text-xs-left">{{props.item.endTime}}</td>
                     <!--<td class="text-xs-left">{{props.item.creator.displayName}}</td>-->
-                    <td class="text-xs-left">{{props.item.executor.displayName}}</td>
+                    <!--<td class="text-xs-left">{{props.item.executor.displayName}}</td>-->
                     <td class="text-xs-left">{{props.item.priority}}</td>
+                    <td class="text-xs-left">
+                        <v-chip v-if="props.item.status === 'Waiting'">
+                            Đang chờ
+                        </v-chip>
+                        <v-chip v-if="props.item.status === 'Working'" color="primary" text-color="white">
+                            Đang thực hiện
+                        </v-chip>
+                        <v-chip v-if="props.item.status === 'Completed'" color="success" text-color="white">
+                            Hoàn tất
+                        </v-chip>
+                        <v-chip v-if="props.item.status === 'Complete outdated'" color="error" text-color="white">
+                            Hoàn tất quá hạn
+                        </v-chip>
+                        <v-chip v-if="props.item.status === 'Outdated'" color="error" text-color="white">
+                            Quá hạn
+                        </v-chip>
+                        <v-chip v-if="props.item.status === 'Near deadline'" color="warning" text-color="white">
+                            Gần tới hạn
+                        </v-chip>
+                    </td>
                     <!--<td class="text-xs-left">{{props.item.status}}</td>-->
                 </tr>
             </template>
@@ -192,10 +212,10 @@
                 snackbar: false,
                 snackBarText: '',
                 dialog: false,
-                fromDateMenu: false,
-                toDateMenu: false,
-                fromDate: new Date().toISOString().substr(0, 10),
-                toDate: moment(this.fromDate).add(6, 'days').toISOString().substr(0, 10),
+                // fromDateMenu: false,
+                // toDateMenu: false,
+                // fromDate: new Date().toISOString().substr(0, 10),
+                // toDate: moment(this.fromDate).add(6, 'days').toISOString().substr(0, 10),
                 rules: {
                     required: v => !!v || 'Nội dung không được để trống',
                     max: v => (!!v && v.length <= 255) || 'Nội dung tối đa 255 kí tự'
@@ -232,8 +252,9 @@
                         {text: 'Thời gian bắt đầu', value: 'startTime'},
                         {text: 'Thời gian kết thúc', value: 'endTime'},
                         // {text: 'Người tạo', value: 'creator.displayName'},
-                        {text: 'Người thực hiện', value: 'executor.displayName'},
+                        // {text: 'Người thực hiện', value: 'executor.displayName'},
                         {text: 'Độ ưu tiên', value: 'priority'},
+                        {text: 'Trạng thái', value: 'status'},
                         // {text: 'Trạng thái', value: 'status'},
                     ]
                 },
@@ -299,9 +320,8 @@
                     page: this.pagination.page - 1,
                     size: this.pagination.rowsPerPage,
                     sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
-                    status: 'Working',
-                    fromDate: this.fromDate,
-                    toDate: this.toDate
+                    fromDate: new Date(1900,0,2).toISOString().substr(0,10),
+                    toDate: new Date(9999,11,32).toISOString().substr(0,10),
                 };
                 axios({url, method, params})
                     .then(response => {
