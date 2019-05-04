@@ -317,7 +317,7 @@
                     axios.delete(`http://localhost:8080/tasks/${this.id}`)
                         .then(() => {
                             var title = 'Một tác vụ đã hủy ' + this.displayName;
-                            var detail = '';
+                            var detail = this.task.title;
                             var url = '/tasks/' + this.id;
                             var users = [];
                             users.push(this.task.executor);
@@ -332,7 +332,7 @@
                     axios.patch(`http://localhost:8080/tasks/${this.id}/complete`)
                         .then(() => {
                             var title = 'Một tác vụ đã hoàn thành bởi ' + this.displayName;
-                            var detail = '';
+                            var detail = this.task.title;
                             var url = '/tasks/' + this.id;
                             var users = [];
                             users.push(this.task.creator);
@@ -353,7 +353,7 @@
                     axios.delete(`http://localhost:8080/task-issues/${id}`)
                         .then(() => {
                             var title = 'Một vấn đề đã hủy bởi ' + this.displayName;
-                            var detail = '';
+                            var detail = this.task.title;
                             var url = '/tasks/' + this.id;
                             var users = [];
                             if(this.displayName === this.task.executor.displayName){
@@ -379,7 +379,7 @@
                     axios.patch(`http://localhost:8080/task-issues/${id}/complete`)
                         .then(() => {
                             var title = 'Một vấn đề đã hoàn thành bởi ' + this.displayName;
-                            var detail = '';
+                            var detail = this.task.title;
                             var url = '/tasks/' + this.id;
                             var users = [];
                             users.push(this.task.cretor);
@@ -415,7 +415,7 @@
                     axios.delete(`http://localhost:8080/tasks/${this.id}/documents/${documentId}`)
                         .then(() => {
                             var title = 'Tài liệu đã bị loại bỏ bởi ' + this.displayName;
-                            var detail = '';
+                            var detail = this.task.title;
                             var url = '/tasks/' + this.id;
                             var users = [];
                             users.push(this.task.executor);

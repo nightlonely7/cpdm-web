@@ -280,7 +280,7 @@
                         .then(() => {
                                 //create and send notification
                                 var title = "Một yêu cầu chỉ đạo đã xóa bởi " + this.displayName;
-                                var detail = '';
+                                var detail = this.editItem.content;
                                 var url = "/receiverAskingRequests";
                                 var users = [];
                                 users.push(this.receivers[0]);

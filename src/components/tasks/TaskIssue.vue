@@ -231,7 +231,7 @@
                     axios.delete(`http://localhost:8080/task-issues/${id}`)
                         .then(() => {
                             var title = 'Một vấn đề đã hủy bởi ' + this.displayName;
-                            var detail = '';
+                            var detail = this.task.title;
                             var url = '/tasks/' + this.task.id;
                             var users = [];
                             if (this.displayName === this.task.executor.displayName) {
@@ -256,7 +256,7 @@
                     axios.patch(`http://localhost:8080/task-issues/${id}/complete`)
                         .then(() => {
                             var title = 'Một vấn đề đã hoàn thành bởi ' + this.displayName;
-                            var detail = '';
+                            var detail = this.task.title;
                             var url = '/tasks/' + this.task.id;
                             var users = [];
                             users.push(this.task.cretor);

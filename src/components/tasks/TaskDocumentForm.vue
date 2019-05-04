@@ -86,7 +86,7 @@
                 axios({url, method})
                     .then(() => {
                         var title = 'Tài liệu đã được bổ sung bởi ' + this.displayName;
-                        var detail = '';
+                        var detail = this.task.title;
                         var url = '/tasks/' + this.taskId;
                         var users = [];
                         users.push(this.task.executor);

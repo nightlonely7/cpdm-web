@@ -459,7 +459,7 @@
                         .then(() => {
                                 //create and send notification
                                 var title = "Một đơn nghỉ phép đã xóa bởi " + this.displayName;
-                                var detail = '';
+                                var detail = this.editItem.content;
                                 var url = "/approverLeaveRequests";
                                 var users = [];
                                 users.push(this.approvers[0]);

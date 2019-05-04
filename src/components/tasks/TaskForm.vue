@@ -420,7 +420,7 @@
                 if (id != 0) {
                     title = "Tác vụ chỉnh sửa từ " + this.displayName;
                 }
-                var url = "/tasks";
+                var url = '/tasks/' + data.id;
                 var detail = data.title;
                 var users = [];
                 if(data.relatives){
