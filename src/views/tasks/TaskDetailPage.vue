@@ -2,7 +2,10 @@
     <div>
         <v-progress-circular v-if="loading"></v-progress-circular>
         <div v-if="!loading">
-            <v-btn @click="goBack" color="primary">Trở về</v-btn>
+            <v-btn @click="goBack" color="primary">
+                <v-icon left>mdi-keyboard-backspace</v-icon>
+                Trở về
+            </v-btn>
             <br>
             <br>
             <TaskDetail :id="id"></TaskDetail>

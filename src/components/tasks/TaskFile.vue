@@ -133,7 +133,7 @@
                                         <span>Tải về</span>
                                     </v-btn>
                                 </v-flex>
-                                <v-flex>
+                                <v-flex v-if="userId === taskFile.creator.id">
                                     <TaskFileForm :task="{...task}" :form="{...taskFile}"
                                                   @refresh="getTaskFiles">
                                         <template #activator="{ on }">
@@ -144,7 +144,7 @@
                                         </template>
                                     </TaskFileForm>
                                 </v-flex>
-                                <v-flex>
+                                <v-flex v-if="userId === taskFile.creator.id">
                                     <v-btn color="error" @click="deleteFile(taskFile.id)">
                                         <v-icon left>mdi-delete</v-icon>
                                         <span>Xóa</span>
@@ -166,6 +166,7 @@
     import axios from 'axios';
     import TaskFileForm from "./TaskFileForm";
     import download from 'downloadjs';
+    import {mapState} from "vuex";
 
     export default {
         name: "TaskFile",
@@ -181,7 +182,11 @@
         props: {
             task: Object,
         },
-        computed: {},
+        computed: {
+            ...mapState('AUTHENTICATION', {
+                userId: state => state.id,
+            }),
+        },
         methods: {
             getTaskFiles() {
                 this.taskFileLoading = true;

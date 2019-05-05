@@ -8,23 +8,53 @@
             ></v-progress-circular>
         </div>
         <div v-if="!loading">
-            <h2>Tiêu đề : {{task.title || 'Chưa xác định'}}</h2>
+
+            <br>
+            <p>
+                <span style="width: 25%; float: left"><b>Tiêu đề</b></span>
+                <span style="width: 75%; float: left"><b>{{task.title || 'Chưa xác định'}}</b></span>
+            </p>
+
+            <br>
             <v-divider></v-divider>
             <br>
-            <h4>Nội dung tổng quát: </h4>
-            <p>{{task.summary || 'Chưa xác định'}}</p>
+
+            <p>
+                <span style="width: 25%; float: left">Nội dung tổng quát</span>
+                <span style="width: 75%; float: left">{{task.summary || 'Chưa xác định'}}</span>
+            </p>
+
             <br>
-            <p>Thuộc dự án: {{task.project.name || 'Chưa xác định'}}</p>
+            <v-divider></v-divider>
             <br>
-            <p v-if="(isAdmin || isManager) && isChild">Thuộc tác vụ tổng:
+
+            <p>
+                <span style="width: 25%; float: left">Thuộc dự án</span>
+                <span style="width: 75%; float: left">{{task.project.name || 'Chưa xác định'}}</span>
+            </p>
+
+            <br>
+            <v-divider></v-divider>
+            <br>
+
+            <p v-if="(isAdmin || isManager) && isChild">
+                <span style="width: 25%; float: left">Thuộc tác vụ tổng</span>
                 <router-link :to="`/tasks/${task.parentTask.id}`">
-                    {{task.parentTask.title || 'Chưa xác định'}}
+                        <span style="width: 75%; float: left">
+                        {{task.parentTask.title || 'Chưa xác định'}}
+                    </span>
                 </router-link>
             </p>
+
+            <br v-if="isChild">
+            <v-divider v-if="isChild"></v-divider>
             <br v-if="isChild">
 
-            <p>Trạng thái:
-                <v-chip v-if="task.status === 'Waiting'">Đang chờ</v-chip>
+
+            <p>
+                <span style="width: 25%; float: left">Trạng thái</span>
+                <span style="width: 75%; float: left; position: relative; bottom: 10px;">
+                    <v-chip v-if="task.status === 'Waiting'">Đang chờ</v-chip>
                 <v-chip v-if="task.status === 'Working'" color="primary" text-color="white">Đang thực hiện</v-chip>
                 <v-chip v-if="task.status === 'Completed'" color="success" text-color="white">Hoàn tất</v-chip>
                 <v-chip v-if="task.status === 'Complete outdated'" color="error" text-color="white">Hoàn tất quá hạn
@@ -35,46 +65,154 @@
                 <v-btn v-if="(completionRate === 1 || this.issuesStatus.total === 0) && isRunning && task.executor.id === userId"
                        @click="completeTask" color="success">Báo cáo hoàn tất
                 </v-btn>
-                <br>
-                <span>Số vấn đề hoàn tất: {{issuesStatus.completed}} / {{issuesStatus.total}}</span>
-                <br>
-                <span>Tỉ lệ hoàn thành:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <v-progress-circular :value="completionRate * 100" size="96" rotate="270" width="16" color="primary">
-                    <span style="color: black">{{(completionRate * 100).toFixed(2) || 'Chưa xác định'}}%</span>
+                </span>
+            </p>
+
+            <br>
+            <v-divider></v-divider>
+            <br>
+
+            <p>
+                <span style="width: 25%; float: left">Số vấn đề hoàn tất</span>
+                <span style="width: 75%; float: left">{{issuesStatus.completed}} / {{issuesStatus.total}}</span>
+            </p>
+
+            <br>
+            <v-divider></v-divider>
+            <br>
+
+            <p>
+                <span style="width: 25%; float: left">Tỉ lệ hoàn thành</span>
+                <span style="width: 75%; float: left">
+                    <v-progress-circular :value="completionRate * 100" size="58" rotate="270" width="8"
+                                         color="primary" style="position: relative; bottom: 20px">
+                    <span style="color: black; font-size: 12px;">{{(completionRate * 100).toFixed(2) || 'Chưa xác định'}}%</span>
                 </v-progress-circular>
+                </span>
             </p>
-            <p>Độ ưu tiên: {{task.priority || 'Chưa xác định'}}</p>
-            <p>Người tạo: {{task.creator.displayName || 'Chưa xác định'}}</p>
-            <p>Người xử lý: {{task.executor.displayName || 'Chưa xác định'}}</p>
-            <p>Thời gian tạo:
-                {{moment(task.createdTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
+
+            <br>
+            <v-divider></v-divider>
+            <br>
+
+            <p>
+                <span style="width: 25%; float: left">Độ ưu tiên</span>
+                <span :class="priorityColor(task.priority)" style="width: 75%; float: left">
+                    {{task.priority || 'Chưa xác định'}}
+                </span>
             </p>
-            <p>Thời gian bắt đầu:
-                {{moment(task.startTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+
+            <br>
+            <v-divider></v-divider>
+            <br>
+
+            <p>
+                <span style="width: 25%; float: left">Người tạo</span>
+                <span style="width: 75%; float: left">{{task.creator.displayName || 'Chưa xác định'}}</span>
             </p>
-            <p>Thời gian kết thúc:
-                {{moment(task.endTime,'DD-MM-YYYY HH:mm:ss' ).format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+
+            <br>
+            <v-divider></v-divider>
+            <br>
+
+            <p>
+                <span style="width: 25%; float: left">Người xử lý</span>
+                <span style="width: 75%; float: left">{{task.executor.displayName || 'Chưa xác định'}}</span>
             </p>
-            <p v-if="task.status === 'Completed' || task.status === 'Complete outdated'">Thời gian hoàn thành:
-                {{moment(task.completedTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+
+            <br>
+            <v-divider></v-divider>
+            <br>
+
+            <p>
+                <span style="width: 25%; float: left">Thời gian tạo</span>
+                <span style="width: 75%; float: left">
+                    {{moment(task.createdTime, 'DD-MM-YYYY HH:mm:ss')
+                    .format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
+                </span>
             </p>
-            <p>Thời gian chỉnh sửa gần nhất:
-                {{moment(task.lastModifiedTime,'DD-MM-YYYY HH:mm:ss' ).
-                format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
-                <TaskHistory :task="task" ref="taskHistory">
-                    <template #activator="{ on }">
+
+            <br>
+            <v-divider></v-divider>
+            <br>
+
+            <p>
+                <span style="width: 25%; float: left">Thời gian bắt đầu</span>
+                <span style="width: 75%; float: left">
+                    {{moment(task.startTime, 'DD-MM-YYYY HH:mm:ss')
+                    .format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+                </span>
+            </p>
+
+            <br>
+            <v-divider></v-divider>
+            <br>
+
+            <p>
+                <span style="width: 25%; float: left">Thời gian kết thúc</span>
+                <span style="width: 75%; float: left">
+                    {{moment(task.endTime,'DD-MM-YYYY HH:mm:ss' )
+                    .format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+                </span>
+            </p>
+
+            <br>
+            <v-divider></v-divider>
+            <br>
+
+            <p v-if="task.status === 'Completed' || task.status === 'Complete outdated'">
+                <span style="width: 25%; float: left">Thời gian hoàn thành</span>
+                <span style="width: 75%; float: left">
+                     {{moment(task.completedTime, 'DD-MM-YYYY HH:mm:ss')
+                    .format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+                </span>
+            </p>
+
+            <br v-if="task.status === 'Completed' || task.status === 'Complete outdated'">
+            <v-divider v-if="task.status === 'Completed' || task.status === 'Complete outdated'"></v-divider>
+            <br v-if="task.status === 'Completed' || task.status === 'Complete outdated'">
+
+            <p>
+                <span style="width: 25%; float: left">Thời gian chỉnh sửa gần nhất</span>
+                <span style="width: 75%; float: left; position: relative; bottom: 15px">
+                    {{moment(task.lastModifiedTime,'DD-MM-YYYY HH:mm:ss' )
+                     .format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
+                     <TaskHistory :task="task" ref="taskHistory">
+                        <template #activator="{ on }">
                         <v-btn v-on="on" color="primary">Xem lịch sử chỉnh sửa</v-btn>
-                    </template>
-                </TaskHistory>
+                        </template>
+                     </TaskHistory>
+                </span>
             </p>
+
+            <br>
+            <v-divider></v-divider>
+            <br>
 
             <v-card>
                 <v-card-title>Nội dung chi tiết</v-card-title>
                 <v-divider></v-divider>
-                <v-card-text>
-                    {{task.description || 'Chưa xác định'}}
+                <v-card-text v-html="task.description">
+                    <span v-if="!task.description">Chưa xác định</span>
                 </v-card-text>
             </v-card>
+            <br>
+
+            <v-layout row v-if="(isManager && isChild) || (isAdmin && !isChild)">
+                <TaskForm v-if="isAdmin || isManager" @refresh="getTask" :form="{...form}">
+                    <template #activator="{on}">
+                        <v-btn v-on="on" color="primary">
+                            <v-icon left>mdi-pencil</v-icon>
+                            Chỉnh sửa
+                        </v-btn>
+                    </template>
+                </TaskForm>
+                <v-btn @click="deleteTask" color="error">
+                    <v-icon left>mdi-delete</v-icon>
+                    Xóa
+                </v-btn>
+            </v-layout>
+
             <br>
 
             <v-expansion-panel v-if="!isChild">
@@ -131,11 +269,14 @@
                                         Phòng ban: {{user.department.name || ''}}
                                     </v-list-tile-sub-title>
                                     <v-list-tile-sub-title>
-                                        Chức vụ: {{user.role.name || ''}}
+                                        Chức vụ: {{roleName(user.role.name) || 'Chưa xác định'}}
                                     </v-list-tile-sub-title>
                                 </v-list-tile-content>
                                 <v-list-tile-action>
-                                    <v-btn @click="deleteRelative(user.id)" color="error">Xóa</v-btn>
+                                    <v-btn @click="deleteRelative(user.id)" color="error">
+                                        <v-icon left>mdi-delete</v-icon>
+                                        Xóa
+                                    </v-btn>
                                 </v-list-tile-action>
                             </v-list-tile>
 
@@ -177,7 +318,10 @@
                                 </v-list-tile-sub-title>
                             </v-list-tile-content>
                             <v-list-tile-action>
-                                <v-btn @click="deleteTaskDocument(document.id)" color="error">Xóa</v-btn>
+                                <v-btn @click="deleteTaskDocument(document.id)" color="error">
+                                    <v-icon left>mdi-delete</v-icon>
+                                    Xóa
+                                </v-btn>
                             </v-list-tile-action>
                         </v-list-tile>
                     </v-list>
@@ -194,16 +338,6 @@
             <v-divider></v-divider>
             <br>
 
-            <v-layout row v-if="(isManager && isChild) || (isAdmin && !isChild)">
-                <v-btn @click="deleteTask" color="error">
-                    Xóa
-                </v-btn>
-                <TaskForm v-if="isAdmin || isManager" @refresh="getTask" :form="{...form}">
-                    <template #activator="{on}">
-                        <v-btn v-on="on" color="primary">Chỉnh sửa</v-btn>
-                    </template>
-                </TaskForm>
-            </v-layout>
 
         </div>
     </div>
@@ -242,6 +376,7 @@
                     createdTime: '',
                     completedTime: '',
                     lastModifiedTime: '',
+                    description: '',
                 },
                 taskRelatives: [],
                 documents: [],
@@ -261,7 +396,7 @@
                 return !!this.task.parentTask;
             },
             completionRate: function () {
-                return this.issuesStatus.total === 0 ? 0 : this.issuesStatus.completed / this.issuesStatus.total;
+                return this.issuesStatus.total === 0 ? 1 : this.issuesStatus.completed / this.issuesStatus.total;
             },
             form: function () {
                 return {
@@ -289,6 +424,18 @@
             })
         },
         methods: {
+            roleName(roleName) {
+                switch (roleName) {
+                    case 'ROLE_STAFF':
+                        return 'Nhân viên phòng ban';
+                    case 'ROLE_MANAGER':
+                        return 'Quản lý phòng ban';
+                    case 'ROLE_ADMIN':
+                        return 'Giám đốc';
+                    default:
+                        return '';
+                }
+            },
             refreshIssues() {
                 this.getIssuesStatus();
             },
@@ -296,24 +443,27 @@
                 this.getTaskRelatives();
             },
             getTask: function () {
-                axios.get(`http://localhost:8080/tasks/${this.id}`)
-                    .then(response => {
-                        this.task = response.data;
-                        this.getTaskRelatives();
-                        this.getTaskDocuments();
-                        this.getIssuesStatus();
-                    })
-                    .catch(error => {
-                        if (error.response) {
-                            console.log(error.response.data);
-                        } else {
-                            console.log(error.response);
-                        }
-                    })
-                    .finally(() => {
-                        console.log('detail');
-                        this.loading = false;
-                    })
+                setTimeout(() => {
+                    axios.get(`http://localhost:8080/tasks/${this.id}`)
+                        .then(response => {
+                            this.task = response.data;
+                            this.getTaskRelatives();
+                            this.getTaskDocuments();
+                            this.getIssuesStatus();
+                        })
+                        .catch(error => {
+                            if (error.response) {
+                                console.log(error.response.data);
+                            } else {
+                                console.log(error.response);
+                            }
+                        })
+                        .finally(() => {
+                            console.log('detail');
+                            this.loading = false;
+                        })
+                }, 500);
+
             },
             getIssuesStatus() {
                 axios.get(`http://localhost:8080/tasks/${this.id}/issues/status`)
@@ -451,6 +601,15 @@
                         })
                 }
             },
+            priorityColor(priority) {
+                if (priority < 3)
+                    return 'primary--text';
+                if (priority < 4)
+                    return 'yellow--text';
+                if (priority < 5)
+                    return 'warning--text';
+                return 'red--text';
+            }
         },
     }
 </script>

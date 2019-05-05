@@ -4,9 +4,12 @@
             <slot name="activator" :on="on"></slot>
         </template>
         <v-card>
-            <v-card-title>
-                <span class="headline">FORM TỆP TIN LIÊN QUAN</span>
-            </v-card-title>
+            <v-toolbar dark color="primary">
+                <v-btn icon @click="taskFileDialog = false">
+                    <v-icon>close</v-icon>
+                </v-btn>
+                <v-toolbar-title>{{creating ? 'TẠO MỚI' : 'CHỈNH SỬA'}} TỆP TIN LIÊN QUAN</v-toolbar-title>
+            </v-toolbar>
 
             <v-card-text>
                 <v-container grid-list-md>

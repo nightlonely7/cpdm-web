@@ -45,7 +45,7 @@
                 <span>Không có vấn đề nào</span>
             </div>
 
-            <v-container v-if="issueLoaded">
+            <v-container v-if="issues.length">
                 <template v-for="issue in issues">
                     <div :key="issue.id">
                         <v-card>
@@ -181,14 +181,7 @@
                 issuePanel: null,
                 issueLoaded: false,
                 issueLoading: false,
-                issues: [{
-                    id: 0,
-                    summary: '',
-                    description: '',
-                    completed: false,
-                    creator: {},
-                    lastEditor: {},
-                }],
+                issues: [],
             }
         },
         props: {
