@@ -59,7 +59,8 @@
                 {{moment(task.completedTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
             </p>
             <p>Thời gian chỉnh sửa gần nhất:
-                {{moment(task.lastModifiedTime,'DD-MM-YYYY HH:mm:ss' ).format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
+                {{moment(task.lastModifiedTime,'DD-MM-YYYY HH:mm:ss' ).
+                format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
                 <TaskHistory :task="task" ref="taskHistory">
                     <template #activator="{ on }">
                         <v-btn v-on="on" color="primary">Xem lịch sử chỉnh sửa</v-btn>
@@ -80,7 +81,7 @@
                 <v-expansion-panel-content>
 
                     <template #header>
-                        Danh sách tác vụ phân nhỏ
+                        <span><v-icon left>mdi-file-tree</v-icon>Danh sách tác vụ phân nhỏ</span>
                     </template>
 
                     <TaskTable title="TÁC VỤ PHÂN NHỎ" :getTasksURL="`${this.id}/childs`"></TaskTable>
@@ -102,26 +103,42 @@
                     <v-expansion-panel-content>
 
                         <template #header>
-                            Danh sách người theo dõi
+                            <span><v-icon left>mdi-account-group</v-icon>Danh sách người theo dõi</span>
                         </template>
+                        <div class="text-xs-center" v-if="!taskRelatives || (!!taskRelatives && !taskRelatives.length)">
+                            <span>Không có người liên quan nào</span>
+                        </div>
 
-                        <v-list>
-                            <v-list-tile-content>
-                                <v-list-tile>
-                                    <TaskRelativeForm :task-id="id" @refresh="refreshRelatives">
-                                        <template #activator="{ on }">
-                                            <v-btn v-on="on" color="primary">Thêm người theo dõi</v-btn>
-                                        </template>
-                                    </TaskRelativeForm>
+                        <v-list three-line>
 
-                                </v-list-tile>
-                                <v-list-tile v-for="user in taskRelatives" :key="user.id">
-                                    {{user.displayName}} - {{user.fullName}} - {{user.email}} -
-                                    Phòng ban: {{user.department.name || ''}} -
-                                    Chức vụ: {{user.role.name || ''}}
-                                    <v-btn @click="deleteRelative(user.id)">Xóa</v-btn>
-                                </v-list-tile>
-                            </v-list-tile-content>
+                            <v-list-tile>
+                                <TaskRelativeForm :task-id="id" @refresh="refreshRelatives">
+                                    <template #activator="{ on }">
+                                        <v-btn v-on="on" color="primary">
+                                            <v-icon left>add</v-icon>
+                                            Thêm người theo dõi
+                                        </v-btn>
+                                    </template>
+                                </TaskRelativeForm>
+                            </v-list-tile>
+
+                            <v-list-tile v-for="user in taskRelatives" :key="user.id">
+                                <v-list-tile-content>
+                                    <v-list-tile-title>
+                                        {{user.displayName}} - {{user.fullName}} - {{user.email}}
+                                    </v-list-tile-title>
+                                    <v-list-tile-sub-title>
+                                        Phòng ban: {{user.department.name || ''}}
+                                    </v-list-tile-sub-title>
+                                    <v-list-tile-sub-title>
+                                        Chức vụ: {{user.role.name || ''}}
+                                    </v-list-tile-sub-title>
+                                </v-list-tile-content>
+                                <v-list-tile-action>
+                                    <v-btn @click="deleteRelative(user.id)" color="error">Xóa</v-btn>
+                                </v-list-tile-action>
+                            </v-list-tile>
+
                         </v-list>
                     </v-expansion-panel-content>
                 </v-expansion-panel>
@@ -134,29 +151,33 @@
             <v-expansion-panel>
                 <v-expansion-panel-content>
                     <template #header>
-                        Danh sách tài liệu liên quan
+                        <span><v-icon left>mdi-file-document</v-icon>Danh sách tài liệu liên quan</span>
                     </template>
                     <div class="text-xs-center" v-if="!documents || (!!documents && !documents.length)">
                         <span>Không có tài liệu nào</span>
                     </div>
                     <v-list three-line>
                         <v-list-tile v-if="task.creator.id === userId">
-                            <TaskDocumentForm :task="task" :task-id="id" :project-id="task.project.id" @refresh="getTaskDocuments">
+                            <TaskDocumentForm :task="task" :task-id="id" :project-id="task.project.id"
+                                              @refresh="getTaskDocuments">
                                 <template #activator="{on}">
-                                    <v-btn v-on="on" color="primary">Thêm tài liệu liên quan</v-btn>
+                                    <v-btn v-on="on" color="primary">
+                                        <v-icon left>add</v-icon>
+                                        Thêm tài liệu liên quan
+                                    </v-btn>
                                 </template>
                             </TaskDocumentForm>
                         </v-list-tile>
                         <v-list-tile v-for="document in documents" :key="document.id">
                             <v-list-tile-content>
-                                <v-list-tile-title>{{ document.title }}</v-list-tile-title>
-                                <v-list-tile-sub-title>{{ document.summary }}</v-list-tile-sub-title>
+                                <v-list-tile-title>Tiêu đề: {{ document.title }}</v-list-tile-title>
+                                <v-list-tile-sub-title>Tổng quát: {{ document.summary }}</v-list-tile-sub-title>
                                 <v-list-tile-sub-title>
                                     <router-link :to="`/documents/${document.id}`">Đường dẫn tới tài liệu</router-link>
                                 </v-list-tile-sub-title>
                             </v-list-tile-content>
                             <v-list-tile-action>
-                                <v-btn @click="deleteTaskDocument(document.id)">Xóa</v-btn>
+                                <v-btn @click="deleteTaskDocument(document.id)" color="error">Xóa</v-btn>
                             </v-list-tile-action>
                         </v-list-tile>
                     </v-list>
@@ -316,12 +337,12 @@
                 if (confirm('Xóa?')) {
                     axios.delete(`http://localhost:8080/tasks/${this.id}`)
                         .then(() => {
-                            var title = 'Một tác vụ đã hủy ' + this.displayName;
-                            var detail = this.task.title;
-                            var url = '/tasks/' + this.id;
-                            var users = [];
-                            users.push(this.task.executor);
-                            pushNotif(title,detail,url,users);
+                                var title = 'Một tác vụ đã hủy ' + this.displayName;
+                                var detail = this.task.title;
+                                var url = '/tasks/' + this.id;
+                                var users = [];
+                                users.push(this.task.executor);
+                                pushNotif(title, detail, url, users);
                                 this.$router.push("/tasks");
                             }
                         )
@@ -336,7 +357,7 @@
                             var url = '/tasks/' + this.id;
                             var users = [];
                             users.push(this.task.creator);
-                            pushNotif(title,detail,url,users);
+                            pushNotif(title, detail, url, users);
                             this.getTask();
                         })
                         .catch(error => {
@@ -356,13 +377,12 @@
                             var detail = this.task.title;
                             var url = '/tasks/' + this.id;
                             var users = [];
-                            if(this.displayName === this.task.executor.displayName){
+                            if (this.displayName === this.task.executor.displayName) {
                                 users.push(this.task.cretor);
-                            }
-                            else{
+                            } else {
                                 users.push(this.task.executor);
                             }
-                            pushNotif(title,detail,url,users);
+                            pushNotif(title, detail, url, users);
                             this.refreshIssues();
                         })
                         .catch(error => {
@@ -383,7 +403,7 @@
                             var url = '/tasks/' + this.id;
                             var users = [];
                             users.push(this.task.cretor);
-                            pushNotif(title,detail,url,users);
+                            pushNotif(title, detail, url, users);
                             this.refreshIssues();
                         })
                         .catch(error => {
@@ -419,7 +439,7 @@
                             var url = '/tasks/' + this.id;
                             var users = [];
                             users.push(this.task.executor);
-                            pushNotif(title,detail,url,users);
+                            pushNotif(title, detail, url, users);
                             this.getTaskDocuments();
                         })
                         .catch(error => {

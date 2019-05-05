@@ -39,6 +39,7 @@
                 >
                     <td class="text-xs-left">{{props.item.name}}</td>
                     <td class="text-xs-left">{{props.item.alias}}</td>
+                    <td class="text-xs-left">{{props.item.description}}</td>
                 </router-link>
             </template>
         </v-data-table>
@@ -65,7 +66,8 @@
                     loading: false,
                     headers: [
                         {text: 'Tên dự án', value: 'name'},
-                        {text: 'Mã dự án', value: 'alias'}
+                        {text: 'Mã dự án', value: 'alias'},
+                        {text: 'Mô tả', value: 'description'}
                     ]
                 },
                 projects: []

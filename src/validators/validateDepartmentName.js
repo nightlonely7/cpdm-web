@@ -14,7 +14,8 @@ async function checkDepNameExisted(value, obj) {
     let isDepNameExisted = true;
     let currentName = obj[0];
     let isEdit = obj[1];
-    if(isEdit && currentName === value){
+    console.log(isEdit + "-" + currentName + "-" + value);
+    if(!isEdit && currentName === value){
         return true;
     }
     try {

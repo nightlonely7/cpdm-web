@@ -3,7 +3,7 @@
         <v-expansion-panel-content>
 
             <template #header>
-                Danh sách vấn đề
+                <span><v-icon left>mdi-format-list-checks</v-icon>Danh sách vấn đề</span>
             </template>
 
             <v-toolbar flat dense>
@@ -14,7 +14,9 @@
                         <span>Tải lại</span>
                     </v-btn>
                     <v-divider vertical inset></v-divider>
-                    <TaskIssueForm :task="{...task}" @refresh="refreshIssues" creating>
+                    <TaskIssueForm :task="{...task}" @refresh="refreshIssues" creating
+                                   v-if="(task.status === 'Waiting'|| isTaskRunning)
+                                    && (task.creator.id === userId || task.executor.id === userId)">
                         <template #activator="{ on }">
                             <v-btn v-on="on" flat color="primary">
                                 <v-icon left>add</v-icon>
@@ -22,7 +24,9 @@
                             </v-btn>
                         </template>
                     </TaskIssueForm>
-                    <v-divider vertical inset></v-divider>
+                    <v-divider vertical inset
+                               v-if="(task.status === 'Waiting'|| isTaskRunning)
+                                    && (task.creator.id === userId || task.executor.id === userId)"></v-divider>
                 </v-toolbar-items>
             </v-toolbar>
 
@@ -41,7 +45,7 @@
                 <span>Không có vấn đề nào</span>
             </div>
 
-            <v-container v-if="issues.length">
+            <v-container v-if="issueLoaded">
                 <template v-for="issue in issues">
                     <div :key="issue.id">
                         <v-card>
@@ -71,6 +75,53 @@
                                     {{issue.completed ? 'Hoàn tất' : 'Chưa hoàn tất'}}
                                 </v-chip>
                                     </span>
+                                </p>
+
+                                <br>
+                                <v-divider></v-divider>
+                                <br>
+
+                                <template v-if="issue.completedTime">
+                                    <p>
+                                        <span style="width: 25%; float: left">Thời gian hoàn thành</span>
+                                        <span style="width: 75%; float: left">{{moment(issue.completedTime).format('DD/MM/YYYY HH:mm:ss')}}</span>
+                                    </p>
+
+                                    <br>
+                                    <v-divider></v-divider>
+                                    <br>
+                                </template>
+
+                                <p>
+                                    <span style="width: 25%; float: left">Người tạo</span>
+                                    <span style="width: 75%; float: left">{{issue.creator.displayName}} - {{issue.creator.email}}</span>
+                                </p>
+
+                                <br>
+                                <v-divider></v-divider>
+                                <br>
+
+                                <p>
+                                    <span style="width: 25%; float: left">Thời gian tạo</span>
+                                    <span style="width: 75%; float: left">{{moment(issue.createdTime).format('DD/MM/YYYY HH:mm:ss')}}</span>
+                                </p>
+
+                                <br>
+                                <v-divider></v-divider>
+                                <br>
+
+                                <p>
+                                    <span style="width: 25%; float: left">Người chỉnh sửa gần nhất</span>
+                                    <span style="width: 75%; float: left">{{issue.lastEditor.displayName}} - {{issue.lastEditor.email}}</span>
+                                </p>
+
+                                <br>
+                                <v-divider></v-divider>
+                                <br>
+
+                                <p>
+                                    <span style="width: 25%; float: left">Thời gian chỉnh sửa gần nhất</span>
+                                    <span style="width: 75%; float: left">{{moment(issue.lastModifiedTime).format('DD/MM/YYYY HH:mm:ss')}}</span>
                                 </p>
 
                                 <br>
@@ -111,54 +162,7 @@
 
             <br v-if="!issues.length">
 
-            <v-list three-line>
-                <v-list-tile
-                        v-if="(task.status === 'Waiting'|| isTaskRunning)
-                                    && (task.creator.id === userId || task.executor.id === userId)">
-                    <v-list-tile-content>
-                        <TaskIssueForm @refresh="refreshIssues" :task="{...task}">
-                            <template #activator="{ on }">
-                                <v-btn v-on="on" color="primary">Thêm vấn đề</v-btn>
-                            </template>
-                        </TaskIssueForm>
-                    </v-list-tile-content>
 
-                </v-list-tile>
-                <template v-for="issue in issues">
-                    <v-list-tile :key="issue.id">
-                        <v-list-tile-content>
-                            <v-list-tile-title>{{issue.summary}}</v-list-tile-title>
-                            <v-list-tile-sub-title>{{issue.description}}</v-list-tile-sub-title>
-                            <v-list-tile-sub-title>
-                                <span>Trạng thái :</span>
-                                <v-chip :color="`${issue.completed ? 'success' : ''}`">
-                                    {{issue.completed ? 'Hoàn tất' : 'Chưa hoàn tất'}}
-                                </v-chip>
-                            </v-list-tile-sub-title>
-                        </v-list-tile-content>
-                        <v-list-tile-action-text>
-                            <v-btn v-if="!issue.completed && task.status !== 'Waiting' && task.executor.id === userId"
-                                   @click="completeIssue(issue.id)" color="success">Báo cáo hoàn tất
-                            </v-btn>
-                        </v-list-tile-action-text>
-                        <v-list-tile-action-text
-                                v-if="(task.creator.id === userId || task.executor.id === userId)">
-                            <TaskIssueForm @refresh="refreshIssues" :task={...task} :form="{...issue}"
-                                           v-if="!issue.completed"
-                            >
-                                <template #activator="{ on }">
-                                    <v-btn v-on="on" color="primary">Sửa</v-btn>
-                                </template>
-                            </TaskIssueForm>
-                        </v-list-tile-action-text>
-                        <v-list-tile-action-text>
-                            <v-btn v-if="!issue.completed && (task.creator.id === userId || task.executor.id === userId)"
-                                   color="error" @click="deleteIssue(issue.id)">Xóa
-                            </v-btn>
-                        </v-list-tile-action-text>
-                    </v-list-tile>
-                </template>
-            </v-list>
         </v-expansion-panel-content>
     </v-expansion-panel>
 </template>
@@ -182,6 +186,8 @@
                     summary: '',
                     description: '',
                     completed: false,
+                    creator: {},
+                    lastEditor: {},
                 }],
             }
         },

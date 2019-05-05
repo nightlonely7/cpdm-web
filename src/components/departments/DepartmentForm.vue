@@ -40,6 +40,16 @@
                                     ></v-text-field>
                                     <p style="color: red">{{ errors.first('alias') }}</p>
                                 </v-flex>
+                                <v-flex md12 sm12>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <span class="font-weight-bold">Nội dung chi tiết:</span>
+                                    <br>
+                                    <br>
+                                    <ckeditor style="height: 500px" :editor="editor" v-model="departmentForm.description"
+                                              :config="editorConfig"></ckeditor>
+                                </v-flex>
                             </v-layout>
                         </v-container>
                     </v-form>
@@ -60,8 +70,10 @@
 </template>
 
 <script>
-    import axios from 'axios'
+    import axios from 'axios';
     import 'vee-validate';
+    import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+    import '@ckeditor/ckeditor5-build-classic/build/translations/vi';
 
     export default {
         name: "DepartmentForm",
@@ -80,18 +92,18 @@
                 serverErrorText: 'Lưu thông tin thất bại!',
                 timeout: 10000,
                 dialog: false,
-                departmentName: '',
-                departmentAlias: '',
+                editor: ClassicEditor,
+                editorConfig: {
+                    language: 'vi',
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList',
+                        'numberedList', 'blockQuote', 'undo', 'redo'],
+                    removePlugins: ['imageUpload'],
+                },
             }
         },
         computed: {
         },
         mounted(){
-            if(this.departmentForm.id !== 0){
-                this.departmentName = this.departmentForm.name;
-                this.departmentAlias = this.departmentForm.alias;
-            }
-            console.log(this.departmentForm);
         },
         props: {
             departmentForm: {
@@ -108,6 +120,18 @@
                 type: Boolean,
                 default: function () {
                     return false;
+                }
+            },
+            departmentName: {
+                type: String,
+                default: function () {
+                    return '';
+                }
+            },
+            departmentAlias: {
+                type: String,
+                default: function () {
+                    return '';
                 }
             }
         },
@@ -141,10 +165,12 @@
                     )
                 }
             }
-        }
+        },
     }
 </script>
 
 <style scoped>
-
+    .ck-editor__editable {
+        min-height: 500px;
+    }
 </style>

@@ -14,7 +14,7 @@ async function checkProjectAliasExisted(value, obj) {
     let isProjectAliasExisted = true;
     let currentAlias = obj[0];
     let isEdit = obj[1];
-    if(isEdit && currentAlias === value){
+    if(!isEdit && currentAlias === value){
         return true;
     }
     try {

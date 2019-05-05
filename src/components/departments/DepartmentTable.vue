@@ -30,6 +30,7 @@
                 >
                     <td class="text-xs-left">{{props.item.name}}</td>
                     <td class="text-xs-left">{{props.item.alias}}</td>
+                    <td class="text-xs-left">{{props.item.description}}</td>
                 </router-link>
             </template>
         </v-data-table>
@@ -56,7 +57,8 @@
                     loading: false,
                     headers: [
                         {text: 'Tên phòng ban', value: 'name'},
-                        {text: 'Mã phòng ban', value: 'alias'}
+                        {text: 'Mã phòng ban', value: 'alias'},
+                        {text: 'Mô tả', value: 'description'}
                     ]
                 },
                 departments: []

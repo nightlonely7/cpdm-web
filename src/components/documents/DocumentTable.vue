@@ -11,11 +11,11 @@
         <v-toolbar flat color="white">
             <v-toolbar-title class="animated bounce delay-1s">Quản lý tài liệu</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
-            <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
+            <v-btn color="primary" @click="refresh()"><v-icon left>mdi-cached</v-icon>Tải lại</v-btn>
             <v-spacer></v-spacer>
-            <DocumentForm @refresh="refresh" v-if="isAdmin" document-title="" :creating="true">
+            <DocumentForm @refresh="refresh" v-if="isAdmin" document-title="" creating>
                 <template #activator="{on}">
-                    <v-btn v-on="on" color="primary">Tạo mới tài liệu</v-btn>
+                    <v-btn v-on="on" color="primary"><v-icon left>add</v-icon>Tạo mới tài liệu</v-btn>
                 </template>
             </DocumentForm>
         </v-toolbar>
@@ -45,7 +45,6 @@
                     <td class="text-xs-left">{{moment(item.createdTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
                     <td class="text-xs-left">{{moment(item.startTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
                     <td class="text-xs-left">{{moment(item.endTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
-                    <td class="text-xs-left">{{item.status}}</td>
                 </router-link>
             </template>
         </v-data-table>
@@ -93,7 +92,13 @@
             }),
             ...mapState('DOCUMENT_STORE', {
                 titleSearchValue: state => state.titleSearchValue,
-                summarySearchValue: state => state.summarySearchValue
+                summarySearchValue: state => state.summarySearchValue,
+                createdTimeFromSearchValue: state => state.createdTimeFromSearchValue,
+                createdTimeToSearchValue: state => state.createdTimeToSearchValue,
+                startTimeFromSearchValue: state => state.startTimeFromSearchValue,
+                startTimeToSearchValue: state => state.startTimeToSearchValue,
+                endTimeFromSearchValue: state => state.endTimeFromSearchValue,
+                endTimeToSearchValue: state => state.endTimeToSearchValue,
             }),
         },
         mounted() {
@@ -111,19 +116,26 @@
             getDocuments: function () {
                 this.table.loading = true;
                 // const url = this.isAdmin ? `http://localhost:8080/documents` : `http://localhost:8080/documents/search/relatives`;
-                const url = "http://localhost:8080/documents/search/titleAndSummary";
+                const url = "http://localhost:8080/documents/search/creates";
                 const method = 'GET';
                 const params = {
                     page: this.pagination.page - 1,
                     size: this.pagination.rowsPerPage,
                     sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
                     title: this.titleSearchValue,
-                    summary: this.summarySearchValue
+                    summary: this.summarySearchValue,
+                    createdTimeFrom: this.createdTimeFromSearchValue,
+                    createdTimeTo: this.createdTimeToSearchValue,
+                    startTimeFrom: this.startTimeFromSearchValue,
+                    startTimeTo: this.startTimeToSearchValue,
+                    endTimeFrom: this.endTimeFromSearchValue,
+                    endTimeTo: this.endTimeToSearchValue,
                 };
                 axios({url, method, params})
                     .then(response => {
                         this.documents = response.data.content;
                         this.pagination.totalItems = response.data.totalElements;
+                        console.log(response.data.content);
                     })
                     .catch(error => {
                         this.alert = 'Không thể truy cập';
@@ -146,6 +158,30 @@
                 this.debouncedGetDocuments();
             },
             summarySearchValue: function () {
+                this.debouncedGetDocuments();
+            },
+            createdTimeFromSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetDocuments();
+            },
+            createdTimeToSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetDocuments();
+            },
+            startTimeFromSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetDocuments();
+            },
+            startTimeToSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetDocuments();
+            },
+            endTimeFromSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetDocuments();
+            },
+            endTimeToSearchValue: function () {
+                this.pagination.page = 1;
                 this.debouncedGetDocuments();
             },
         },

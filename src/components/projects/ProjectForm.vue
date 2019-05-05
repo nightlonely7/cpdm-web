@@ -41,6 +41,16 @@
                                     ></v-text-field>
                                     <p style="color: red">{{ errors.first('alias') }}</p>
                                 </v-flex>
+                                <v-flex md12 sm12>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <span class="font-weight-bold">Nội dung chi tiết:</span>
+                                    <br>
+                                    <br>
+                                    <ckeditor style="height: 500px" :editor="editor" v-model="projectForm.description"
+                                              :config="editorConfig"></ckeditor>
+                                </v-flex>
                             </v-layout>
                         </v-container>
                     </v-form>
@@ -48,11 +58,11 @@
                 <v-card-actions>
                     <v-btn color="secondary" @click="close">
                         <v-icon left>clear</v-icon>
-                        Cancel
+                        Hủy
                     </v-btn>
                     <v-btn color="primary" @click="save">
                         <v-icon left>done</v-icon>
-                        Save
+                        Lưu
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -66,6 +76,8 @@
     import 'vee-validate'
     import _ from 'lodash'
     import moment from 'moment'
+    import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+    import '@ckeditor/ckeditor5-build-classic/build/translations/vi';
 
     export default {
         name: "ProjectForm",
@@ -82,8 +94,13 @@
                 serverErrorText: 'Lưu thông tin thất bại!',
                 timeout: 10000,
                 dialog: false,
-                projectName: '',
-                projectAlias: ''
+                editor: ClassicEditor,
+                editorConfig: {
+                    language: 'vi',
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList',
+                        'numberedList', 'blockQuote', 'undo', 'redo'],
+                    removePlugins: ['imageUpload'],
+                },
             }
         },
         computed: {
@@ -95,7 +112,8 @@
                     return {
                         id: 0,
                         name: '',
-                        alias: ''
+                        alias: '',
+                        description: ''
                     }
                 }
             },
@@ -104,13 +122,22 @@
                 default: function () {
                     return false;
                 }
+            },
+            projectName: {
+                type: String,
+                default: function () {
+                    return '';
+                }
+            },
+            projectAlias: {
+                type: String,
+                default: function () {
+                    return '';
+                }
             }
         },
         mounted() {
-            if(this.projectForm.id !== 0){
-                this.projectName = this.projectForm.name;
-                this.projectAlias = this.projectForm.alias;
-            }
+
         },
         methods: {
             close: function () {

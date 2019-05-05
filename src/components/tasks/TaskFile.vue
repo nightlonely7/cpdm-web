@@ -3,9 +3,7 @@
         <v-expansion-panel-content>
 
             <template #header>
-                <span>
-                <v-icon left>mdi-paperclip</v-icon>
-                Danh sách tệp tin</span>
+                <span><v-icon left>mdi-paperclip</v-icon>Danh sách tệp tin</span>
             </template>
 
             <v-toolbar flat dense>
@@ -43,8 +41,9 @@
             </div>
 
             <v-container v-if="taskFiles.length">
-                <template v-for="taskFile in taskFiles">
+                <template v-for="(taskFile, index) in taskFiles">
                     <div :key="taskFile.id">
+                        <br v-if="index !== 0">
                         <v-card>
                             <v-card-text>
                                 <p>
@@ -153,7 +152,6 @@
                                 </v-flex>
                             </v-card-actions>
                         </v-card>
-                        <br>
                     </div>
                 </template>
             </v-container>

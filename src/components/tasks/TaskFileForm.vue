@@ -5,23 +5,13 @@
         </template>
         <v-card>
             <v-card-title>
-                <span class="headline">FORM TÀI LIỆU LIÊN QUAN</span>
+                <span class="headline">FORM TỆP TIN LIÊN QUAN</span>
             </v-card-title>
 
             <v-card-text>
                 <v-container grid-list-md>
                     <v-layout wrap>
-                        <v-flex xs12>
-                            <v-text-field v-model="form.filename"
-                                          label="Tên tệp"
-                            ></v-text-field>
-                        </v-flex>
-                        <v-flex xs12>
-                            <v-textarea v-model="form.description"
-                                        label="Mô tả"
-                            ></v-textarea>
-                        </v-flex>
-                        <v-flex xs12>
+                        <v-flex xs12 v-if="taskFileDialog">
                             <UploadButton :fileChangedCallback="handleFileUpload"
                                           title="Chọn tệp tin"
                                           light
@@ -37,6 +27,16 @@
                         </v-flex>
                         <v-flex xs12>
                             <v-alert dismissible type="error" v-model="taskFileAlert">Tải lên thất bại</v-alert>
+                        </v-flex>
+                        <v-flex xs12>
+                            <v-text-field v-model="form.filename"
+                                          label="Tên tệp"
+                            ></v-text-field>
+                        </v-flex>
+                        <v-flex xs12>
+                            <v-textarea v-model="form.description"
+                                        label="Mô tả"
+                            ></v-textarea>
                         </v-flex>
 
                     </v-layout>
@@ -124,7 +124,6 @@
                 if (file) {
                     this.file = file;
                     this.form.filename = file.name.substring(0, file.name.lastIndexOf('.'));
-                    console.log(this.file);
                 }
             },
         },

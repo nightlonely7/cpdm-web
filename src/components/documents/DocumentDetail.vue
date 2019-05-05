@@ -1,19 +1,66 @@
 <template>
     <div>
-        <v-btn @click="goBack" color="primary">Trở về</v-btn>
+        <v-btn @click="goBack" color="primary">
+            <v-icon left>mdi-keyboard-backspace</v-icon>
+            Trở về
+        </v-btn>
         <br/><br/>
-        <template v-if="isServerError">
-            <p style="color: blue">Tên tài liệu: {{document.title || 'Chưa xác định'}}</p>
-            <p style="color: blue">Tóm tắt tài liệu: {{document.summary || 'Chưa xác định'}}</p>
-            <p style="color: blue">Mô tả:</p>
-            <span v-html="document.description" style="color: blue"></span>
-            <p style="color: blue">Tên dự án: {{document.project.name || 'Chưa xác định'}}</p>
-            <p style="color: blue">Thời gian tạo: {{moment(document.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
-            <p style="color: blue">Thời gian hiệu lực: {{moment(document.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
-            <p style="color: blue">Thời gian hết hạn: {{moment(document.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</p>
-            <DocumentForm :form="{...document}" :creating="true" :document-title="`${document.title}`">
+        <template v-if="loaded">
+            <v-card-text>
+                <p>
+                    <span style="width: 25%; float: left">Tên tài liệu</span>
+                    <span style="width: 75%; float: left"><b>{{document.title || 'Chưa xác định'}}</b></span>
+                </p>
+                <br>
+                <v-divider></v-divider>
+                <br>
+                <p>
+                    <span style="width: 25%; float: left">Tóm tắt tài liệu</span>
+                    <span style="width: 75%; float: left"><b>{{document.summary || 'Chưa xác định'}}</b></span>
+                </p>
+                <br>
+                <v-divider></v-divider>
+                <br>
+                <p>
+                    <span style="width: 25%; float: left">Thời gian tạo</span>
+                    <span style="width: 75%; float: left"><b>{{moment(document.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</b></span>
+                </p>
+                <br>
+                <v-divider></v-divider>
+                <br>
+                <p>
+                    <span style="width: 25%; float: left">Thời gian hiệu lực</span>
+                    <span style="width: 75%; float: left"><b>{{moment(document.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</b></span>
+                </p>
+                <br>
+                <v-divider></v-divider>
+                <br>
+                <p>
+                    <span style="width: 25%; float: left">Thời gian hết hạn</span>
+                    <span style="width: 75%; float: left"><b>{{moment(document.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</b></span>
+                </p>
+            </v-card-text>
+            <br/>
+            <v-card>
+                <v-card-title>Nội dung chi tiết</v-card-title>
+                <v-divider></v-divider>
+                <v-card-text>
+                    {{document.description || 'Chưa xác định'}}
+                </v-card-text>
+            </v-card>
+            <br>
+            <p>Thời gian chỉnh sửa gần nhất:
+                {{moment(document.lastModifiedTime,'DD-MM-YYYY HH:mm:ss' )
+                .format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
+                <DocumentHistory :document="document" ref="documentHistory">
+                    <template #activator="{ on }">
+                        <v-btn v-on="on" color="primary">Xem lịch sử chỉnh sửa</v-btn>
+                    </template>
+                </DocumentHistory>
+            </p>
+            <DocumentForm :form="{...form}" @refresh="getDocumentDetail(id)" :document-title="`${document.title}`">
                 <template #activator="{on}">
-                    <v-btn v-on="on" color="primary">Sửa</v-btn>
+                    <v-btn v-on="on" color="primary">Chỉnh Sửa</v-btn>
                 </template>
             </DocumentForm>
             <v-btn @click="deleteDocument" color="error">Xóa</v-btn>
@@ -22,14 +69,6 @@
             <h3 style="color:red;">Không tìm thấy tài liệu cần tìm!</h3>
         </template>
         <DocumentFile :document="{...document}"></DocumentFile>
-        <p>Thời gian chỉnh sửa gần nhất:
-            {{moment(document.lastModifiedTime,'DD-MM-YYYY HH:mm:ss' ).format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
-            <DocumentHistory :document="document" ref="documentHistory">
-                <template #activator="{ on }">
-                    <v-btn v-on="on" color="primary">Xem lịch sử chỉnh sửa</v-btn>
-                </template>
-            </DocumentHistory>
-        </p>
         <br>
     </div>
 </template>
@@ -37,15 +76,15 @@
 <script>
     import axios from 'axios';
     import 'vuex';
-    import 'moment';
     import DocumentForm from "./DocumentForm";
     import DocumentFile from "./DocumentFile";
     import DocumentHistory from "./DocumentHistory";
+    import moment from 'moment';
 
     export default {
         name: "DocumentDetail",
         components: {DocumentHistory, DocumentFile, DocumentForm},
-        data(){
+        data() {
             return {
                 document: {
                     title: '',
@@ -58,11 +97,19 @@
                     endTime: '',
                     lastModifiedTime: '',
                 },
-                isServerError: true,
+                loaded: false,
             }
         },
         computed: {
-
+            form: function () {
+                return {
+                    ...this.document,
+                    startDate: moment(this.document.startTime, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD'),
+                    startTime: moment(this.document.startTime, 'DD-MM-YYYY HH:mm:ss').format('HH:mm'),
+                    endDate: moment(this.document.endTime, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD'),
+                    endTime: moment(this.document.endTime, 'DD-MM-YYYY HH:mm:ss').format('HH:mm'),
+                };
+            },
         },
         props: {
             id: Number
@@ -76,12 +123,12 @@
                     .then(
                         response => {
                             this.document = response.data;
+                            this.loaded = true;
                         }
                     )
                     .catch(
                         err => {
                             console.log(err);
-                            this.isServerError = false;
                         }
                     );
             },
@@ -93,14 +140,14 @@
                                 this.$router.push("/documents");
                             }
                         ).catch(
-                            err => {
-                                console.log(err);
-                            }
+                        err => {
+                            console.log(err);
+                        }
                     )
                 }
             },
             goBack: function () {
-                this.$router.push('/documents');
+                this.$router.back();
             }
         },
     }
