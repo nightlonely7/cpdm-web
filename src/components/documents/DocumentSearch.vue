@@ -4,17 +4,20 @@
             <v-card-text v-if="showing">
                 <v-form ref="form">
                     <v-text-field v-model="titleSearchValue"
-                                  label="Tìm theo tên phòng ban"
+                                  label="Tìm theo tên tài liệu"
                                   :rules="titleSearchRules"
                                   validation-on-blur
                                   clearable
                     ></v-text-field>
                     <v-text-field v-model="summarySearchValue"
-                                  label="Tìm theo mã phòng ban"
+                                  label="Tìm theo tóm tắt tài liệu"
                                   :rules="summarySearchRules"
                                   validation-on-blur
                                   clearable
                     ></v-text-field>
+                    <DocumentSearchCreatedTime ref="documentSearchCreatedTime"></DocumentSearchCreatedTime>
+                    <DocumentSearchStartTime ref="documentSearchStartTime"></DocumentSearchStartTime>
+                    <DocumentSearchEndTime ref="documentSearchEndTime"></DocumentSearchEndTime>
                 </v-form>
             </v-card-text>
         </v-card>
@@ -22,8 +25,13 @@
 </template>
 
 <script>
+    import DocumentSearchCreatedTime from "./DocumentSearchCreatedTime";
+    import DocumentSearchStartTime from "./DocumentSearchStartTime";
+    import DocumentSearchEndTime from "./DocumentSearchEndTime";
+
     export default {
         name: "DocumentSearch",
+        components: {DocumentSearchEndTime, DocumentSearchStartTime, DocumentSearchCreatedTime},
         data() {
             return {
                 showing: true,
@@ -68,9 +76,16 @@
                         this.$refs.form.resetValidation();
                     }
                 }
-            }
+            },
         },
-
+        methods: {
+            reset() {
+                this.$refs.taskSearchStartTime.reset();
+                this.$refs.taskSearchCreatedTime.reset();
+                this.$refs.taskSearchEndTime.reset();
+                this.$store.commit('DOCUMENT_STORE/RESET_SEARCH');
+            },
+        }
     }
 </script>
 

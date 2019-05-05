@@ -13,7 +13,7 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh()"><v-icon left>mdi-cached</v-icon>Tải lại</v-btn>
             <v-spacer></v-spacer>
-            <DocumentForm @refresh="refresh" v-if="isAdmin" document-title="" :creating="true">
+            <DocumentForm @refresh="refresh" v-if="isAdmin" document-title="" creating>
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary"><v-icon left>add</v-icon>Tạo mới tài liệu</v-btn>
                 </template>
@@ -92,7 +92,13 @@
             }),
             ...mapState('DOCUMENT_STORE', {
                 titleSearchValue: state => state.titleSearchValue,
-                summarySearchValue: state => state.summarySearchValue
+                summarySearchValue: state => state.summarySearchValue,
+                createdTimeFromSearchValue: state => state.createdTimeFromSearchValue,
+                createdTimeToSearchValue: state => state.createdTimeToSearchValue,
+                startTimeFromSearchValue: state => state.startTimeFromSearchValue,
+                startTimeToSearchValue: state => state.startTimeToSearchValue,
+                endTimeFromSearchValue: state => state.endTimeFromSearchValue,
+                endTimeToSearchValue: state => state.endTimeToSearchValue,
             }),
         },
         mounted() {
@@ -117,7 +123,13 @@
                     size: this.pagination.rowsPerPage,
                     sort: `${this.pagination.sortBy},${this.pagination.descending ? 'desc' : 'asc'}`,
                     title: this.titleSearchValue,
-                    summary: this.summarySearchValue
+                    summary: this.summarySearchValue,
+                    createdTimeFrom: this.createdTimeFromSearchValue,
+                    createdTimeTo: this.createdTimeToSearchValue,
+                    startTimeFrom: this.startTimeFromSearchValue,
+                    startTimeTo: this.startTimeToSearchValue,
+                    endTimeFrom: this.endTimeFromSearchValue,
+                    endTimeTo: this.endTimeToSearchValue,
                 };
                 axios({url, method, params})
                     .then(response => {
@@ -145,6 +157,30 @@
                 this.debouncedGetDocuments();
             },
             summarySearchValue: function () {
+                this.debouncedGetDocuments();
+            },
+            createdTimeFromSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetDocuments();
+            },
+            createdTimeToSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetDocuments();
+            },
+            startTimeFromSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetDocuments();
+            },
+            startTimeToSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetDocuments();
+            },
+            endTimeFromSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetDocuments();
+            },
+            endTimeToSearchValue: function () {
+                this.pagination.page = 1;
                 this.debouncedGetDocuments();
             },
         },

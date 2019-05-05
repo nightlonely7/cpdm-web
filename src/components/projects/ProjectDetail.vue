@@ -2,8 +2,24 @@
     <div>
         <v-btn @click="goBack" color="primary">Trở về</v-btn>
         <br/><br/>
-        <p style="color: blue">Tên dự án: {{project.name || 'Chưa xác định'}}</p>
-        <p style="color: blue">Mã dự án: {{project.alias || 'Chưa xác định'}}</p>
+        <v-card>
+            <v-card-text>
+                <p>
+                    <span style="width: 25%; float: left">Tên dự án</span>
+                    <span style="width: 75%; float: left"><b>{{project.name || 'Chưa xác định'}}</b></span>
+                </p>
+                <br><v-divider></v-divider><br>
+                <p>
+                    <span style="width: 25%; float: left">Mã dự án</span>
+                    <span style="width: 75%; float: left"><b>{{project.alias || 'Chưa xác định'}}</b></span>
+                </p>
+                <br><v-divider></v-divider><br>
+                <p>
+                    <span style="width: 25%; float: left">Mô tả</span>
+                    <span style="width: 75%; float: left"><b><span v-html="project.description || 'Chưa xác định'"></span></b></span>
+                </p>
+            </v-card-text>
+        </v-card>
         <v-list three-line class="elevation-1">
             <v-subheader>
                 <h4>Danh sách tác vụ</h4>
@@ -66,7 +82,7 @@
                 </v-list-tile-content>
             </v-list-tile>
         </v-list>
-        <ProjectForm :project-form="{...project}" @refresh="getProjectDetail(id)">
+        <ProjectForm :project-form="{...project}" @refresh="getProjectDetail(id)" creating>
             <template #activator="{on}">
                 <v-btn v-on="on" color="primary">Sửa</v-btn>
             </template>
@@ -88,7 +104,8 @@
                 project: {
                     id: 0,
                     name: '',
-                    alias: ''
+                    alias: '',
+                    description: ''
                 },
                 taskIssues: [],
                 documents: []

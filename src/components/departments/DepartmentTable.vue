@@ -30,6 +30,9 @@
                 >
                     <td class="text-xs-left">{{props.item.name}}</td>
                     <td class="text-xs-left">{{props.item.alias}}</td>
+                    <td class="text-xs-left">
+                        <span v-html="props.item.description || 'Chưa xác định'"></span>
+                    </td>
                 </router-link>
             </template>
         </v-data-table>

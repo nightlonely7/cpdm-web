@@ -41,6 +41,16 @@
                                     ></v-text-field>
                                     <p style="color: red">{{ errors.first('alias') }}</p>
                                 </v-flex>
+                                <v-flex md12 sm12>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <span class="font-weight-bold">Nội dung chi tiết:</span>
+                                    <br>
+                                    <br>
+                                    <ckeditor style="height: 500px" :editor="editor" v-model="projectForm.description"
+                                              :config="editorConfig"></ckeditor>
+                                </v-flex>
                             </v-layout>
                         </v-container>
                     </v-form>
@@ -66,6 +76,8 @@
     import 'vee-validate'
     import _ from 'lodash'
     import moment from 'moment'
+    import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+    import '@ckeditor/ckeditor5-build-classic/build/translations/vi';
 
     export default {
         name: "ProjectForm",
@@ -83,7 +95,14 @@
                 timeout: 10000,
                 dialog: false,
                 projectName: '',
-                projectAlias: ''
+                projectAlias: '',
+                editor: ClassicEditor,
+                editorConfig: {
+                    language: 'vi',
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList',
+                        'numberedList', 'blockQuote', 'undo', 'redo'],
+                    removePlugins: ['imageUpload'],
+                },
             }
         },
         computed: {
@@ -95,7 +114,8 @@
                     return {
                         id: 0,
                         name: '',
-                        alias: ''
+                        alias: '',
+                        description: ''
                     }
                 }
             },

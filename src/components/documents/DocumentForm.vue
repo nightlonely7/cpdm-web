@@ -210,59 +210,61 @@
                                 <ckeditor style="height: 500px" :editor="editor" v-model="documentForm.description"
                                           :config="editorConfig"></ckeditor>
                             </v-flex>
-                            <v-flex md12 sm12>
-                                <v-checkbox v-model="selectAll" label="Chọn tất cả" color="blue" hide-details>
-                                </v-checkbox>
-                            </v-flex>
-                            <v-flex md12 sm12 v-if="selectAll">
-                                <span class="font-weight-bold">Danh sách phòng ban:</span>
-                                <div v-for="department in departments">
-                                    <v-checkbox v-model="selectedDepartments" :label="department.name"
-                                                :value="department.id" hide-details disabled color="blue">
+                            <template v-if="creating">
+                                <v-flex md12 sm12>
+                                    <v-checkbox v-model="selectAll" label="Chọn tất cả" color="blue" hide-details>
                                     </v-checkbox>
-                                </div>
-                            </v-flex>
-                            <v-flex md12 sm12 v-else>
-                                <span class="font-weight-bold">Danh sách phòng ban:</span>
-                                <div v-for="department in departments">
-                                    <v-checkbox v-model="selectedDepartments" :label="department.name"
-                                                :value="department.id" hide-details color="blue">
+                                </v-flex>
+                                <v-flex md12 sm12 v-if="selectAll">
+                                    <span class="font-weight-bold">Danh sách phòng ban:</span>
+                                    <div v-for="department in departments">
+                                        <v-checkbox v-model="selectedDepartments" :label="department.name"
+                                                    :value="department.id" hide-details disabled color="blue">
+                                        </v-checkbox>
+                                    </div>
+                                </v-flex>
+                                <v-flex md12 sm12 v-else>
+                                    <span class="font-weight-bold">Danh sách phòng ban:</span>
+                                    <div v-for="department in departments">
+                                        <v-checkbox v-model="selectedDepartments" :label="department.name"
+                                                    :value="department.id" hide-details color="blue">
+                                        </v-checkbox>
+                                    </div>
+                                </v-flex>
+                                <v-flex md12 sm12 v-if="selectAll">
+                                    <v-checkbox label="Chọn tất cả quản lý" color="blue" hide-details>
                                     </v-checkbox>
-                                </div>
-                            </v-flex>
-                            <v-flex md12 sm12 v-if="selectAll">
-                                <v-checkbox label="Chọn tất cả quản lý" color="blue" hide-details>
-                                </v-checkbox>
-                            </v-flex>
-                            <v-flex md12 sm12 v-else>
-                                <v-checkbox v-model="selectAllManager" label="Chọn tất cả quản lý" color="blue"
-                                            hide-details>
-                                </v-checkbox>
-                            </v-flex>
-                            <v-flex md12 sm12>
-                                <v-autocomplete label="Người liên quan"
-                                                hide-no-data
-                                                disabled
-                                                v-if="selectAll"
-                                ></v-autocomplete>
-                                <v-autocomplete chips deletable-chips cache-items multiple
-                                                v-model="relatives"
-                                                :items="viewerOptions"
-                                                item-text="email"
-                                                item-value="id"
-                                                :loading="viewerOptionsLoading"
-                                                :search-input.sync="viewerOptionsSearch"
-                                                label="Người liên quan"
-                                                clearable
-                                                hide-no-data
-                                                v-else
-                                >
-                                    <template #item="{item}">
-                                        {{item.email}} - {{item.fullName}} - Phòng ban:
-                                        {{item.department.name}}
-                                    </template>
-                                </v-autocomplete>
-                            </v-flex>
+                                </v-flex>
+                                <v-flex md12 sm12 v-else>
+                                    <v-checkbox v-model="selectAllManager" label="Chọn tất cả quản lý" color="blue"
+                                                hide-details>
+                                    </v-checkbox>
+                                </v-flex>
+                                <v-flex md12 sm12>
+                                    <v-autocomplete label="Người liên quan"
+                                                    hide-no-data
+                                                    disabled
+                                                    v-if="selectAll"
+                                    ></v-autocomplete>
+                                    <v-autocomplete chips deletable-chips cache-items multiple
+                                                    v-model="relatives"
+                                                    :items="viewerOptions"
+                                                    item-text="email"
+                                                    item-value="id"
+                                                    :loading="viewerOptionsLoading"
+                                                    :search-input.sync="viewerOptionsSearch"
+                                                    label="Người liên quan"
+                                                    clearable
+                                                    hide-no-data
+                                                    v-else
+                                    >
+                                        <template #item="{item}">
+                                            {{item.email}} - {{item.fullName}} - Phòng ban:
+                                            {{item.department.name}}
+                                        </template>
+                                    </v-autocomplete>
+                                </v-flex>
+                            </template>
                         </v-layout>
                     </v-container>
                 </v-card-text>
@@ -395,7 +397,7 @@
                 const method = data.id === 0 ? 'POST' : 'PUT';
                 const url = `http://localhost:8080/documents` + (data.id === 0 ? `` : `/${data.id}`);
                 console.log(data.id);
-                console.log(this.selectedDepartments.join(','));
+                // console.log(this.selectedDepartments.join(','));
                 axios({
                     url: url,
                     method: method,
