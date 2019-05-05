@@ -1,13 +1,16 @@
 <template>
     <div>
-        <v-dialog v-model="dialog" persistent>
+        <v-dialog v-model="dialog" persistent fullscreen transition="dialog-bottom-transition">
             <template #activator="{on}">
                 <slot name="activator" :on="on"></slot>
             </template>
             <v-card>
-                <v-card-title>
-                    <span class="headline">FORM</span>
-                </v-card-title>
+                <v-toolbar dark color="primary">
+                    <v-btn icon @click="dialog = false">
+                        <v-icon>close</v-icon>
+                    </v-btn>
+                    <v-toolbar-title>Tạo mới tài liệu</v-toolbar-title>
+                </v-toolbar>
 
                 <v-card-text>
                     <v-container grid-list-md>
@@ -23,9 +26,9 @@
                                 <p style="color: red">{{ errors.first('title') }}</p>
                             </v-flex>
                             <v-flex md12>
-                                <v-text-field v-model="documentForm.summary"
+                                <v-textarea v-model="documentForm.summary"
                                               label="Tóm tắt"
-                                ></v-text-field>
+                                ></v-textarea>
                             </v-flex>
                             <v-flex md12>
                                 <v-select v-model="documentForm.project.id"
@@ -269,13 +272,13 @@
                         <v-flex md2>
                             <v-btn color="secondary" @click="close" block>
                                 <v-icon left>clear</v-icon>
-                                Cancel
+                                Hủy
                             </v-btn>
                         </v-flex>
                         <v-flex md2>
                             <v-btn color="primary" @click="save" block :loading="saveLoading">
                                 <v-icon left>done</v-icon>
-                                Save
+                                Lưu
                             </v-btn>
                         </v-flex>
                     </v-layout>

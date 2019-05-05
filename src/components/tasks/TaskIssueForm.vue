@@ -13,15 +13,15 @@
                     <v-layout wrap>
                         <v-flex md12>
                             <v-text-field v-model="form.summary"
-                                          label="Nội dung tổng quát"
+                                          label="Nội dung tóm tắt"
                                           :rules="summaryRules"
                                           validate-on-blur
                             ></v-text-field>
                         </v-flex>
                         <v-flex md12>
-                            <v-text-field v-model="form.description"
-                                          label="Nội dung chi tiết"
-                            ></v-text-field>
+                            <v-textarea v-model="form.description"
+                                          label="Mô tả"
+                            ></v-textarea>
                         </v-flex>
                     </v-layout>
                 </v-container>

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-btn @click="goBack" color="primary">Trở về</v-btn>
+        <v-btn @click="goBack" color="primary"><v-icon left>mdi-keyboard-backspace</v-icon>Trở về</v-btn>
         <br/><br/>
         <template v-if="isServerError">
             <p style="color: blue">Tên tài liệu: {{document.title || 'Chưa xác định'}}</p>
@@ -100,7 +100,7 @@
                 }
             },
             goBack: function () {
-                this.$router.push('/documents');
+                this.$router.back();
             }
         },
     }
