@@ -44,11 +44,11 @@
             <v-card>
                 <v-card-title>Nội dung chi tiết</v-card-title>
                 <v-divider></v-divider>
-                <v-card-text>
-                    {{document.description || 'Chưa xác định'}}
+                <v-card-text v-html="document.description">
+                    <span v-if="!document.description">Chưa xác định</span>
                 </v-card-text>
             </v-card>
-            <br>
+            <br/>
             <p>Thời gian chỉnh sửa gần nhất:
                 {{moment(document.lastModifiedTime,'DD-MM-YYYY HH:mm:ss' )
                 .format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
@@ -58,12 +58,14 @@
                     </template>
                 </DocumentHistory>
             </p>
-            <DocumentForm :form="{...form}" @refresh="getDocumentDetail(id)" :document-title="`${document.title}`">
-                <template #activator="{on}">
-                    <v-btn v-on="on" color="primary">Chỉnh Sửa</v-btn>
-                </template>
-            </DocumentForm>
-            <v-btn @click="deleteDocument" color="error">Xóa</v-btn>
+            <v-layout row>
+                <DocumentForm :form="{...form}" @refresh="getDocumentDetail(id)" :document-title="`${document.title}`">
+                    <template #activator="{on}">
+                        <v-btn v-on="on" color="primary">Chỉnh Sửa</v-btn>
+                    </template>
+                </DocumentForm>
+                <v-btn @click="deleteDocument" color="error">Xóa</v-btn>
+            </v-layout>
         </template>
         <template v-else>
             <h3 style="color:red;">Không tìm thấy tài liệu cần tìm!</h3>

@@ -154,6 +154,7 @@
 <script>
     import DocumentFileForm from "./DocumentFileForm";
     import axios from 'axios';
+    import download from 'downloadjs';
 
     export default {
         name: "DocumentFile",
