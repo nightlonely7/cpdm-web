@@ -15,7 +15,7 @@
                 <v-card-text>
                     <v-container grid-list-md>
                         <v-layout wrap>
-                            <v-flex md12>
+                            <v-flex xs12>
                                 <v-text-field v-model="documentForm.title"
                                               label="Tiêu đề"
                                               v-validate="{documentNameValidator: [documentTitle, creating]}"
@@ -25,7 +25,7 @@
                                 ></v-text-field>
                                 <p style="color: red">{{ errors.first('title') }}</p>
                             </v-flex>
-                            <v-flex md12>
+                            <v-flex xs12>
                                 <v-textarea v-model="documentForm.summary"
                                               label="Tóm tắt"
                                 ></v-textarea>
@@ -319,10 +319,10 @@
                     val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!",
                     val => (val.length >= 4 && val.length <= 50) || "Phải điền từ 4 tới 50 kí tự!"
                 ],
-                startDate: '',
-                startTime: '',
-                endDate: '',
-                endTime: '',
+                startDate: this.form.startDate,
+                startTime: this.form.startTime,
+                endDate: this.form.endDate,
+                endTime: this.form.endTime,
                 startDateMenu: false,
                 startTimeMenu: false,
                 endDateMenu: false,
@@ -344,9 +344,6 @@
                         id: 0,
                         title: '',
                         project: {id: null},
-                        endTime: '',
-                        startTime: '',
-                        createdTime: '',
                     };
                 }
             },
@@ -364,19 +361,14 @@
             }
         },
         computed: {
-            documentForm: function () {
-                return {
-                    ...this.form,
-                    startDate: moment(this.form.startTime, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD'),
-                    startTime: moment(this.form.startTime, 'DD-MM-YYYY HH:mm:ss').format('HH:mm'),
-                    endDate: moment(this.form.endTime, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD'),
-                    endTime: moment(this.form.endTime, 'DD-MM-YYYY HH:mm:ss').format('HH:mm'),
-                };
+            documentForm: function(){
+                return {...this.form};
             },
         },
         mounted() {
             this.getProjectOptions();
             this.getDepartments();
+            console.log(this.startDate)
         },
         methods: {
             close() {

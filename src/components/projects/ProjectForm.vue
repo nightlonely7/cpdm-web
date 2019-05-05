@@ -58,11 +58,11 @@
                 <v-card-actions>
                     <v-btn color="secondary" @click="close">
                         <v-icon left>clear</v-icon>
-                        Cancel
+                        Hủy
                     </v-btn>
                     <v-btn color="primary" @click="save">
                         <v-icon left>done</v-icon>
-                        Save
+                        Lưu
                     </v-btn>
                 </v-card-actions>
             </v-card>
@@ -94,8 +94,6 @@
                 serverErrorText: 'Lưu thông tin thất bại!',
                 timeout: 10000,
                 dialog: false,
-                projectName: '',
-                projectAlias: '',
                 editor: ClassicEditor,
                 editorConfig: {
                     language: 'vi',
@@ -124,13 +122,22 @@
                 default: function () {
                     return false;
                 }
+            },
+            projectName: {
+                type: String,
+                default: function () {
+                    return '';
+                }
+            },
+            projectAlias: {
+                type: String,
+                default: function () {
+                    return '';
+                }
             }
         },
         mounted() {
-            if(this.projectForm.id !== 0){
-                this.projectName = this.projectForm.name;
-                this.projectAlias = this.projectForm.alias;
-            }
+
         },
         methods: {
             close: function () {

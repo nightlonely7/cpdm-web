@@ -2,24 +2,28 @@
     <div>
         <v-btn @click="goBack" color="primary">Trở về</v-btn>
         <br/><br/>
+        <v-card-text>
+            <p>
+                <span style="width: 25%; float: left">Tên phòng ban</span>
+                <span style="width: 75%; float: left"><b>{{department.name || 'Chưa xác định'}}</b></span>
+            </p>
+            <br>
+            <v-divider></v-divider>
+            <br>
+            <p>
+                <span style="width: 25%; float: left">Mã phòng ban</span>
+                <span style="width: 75%; float: left"><b>{{department.alias || 'Chưa xác định'}}</b></span>
+            </p>
+        </v-card-text>
+        <br/>
         <v-card>
+            <v-card-title>Nội dung chi tiết</v-card-title>
+            <v-divider></v-divider>
             <v-card-text>
-                <p>
-                    <span style="width: 25%; float: left">Tên phòng ban</span>
-                    <span style="width: 75%; float: left"><b>{{department.name || 'Chưa xác định'}}</b></span>
-                </p>
-                <br><v-divider></v-divider><br>
-                <p>
-                    <span style="width: 25%; float: left">Mã phòng ban</span>
-                    <span style="width: 75%; float: left"><b>{{department.alias || 'Chưa xác định'}}</b></span>
-                </p>
-                <br><v-divider></v-divider><br>
-                <p>
-                    <span style="width: 25%; float: left">Mô tả</span>
-                    <span style="width: 75%; float: left"><b><span v-html="department.description || 'Chưa xác định'"></span></b></span>
-                </p>
+                {{department.description || 'Chưa xác định'}}
             </v-card-text>
         </v-card>
+        <br/>
         <v-list three-line class="elevation-1">
             <v-subheader>
                 <h4>Quản lý</h4>
@@ -86,7 +90,8 @@
                 </v-list-tile-content>
             </v-list-tile>
         </v-list>
-        <DepartmentForm :department-form="{...department}" creating @refresh="getDepartmentDetail(id)">
+        <DepartmentForm :department-form="{...department}" @refresh="getDepartmentDetail(id)"
+                        :department-name="department.name" :department-alias="department.alias">
             <template #activator="{on}">
                 <v-btn v-on="on" color="primary">Sửa</v-btn>
             </template>

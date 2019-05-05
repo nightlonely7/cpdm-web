@@ -92,8 +92,6 @@
                 serverErrorText: 'Lưu thông tin thất bại!',
                 timeout: 10000,
                 dialog: false,
-                departmentName: '',
-                departmentAlias: '',
                 editor: ClassicEditor,
                 editorConfig: {
                     language: 'vi',
@@ -106,11 +104,6 @@
         computed: {
         },
         mounted(){
-            if(this.departmentForm.id !== 0){
-                this.departmentName = this.departmentForm.name;
-                this.departmentAlias = this.departmentForm.alias;
-            }
-            console.log(this.departmentForm);
         },
         props: {
             departmentForm: {
@@ -127,6 +120,18 @@
                 type: Boolean,
                 default: function () {
                     return false;
+                }
+            },
+            departmentName: {
+                type: String,
+                default: function () {
+                    return '';
+                }
+            },
+            departmentAlias: {
+                type: String,
+                default: function () {
+                    return '';
                 }
             }
         },

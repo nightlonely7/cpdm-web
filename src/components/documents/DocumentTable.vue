@@ -116,7 +116,7 @@
             getDocuments: function () {
                 this.table.loading = true;
                 // const url = this.isAdmin ? `http://localhost:8080/documents` : `http://localhost:8080/documents/search/relatives`;
-                const url = "http://localhost:8080/documents/search/titleAndSummary";
+                const url = "http://localhost:8080/documents/search/creates";
                 const method = 'GET';
                 const params = {
                     page: this.pagination.page - 1,
@@ -135,6 +135,7 @@
                     .then(response => {
                         this.documents = response.data.content;
                         this.pagination.totalItems = response.data.totalElements;
+                        console.log(response.data.content);
                     })
                     .catch(error => {
                         this.alert = 'Không thể truy cập';

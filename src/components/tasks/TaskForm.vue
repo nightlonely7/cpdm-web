@@ -457,7 +457,6 @@
                 }, 500);
             },
             getExecutorOptions: function () {
-
                 const url = this.isAdmin ?
                     `http://localhost:8080/users/search/findAllManagerSummary` :
                     `http://localhost:8080/users/findAllStaffDisplayNameByDepartmentOfCurrentLoggedManager`;
@@ -521,7 +520,7 @@
                 this.getExecutorOptions();
                 this.getProjectOptions();
             });
-
+            console.log(this.startDate);
         },
         created() {
             this.debouncedGetViewerOptions = _.debounce(this.getViewerOptions, 500);
