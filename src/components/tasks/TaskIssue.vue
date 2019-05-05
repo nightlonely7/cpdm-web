@@ -241,7 +241,7 @@
                             var url = '/tasks/' + this.task.id;
                             var users = [];
                             if (this.displayName === this.task.executor.displayName) {
-                                users.push(this.task.cretor);
+                                users.push(this.task.creator);
                             } else {
                                 users.push(this.task.executor);
                             }
@@ -265,7 +265,7 @@
                             var detail = this.task.title;
                             var url = '/tasks/' + this.task.id;
                             var users = [];
-                            users.push(this.task.cretor);
+                            users.push(this.task.creator);
                             pushNotif(title, detail, url, users);
                             this.refreshIssues();
                         })

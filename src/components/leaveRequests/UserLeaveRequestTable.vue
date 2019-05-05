@@ -253,6 +253,7 @@
         },
         data() {
             return {
+                on: false,
                 snackbar: false,
                 snackBarText: '',
                 title: '',
