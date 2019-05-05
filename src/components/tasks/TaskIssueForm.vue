@@ -91,19 +91,18 @@
                 const data = {...this.form};
                 console.log(url, method, data);
                 axios({url, method, data})
-                    .then((response) => {
-                        var title = 'Một vấn đề đã được thêm bởi ' + this.displayName;
+                    .then(() => {
+                        var title = this.creating ? 'Một vấn đề đã được thêm bởi ' + this.displayName : 'Một vấn đề đã được sửa bởi ' + this.displayName;
                         var detail = this.task.title;
                         var url = '/tasks/' + this.task.id;
                         var users = [];
                         if(this.displayName === this.task.executor.displayName){
-                            users.push(this.task.cretor);
+                            users.push(this.task.creator);
                         }
                         else{
                             users.push(this.task.executor);
                         }
                         pushNotif(title,detail,url,users);
-                        console.log(response.data);
                         this.dialog = false;
                         this.$emit("refresh");
                     })
