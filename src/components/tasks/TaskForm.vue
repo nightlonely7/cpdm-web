@@ -438,7 +438,9 @@
                   users = data.relatives;
                 }
                 users.push(data.executor);
-                pushNotif(title, detail, url, users);
+                for(var i in users){
+                    pushNotif(title, detail, url, users[i]);
+                }
             },
             close: function () {
                 this.dialog = false;

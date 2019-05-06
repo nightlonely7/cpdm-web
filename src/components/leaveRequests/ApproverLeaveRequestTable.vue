@@ -269,9 +269,8 @@
                 var title = "Đơn xin nghỉ phép đã xử lý bởi " + this.displayName;
                 var url = "/userLeaveRequests";
                 var detail = item.content;
-                var users = [];
-                users.push(item.user);
-                pushNotif(title, detail, url, users);
+                var user = item.user;
+                pushNotif(title, detail, url, user);
             }
             , close() {
                 this.dialog = false

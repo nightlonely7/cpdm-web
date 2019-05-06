@@ -229,14 +229,11 @@
                             var title = 'Bình luận mới từ' + this.displayName;
                             var detail = this.newCommentModel.content;
                             var url = '/tasks/' + this.taskId;
-                            var users = [];
-                            if(this.displayName === response.data.executor.displayName){
-                                users.push(response.data.creator);
+                            var user = response.data.executor;
+                            if (this.displayName === response.data.executor.displayName) {
+                                user = response.data.creator;
                             }
-                            else {
-                                users.push(response.data.executor);
-                            }
-                            pushNotif(title, detail, url, users);
+                            pushNotif(title, detail, url, user);
                             this.clear();
                             this.getComment();
                             this.snackBarText = 'Thành công';

@@ -275,9 +275,8 @@
                 var title = "Đơn xin ủy quyền đã xử lý bởi " + this.displayName;
                 var url = "/userAssignRequests";
                 var detail = item.content;
-                var users = [];
-                users.push(item.user);
-                pushNotif(title, detail, url, users);
+                var user = item.user;
+                pushNotif(title, detail, url, user);
             },
             close(){
                 this.dialog = false;

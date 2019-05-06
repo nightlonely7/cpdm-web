@@ -408,9 +408,8 @@
                 var title = "Yêu cầu chỉ đạo mới từ " + this.displayName;
                 var url = "/receiverAskingRequests";
                 var detail = item.content;
-                var users = [];
-                users.push(item.receiver);
-                pushNotif(title,detail,url,users);
+                var user = item.receiver;
+                pushNotif(title,detail,url,user);
             },
             storeSelectedTasks() {
                 this.$store.commit('ASKING_REQUEST_STORE/SET_SELECTED_TASK', this.selected);

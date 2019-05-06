@@ -465,14 +465,14 @@
                                 var title = "Một đơn nghỉ phép đã xóa bởi " + this.displayName;
                                 var detail = this.editItem.content;
                                 var url = "/approverLeaveRequests";
-                                var users = [];
-                                users.push(this.approvers[0]);
-                                pushNotif(title, detail, url, users);
+                                var user = this.approvers[0];
+                                pushNotif(title, detail, url, user);
                                 //refresh and dialog
                                 this.refresh();
                                 this.snackbar = true;
                                 this.snackBarText = "Thành công";
                                 this.$emit("refresh");
+                                this.getCalendarData();
                             }
                         ).catch(error => {
                             if (error.response) {
@@ -565,9 +565,8 @@
                         }
                         var detail = this.editItem.content;
                         var url = "/approverLeaveRequests";
-                        var users = [];
-                        users.push(this.editItem.approver);
-                        pushNotif(title, detail, url, users);
+                        var user = this.editItem.approver;
+                        pushNotif(title, detail, url, user);
                         //refresh and dialog
                         this.close();
                         this.refresh();

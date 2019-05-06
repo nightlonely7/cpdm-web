@@ -33,23 +33,23 @@ messaging.onMessage(function (payload) {
     // }
 });
 
-export function pushNotif(title, detail, url, users) {
-    var keys = [];
-    for (var i in users) {
+export function pushNotif(title, detail, url, user) {
+        var keys = [];
         axios.post('http://localhost:8080/notifications', {
                 title: title,
                 detail: detail,
                 url: url,
-                user: users[i]
+                user: user
             }
         ).then((response) => {
-            db.ref('users/' + users[i].id).once('value').then(function (snapshot) {
+            db.ref('users/' + user.id).once('value').then(function (snapshot) {
                 if(snapshot.val() != null){
                     keys = snapshot.val();
                 }
-                if(users[i].email){
-                    keys.push('/topics/' + users[i].email.split('@')[0]);
+                if(user.email){
+                    keys.push('/topics/' + user.email.split('@')[0]);
                 }
+                console.log(keys);
                 axios.post('http://localhost:8080/notifications/push',
                     {
                         keys: keys,
@@ -77,7 +77,6 @@ export function pushNotif(title, detail, url, users) {
                 console.log(error.response);
             }
         });
-    }
 }
 
 export const mes = messaging;

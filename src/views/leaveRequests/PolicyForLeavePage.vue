@@ -110,7 +110,8 @@
 <script>
     import axios from 'axios';
     import moment from "moment";
-    import {mapGetters,mapState} from 'vuex';
+    import {mapGetters, mapState} from 'vuex';
+    import {pushNotif} from "@/firebase.js";
 
     var notAllowedDate = [];
 
@@ -122,18 +123,18 @@
                 snackbar: false,
                 snackBarText: '',
                 dialog: false,
-                minDate: new Date().toISOString().substr(0, 10),
+                minDate: moment(new Date()).add(1, 'days').toISOString().substr(0, 10),
                 defaultItem: {
                     number_of_day_off_free_check: '',
-                    valid_from_date: new Date().toISOString().substr(0, 10),
+                    valid_from_date: moment(new Date()).add(1, 'days').toISOString().substr(0, 10),
                 },
                 editItem: {
                     number_of_day_off_free_check: '',
-                    valid_from_date: new Date().toISOString().substr(0, 10),
+                    valid_from_date: moment(new Date()).add(1, 'days').toISOString().substr(0, 10),
                 },
                 oldItem: {
                     number_of_day_off_free_check: '',
-                    valid_from_date: new Date().toISOString().substr(0, 10),
+                    valid_from_date: moment(new Date()).add(1, 'days').toISOString().substr(0, 10),
                 },
                 fromDateMenu: false,
                 pagination: {
@@ -169,7 +170,7 @@
         },
         mounted() {
             this.$nextTick(function () {
-                if(this.isAdmin){
+                if (this.isAdmin) {
                     this.table.headers.push({text: 'Thao tác', sortable: false});
                 }
                 this.refresh();
@@ -205,7 +206,7 @@
                     }
                 );
             },
-            getNotAllowDate(){
+            getNotAllowDate() {
                 axios.get(`http://localhost:8080/leaveRequests/search/policyForLeave/notAllowDate`
                 ).then(response => {
                         notAllowedDate = response.data;
@@ -223,15 +224,14 @@
             },
             editPolicy(item) {
                 this.dialog = true;
-                Object.assign(this.editItem,item);
-                Object.assign(this.oldItem,item);
+                Object.assign(this.editItem, item);
+                Object.assign(this.oldItem, item);
                 this.isAddNew = false;
             },
             deletePolicy(item) {
                 if (confirm('Bạn muốn xóa chính sách này?')) {
                     var url = `http://localhost:8080/leaveRequests/policyForLeave`;
                     var method = 'DELETE';
-
                     axios.request(
                         {
                             url: url,
@@ -245,6 +245,7 @@
                             this.snackbar = true;
                         }
                     ).catch(error => {
+                            console.log(error);
                             if (error.response) {
                                 console.log(error.response.data)
                             }
@@ -265,11 +266,11 @@
                 this.$refs.txtNoOfDate.reset();
 
                 //Set available dates
-                var count = 0;
-                var minAvailableDate = moment(new Date()).add(count,'days').toISOString().substr(0, 10);
-                while(notAllowedDate.includes(minAvailableDate)){
+                var count = 1;
+                var minAvailableDate = moment(new Date()).add(count, 'days').toISOString().substr(0, 10);
+                while (notAllowedDate.includes(minAvailableDate)) {
                     count++;
-                    minAvailableDate = moment(new Date()).add(count,'days').toISOString().substr(0, 10);
+                    minAvailableDate = moment(new Date()).add(count, 'days').toISOString().substr(0, 10);
                 }
                 this.editItem.valid_from_date = minAvailableDate;
             },
@@ -286,7 +287,6 @@
                     this.snackbar = true;
                     return;
                 }
-
                 //call api
                 var url = `http://localhost:8080/leaveRequests/policyForLeave`;
                 var method = 'POST';
@@ -308,6 +308,20 @@
                         data: data
                     }
                 ).then(() => {
+                        axios.get('http://localhost:8080/users/search/all/staff-and-manager'
+                        ).then((response) => {
+                            var title = 'Chính sách nghỉ phép đã được thay đổi';
+                            var detail = '';
+                            var url = '/policyForLeave';
+                            var users = [];
+                            users = response.data;
+                            for(var i in users){
+                                pushNotif(title, detail, url, users[i]);
+                            }
+
+                        }).catch((error) => {
+                            console.log(error);
+                        });
                         this.close();
                         this.refresh();
                         this.snackBarText = 'Thành công';
