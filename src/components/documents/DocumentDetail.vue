@@ -72,6 +72,30 @@
             <h3 style="color:red;">Không tìm thấy tài liệu cần tìm!</h3>
         </template>
         <br>
+
+
+
+        <v-expansion-panel>
+            <v-expansion-panel-content>
+                <template #header>
+                    <span><v-icon left>mdi-file-document</v-icon>Danh sách tác vụ liên quan</span>
+                </template>
+                <div class="text-xs-center" v-if="!tasks || (!!tasks && !tasks.length)">
+                    <span>Không có tác vụ nào</span>
+                </div>
+                <v-list three-line>
+                    <v-list-tile v-for="task in tasks" :key="task.id">
+                        <v-list-tile-content>
+                            <v-list-tile-title>Tiêu đề: {{ task.title }}</v-list-tile-title>
+                            <v-list-tile-sub-title>Tổng quát: {{ task.summary }}</v-list-tile-sub-title>
+                            <v-list-tile-sub-title>
+                                <router-link :to="`/tasks/${task.id}`">Đường dẫn tới tác vụ</router-link>
+                            </v-list-tile-sub-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list>
+            </v-expansion-panel-content>
+        </v-expansion-panel>
     </div>
 </template>
 
@@ -97,8 +121,9 @@
                     createdTime: '',
                     startTime: '',
                     endTime: '',
-                    lastModifiedTime: ''
+                    lastModifiedTime: '',
                 },
+                tasks: [],
                 loaded: false,
                 isServerError: false
             }
@@ -126,6 +151,7 @@
                     .then(
                         response => {
                             this.document = response.data;
+                            this.getTaskDocuments();
                             this.loaded = true;
                         }
                     )
@@ -149,6 +175,12 @@
                         }
                     )
                 }
+            },
+            getTaskDocuments: function () {
+                axios.get(`http://localhost:8080/documents/${this.id}/tasks`)
+                    .then(response => {
+                        this.tasks = response.data;
+                    })
             },
             goBack: function () {
                 this.$router.back();
