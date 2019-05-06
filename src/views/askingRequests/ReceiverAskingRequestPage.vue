@@ -1,7 +1,7 @@
 <template>
     <div class="elevation-5">
         <v-toolbar  tabs fixed-tabs class="elevation-0">
-            <v-toolbar-title>PHẢN HỒI YÊU CẦU THÔNG TIn CHỈ ĐẠO</v-toolbar-title>
+            <v-toolbar-title>PHẢN HỒI YÊU CẦU THÔNG TIN CHỈ ĐẠO</v-toolbar-title>
             <template slot="extension">
                 <v-tabs
                         v-model="tags"

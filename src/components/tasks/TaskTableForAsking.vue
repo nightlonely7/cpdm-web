@@ -58,7 +58,7 @@
                 </template>
                 <v-card>
                     <v-card-title>
-                        <span class="headline">ĐƠN XIN ỦY QUYỀN</span>
+                        <span class="headline">XIN Ý KIẾN LÃNH ĐẠO</span>
                     </v-card-title>
                     <v-card-text>
                         <v-container grid-list-md>
