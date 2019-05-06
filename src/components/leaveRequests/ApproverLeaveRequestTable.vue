@@ -136,7 +136,7 @@
 
 <script>
     import axios from 'axios';
-    import {pushNotif} from '@/firebase.js';
+    import {mes, pushNotif} from '@/firebase.js';
     import {mapState} from 'vuex';
 
     export default {
@@ -180,8 +180,7 @@
             })
         },
         mounted() {
-            this.$nextTick()
-            {
+            this.$nextTick(function () {
                 switch (this.type) {
                     case 'waiting':
                         this.title = 'ĐƠN ĐANG CHỜ';
@@ -197,7 +196,10 @@
                         break;
                 }
                 this.getApproverLeveRequests();
-            }
+            });
+            mes.onMessage(() => {
+                this.getApproverLeveRequests();
+            });
         },
         methods: {
             getApproverLeveRequests: function () {
@@ -281,7 +283,7 @@
             },
             refreshFlag: function () {
                 this.getApproverLeveRequests();
-            }
+            },
         }
     }
 </script>

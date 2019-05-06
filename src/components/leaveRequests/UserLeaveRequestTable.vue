@@ -240,7 +240,7 @@
     import axios from 'axios';
     import {mapGetters, mapState} from "vuex";
     import moment from "moment";
-    import {pushNotif} from '@/firebase.js'
+    import {mes,pushNotif} from '@/firebase.js'
 
     var notAllowedDate = [];
 
@@ -341,7 +341,10 @@
                 }
                 this.refresh();
                 this.getApprovers();
-            })
+            });
+            mes.onMessage(() => {
+                this.getUserLeveRequests();
+            });
         },
         methods: {
             getApprovers: function () {
@@ -522,7 +525,9 @@
                 var fromDate = moment(this.editItem.fromDate).add(1, 'days');
                 var toDate = moment(this.editItem.toDate).add(1, 'days');
                 //check remain day off
-                if(toDate.diff(fromDate) > this.yearSummary.dayOffRemain){
+                console.log(toDate.diff(fromDate, 'days')+1);
+                console.log(this.yearSummary.dayOffRemain);
+                if((toDate.diff(fromDate, 'days')+1) > this.yearSummary.dayOffRemain){
                     this.snackBarText = "Ngày nghỉ phép còn lại không đủ";
                     this.snackbar = true;
                     return;
@@ -596,7 +601,7 @@
             },
             refreshFlag: function () {
                 this.getUserLeveRequests();
-            }
+            },
         }
     }
 </script>
