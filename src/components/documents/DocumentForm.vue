@@ -404,7 +404,9 @@
                         var detail = data.title;
                         var url = '/documents';
                         var users = data.relatives;
-                        pushNotif(title,detail,url,users);
+                        for(var i in users){
+                            pushNotif(title,detail,url,users[i]);
+                        }
                         this.dialog = false;
                         this.$emit('refresh');
                     })
