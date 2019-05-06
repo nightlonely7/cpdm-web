@@ -14,7 +14,6 @@ async function checkDepAliasExisted(value, obj) {
     let isDepAliasExisted = true;
     let currentAlias = obj[0];
     let isEdit = obj[1];
-    console.log(isEdit + "-" + currentAlias + "-" + value);
     if(!isEdit && currentAlias === value){
         return true;
     }
