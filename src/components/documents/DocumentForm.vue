@@ -210,7 +210,9 @@
                                 <ckeditor style="height: 500px" :editor="editor" v-model="documentForm.description"
                                           :config="editorConfig"></ckeditor>
                             </v-flex>
+
                             <v-flex md12 sm12>
+                                <span class="font-weight-bold">Danh sách người liên quan:</span>
                                 <v-checkbox v-model="selectAll" label="Chọn tất cả" color="blue" hide-details>
                                 </v-checkbox>
                             </v-flex>
@@ -231,10 +233,12 @@
                                 </div>
                             </v-flex>
                             <v-flex md12 sm12 v-if="selectAll">
-                                <v-checkbox label="Chọn tất cả quản lý" color="blue" hide-details>
+                                <span class="font-weight-bold">Danh sách quản lý:</span>
+                                <v-checkbox label="Chọn tất cả quản lý" color="blue" disabled hide-details>
                                 </v-checkbox>
                             </v-flex>
                             <v-flex md12 sm12 v-else>
+                                <span class="font-weight-bold">Danh sách quản lý:</span>
                                 <v-checkbox v-model="selectAllManager" label="Chọn tất cả quản lý" color="blue"
                                             hide-details>
                                 </v-checkbox>
