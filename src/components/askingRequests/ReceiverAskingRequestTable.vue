@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="elevation-1">
         <v-toolbar flat color="white">
             <v-toolbar-title class="animated bounce delay-1s">{{title}}</v-toolbar-title>
@@ -18,9 +18,6 @@
                                             ref="txtContent"
                                             v-model="editItem.content"
                                             label="Nội dung"
-                                            :rules="[rules.required,rules.max]"
-                                            counter
-                                            maxlength="255"
                                             readonly
                                     ></v-textarea>
                                 </v-flex>
@@ -28,7 +25,7 @@
                                     <v-textarea
                                             ref="txtResponse"
                                             v-model="editItem.response"
-                                            label="Nội dung"
+                                            label="Phản hồi"
                                             :rules="[rules.required,rules.max]"
                                             clearable
                                             counter
@@ -89,8 +86,8 @@
             <template #items="props">
                 <td class="text-xs-left">{{props.item.user.displayName}}</td>
                 <td class="text-xs-left">{{props.item.createdDate}}</td>
-                <td class="text-xs-left">{{props.item.content}}</td>
-                <td class="text-xs-left" v-if="props.item.status === 1">{{props.item.response}}</td>
+                <td class="text-xs-left">{{props.item.content | truncate(30)}}</td>
+                <td class="text-xs-left" v-if="props.item.status === 1">{{props.item.response | truncate(30)}}</td>
                 <td class="text-xs-left">
                     <template v-for="task in props.item.tasks">
                         <router-link :key="task.id"
@@ -103,12 +100,77 @@
                         <br/>
                     </template>
                 </td>
-                <td class="text-xs-left" v-if="props.item.status === 0">
+                <td class="text-xs-left">
                     <v-card-actions>
                         <v-btn outline fab small color="indigo"
-                               @click="editAskingRequest(props.item)">
+                               @click="editAskingRequest(props.item)"
+                               v-if="props.item.status === 0">
                             <v-icon>edit</v-icon>
                         </v-btn>
+                        <v-dialog v-model="detailDialog" max-width="500px" v-if="props.item.status === 1">
+                            <template v-slot:activator="{ on }">
+                                <v-btn outline fab small color="indigo" v-on="on">
+                                    <v-icon>info</v-icon>
+                                </v-btn>
+                            </template>
+                            <v-card>
+                                <v-card-title>
+                                    <span class="headline">XIN Ý KIẾN LÃNH ĐẠO</span>
+                                </v-card-title>
+                                <v-card-text>
+                                    <v-container grid-list-md>
+                                        <v-layout wrap>
+                                            <v-flex xs12 sm12 md12>
+                                                <v-textarea
+                                                        v-model="props.item.content"
+                                                        label="Nội dung"
+                                                        readonly
+                                                ></v-textarea>
+                                            </v-flex>
+                                            <v-flex xs12 sm12 md12>
+                                                <v-textarea
+                                                        v-model="props.item.response"
+                                                        label="Phản hồi"
+                                                        readonly
+                                                ></v-textarea>
+                                            </v-flex>
+                                            <v-flex xs12 sm6 md6>
+                                                <v-text-field
+                                                        v-model="props.item.user.displayName"
+                                                        label="Người yêu cầu"
+                                                        readonly
+                                                ></v-text-field>
+                                            </v-flex>
+                                            <v-flex xs12 sm6 md6>
+                                                <v-text-field
+                                                        v-model="props.item.receiver.displayName"
+                                                        label="Người trả lời"
+                                                        readonly
+                                                ></v-text-field>
+                                            </v-flex>
+                                            <v-flex xs12 sm12 md12>
+                                                <v-select
+                                                        v-model="props.item.tasks"
+                                                        :items="props.item.tasks"
+                                                        item-text="title"
+                                                        name="task"
+                                                        label="Tác vụ"
+                                                        return-object
+                                                        multiple
+                                                        chips
+                                                        readonly
+                                                ></v-select>
+                                            </v-flex>
+                                        </v-layout>
+                                    </v-container>
+                                </v-card-text>
+
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="blue darken-1" flat @click="closeDetail">ĐÓNG</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
                     </v-card-actions>
                 </td>
             </template>
@@ -131,7 +193,7 @@
 <script>
     import axios from 'axios';
     import {mapState} from 'vuex';
-    import {pushNotif} from "@/firebase.js";
+    import {mes, pushNotif} from "@/firebase.js";
 
     export default {
         name: "ReceiverAskingRequestTable",
@@ -146,6 +208,7 @@
                 title: '',
                 status: 0,
                 dialog: false,
+                detailDialog: false,
                 rules: {
                     required: v => !!v || 'Nội dung không được để trống',
                     max: v => (!!v && v.length <= 255) || 'Nội dung tối đa 255 kí tự'
@@ -193,8 +256,7 @@
             })
         },
         mounted() {
-            this.$nextTick()
-            {
+            this.$nextTick(function() {
                 switch (this.type) {
                     case 'waiting':
                         this.title = 'YÊU CẦU ĐANG CHỜ';
@@ -206,11 +268,15 @@
                         this.table.headers.pop();
                         this.table.headers.push({text: 'Phản hồi', value: 'response'});
                         this.table.headers.push( {text: 'Tác vụ liên quan', value: 'task'});
+                        this.table.headers.push({text: 'Thao tác', value: 'status'});
                         this.status = 1;
                         break;
                 }
                 this.getReceiverAskingRequests();
-            }
+            });
+            mes.onMessage(() => {
+                this.getReceiverAskingRequests();
+            });
         },
         methods: {
             getReceiverAskingRequests: function () {
@@ -257,6 +323,9 @@
                 setTimeout(() => {
                     this.editItem = Object.assign({}, this.defaultItem)
                 }, 300)
+            },
+            closeDetail(){
+                this.detailDialog = false
             },
             save() {
                 //check input condition

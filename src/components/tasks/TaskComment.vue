@@ -9,7 +9,7 @@
                 <v-subheader></v-subheader>
                 <template v-for="(item,index) in this.comments">
                     <v-list-tile
-                            :key="item.content"
+                            :key="item.id + '_'"
                             avatar>
                         <v-list-tile-avatar>
                             <img v-if="item.avatar != null" :src="item.avatar">
@@ -38,9 +38,9 @@
                             <v-icon>close</v-icon>
                         </v-btn>
                         <!--<v-btn v-if="item.user.displayName == displayName" outline fab small color="red"-->
-                               <!--v-show="item.editDisable"-->
-                               <!--@click="deleteComment(item)">-->
-                            <!--<v-icon>delete</v-icon>-->
+                        <!--v-show="item.editDisable"-->
+                        <!--@click="deleteComment(item)">-->
+                        <!--<v-icon>delete</v-icon>-->
                         <!--</v-btn>-->
 
                     </v-list-tile>
@@ -54,7 +54,7 @@
                             single-line
                             :rules="[rules.required,rules.max]"
                             @click="showEditButton(index)"
-                            counter
+                            :counter="!comments[index].editDisable"
                             maxlength="255"
                     >
                     </v-textarea>
@@ -142,6 +142,7 @@
 <script>
     import {mapState} from 'vuex'
     import axios from 'axios';
+    import {pushNotif} from "@/firebase.js";
 
     export default {
         name: "TaskComment",
@@ -224,10 +225,29 @@
                         data: this.newCommentModel
                     }
                 ).then(() => {
-                        this.clear();
-                        this.getComment();
-                        this.snackBarText = 'Thành công';
-                        this.snackbar = true;
+                        axios.get(`http://localhost:8080/tasks/${this.taskId}`).then((response) => {
+                            var title = 'Bình luận mới từ' + this.displayName;
+                            var detail = this.newCommentModel.content;
+                            var url = '/tasks/' + this.taskId;
+                            var users = [];
+                            if(this.displayName === response.data.executor.displayName){
+                                users.push(response.data.creator);
+                            }
+                            else {
+                                users.push(response.data.executor);
+                            }
+                            pushNotif(title, detail, url, users);
+                            this.clear();
+                            this.getComment();
+                            this.snackBarText = 'Thành công';
+                            this.snackbar = true;
+                        }).catch((error) => {
+                            console.log(error);
+                            this.clear();
+                            this.getComment();
+                            this.snackBarText = 'Thành công';
+                            this.snackbar = true;
+                        });
                     }
                 ).catch(error => {
                         if (error.response) {

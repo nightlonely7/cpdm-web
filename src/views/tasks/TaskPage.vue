@@ -58,6 +58,9 @@
                 isManager: 'isManager',
                 isStaff: 'isStaff',
             })
+        },
+        mounted() {
+            this.$emit("refresh");
         }
     }
 </script>

@@ -91,10 +91,10 @@
         >
             <v-progress-linear #progress color="blue" indeterminate></v-progress-linear>
             <template #items="props">
-                <td class="text-xs-left">{{props.item.content}}</td>
+                <td class="text-xs-left">{{props.item.content | truncate(30)}}</td>
                 <td class="text-xs-left">{{props.item.fromDate}}</td>
                 <td class="text-xs-left">{{props.item.toDate}}</td>
-                <td class="text-xs-left">{{props.item.createdDate}}</td>
+                <!--<td class="text-xs-left">{{props.item.createdDate}}</td>-->
                 <td class="text-xs-left">{{props.item.approver.displayName}}</td>
                 <td class="text-xs-left">
                     <template v-for="task in props.item.tasks">
@@ -108,14 +108,88 @@
                         <br/>
                     </template>
                 </td>
-                <td class="text-xs-left" v-if="props.item.status === 0">
+                <td class="text-xs-left">
                     <v-card-actions>
                         <!--<v-btn outline fab small color="indigo" @click="editAssignRequest(props.item)">-->
                             <!--<v-icon>info</v-icon>-->
                         <!--</v-btn>-->
-                        <v-btn outline fab small color="red" @click="deleteAssignRequest(props.item.id)">
+                        <v-btn outline fab small color="red" @click="deleteAssignRequest(props.item.id)"  v-if="props.item.status === 0">
                             <v-icon>delete</v-icon>
                         </v-btn>
+                        <v-dialog v-model="dialog" max-width="500px">
+                            <template v-slot:activator="{ on }">
+                                <v-btn outline fab small color="indigo" v-on="on">
+                                    <v-icon>info</v-icon>
+                                </v-btn>
+                            </template>
+                            <v-card>
+                                <v-card-title>
+                                    <span class="headline">ĐƠN XIN ỦY QUYỀN</span>
+                                </v-card-title>
+                                <v-card-text>
+                                    <v-container grid-list-md>
+                                        <v-layout wrap>
+                                            <v-flex xs12 sm12 md12>
+                                                <v-textarea
+                                                        ref="txtContent"
+                                                        v-model="props.item.content"
+                                                        label="Nội dung"
+                                                        readonly
+                                                ></v-textarea>
+                                            </v-flex>
+                                            <v-flex xs12 sm6 md6>
+                                                <v-text-field
+                                                        v-model="props.item.approver.displayName"
+                                                        label="Người xét duyệt"
+                                                        readonly
+                                                ></v-text-field>
+                                            </v-flex>
+                                            <v-flex xs12 sm6 md6>
+                                                <v-text-field
+                                                        v-model="props.item.assignee.displayName"
+                                                        label="Người được ủy quyền"
+                                                        readonly
+                                                ></v-text-field>
+                                            </v-flex>
+                                            <v-flex xs12 sm6 md6>
+                                                <v-text-field
+                                                        v-model="props.item.fromDate"
+                                                        label="Ngày bắt đầu"
+                                                        prepend-icon="event"
+                                                        readonly
+                                                ></v-text-field>
+                                            </v-flex>
+                                            <v-flex xs12 sm6 md6>
+                                                <v-text-field
+                                                        v-model="props.item.toDate"
+                                                        label="Ngày kết thúc"
+                                                        prepend-icon="event"
+                                                        readonly
+                                                ></v-text-field>
+                                            </v-flex>
+                                            <v-flex xs12 sm12 md12>
+                                                <v-autocomplete v-model="props.item.tasks"
+                                                                :items="props.item.tasks"
+                                                                item-text="title"
+                                                                name="task"
+                                                                label="Tác vụ"
+                                                                return-object
+                                                                multiple
+                                                                chips
+                                                                readonly>
+
+                                                </v-autocomplete>
+                                            </v-flex>
+                                        </v-layout>
+                                    </v-container>
+                                </v-card-text>
+
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="blue darken-1" flat @click="close">ĐÓNG</v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
                     </v-card-actions>
                 </td>
             </template>
@@ -139,6 +213,7 @@
     import axios from 'axios';
     import {mapGetters, mapState} from "vuex";
     import moment from "moment";
+    import {mes} from '@/firebase.js';
 
     var notAllowedDate = [];
 
@@ -203,9 +278,10 @@
                         {text: 'Nội dung', value: 'content'},
                         {text: 'Ngày bắt đầu', value: 'fromDate'},
                         {text: 'Ngày kết thúc', value: 'toDate'},
-                        {text: 'Ngày tạo', value: 'createdDate'},
+                        // {text: 'Ngày tạo', value: 'createdDate'},
                         {text: 'Người xét duyệt', value: 'approver.displayName'},
                         {text: 'Tác vụ liên quan', value: 'tasks'},
+                        {text: 'Thao tác', value: 'status'}
                     ]
                 },
             }
@@ -228,7 +304,6 @@
                     case 'waiting':
                         this.title = 'ĐƠN ĐANG CHỜ';
                         this.status = 0;
-                        this.table.headers.push({text: 'Thao tác', value: 'status'});
                         break;
                     case 'approved':
                         this.title = 'ĐƠN ĐÃ DUYỆT';
@@ -243,7 +318,10 @@
                 this.getApprovers();
                 this.getAssignees();
                 this.getTasks();
-            })
+            });
+            mes.onMessage(() => {
+                this.getUserAssignRequests();
+            });
         },
         methods: {
             getApprovers: function () {

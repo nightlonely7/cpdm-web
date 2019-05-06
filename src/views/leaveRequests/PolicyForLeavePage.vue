@@ -1,7 +1,7 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
     <div class="elevation-1">
         <v-toolbar flat color="white">
-            <v-toolbar-title class="animated bounce delay-1s">QUẢN LÝ CHÍNH SÁCH NGHỈ PHÉP</v-toolbar-title>
+            <v-toolbar-title class="animated bounce delay-1s">CHÍNH SÁCH NGHỈ PHÉP</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh()">Làm mới</v-btn>
             <v-spacer></v-spacer>
@@ -80,7 +80,7 @@
                 <td class="text-xs-left">{{props.item.number_of_day_off_free_check}}</td>
                 <td class="text-xs-left">{{props.item.valid_from_date}}</td>
                 <td class="text-xs-left">{{props.item.created_date}}</td>
-                <td class="text-xs-left">
+                <td class="text-xs-left" v-if="isAdmin">
                     <v-card-actions>
                         <v-btn outline fab small color="indigo" @click="editPolicy(props.item)">
                             <v-icon>edit</v-icon>
@@ -110,11 +110,12 @@
 <script>
     import axios from 'axios';
     import moment from "moment";
+    import {mapGetters,mapState} from 'vuex';
 
     var notAllowedDate = [];
 
     export default {
-        name: "ManagePolicyForLeavePage",
+        name: "PolicyForLeavePage",
         data() {
             return {
                 isAddNew: true,
@@ -145,7 +146,6 @@
                         {text: 'Số ngày nghỉ', value: 'number_of_day_off_free_check'},
                         {text: 'Ngày bắt đầu hiệu lực', value: 'valid_from_date'},
                         {text: 'Ngày tạo', value: 'created_date'},
-                        {text: 'Thao tác', sortable: false}
                     ]
                 },
                 alert: '',
@@ -155,8 +155,23 @@
                 }
             }
         },
+        computed: {
+            ...mapState('AUTHENTICATION', {
+                role: state => state.role,
+            }),
+            ...mapGetters('AUTHENTICATION', {
+                isInit: 'isInit',
+                isLoggedIn: 'isLoggedIn',
+                isAdmin: 'isAdmin',
+                isManager: 'isManager',
+                isStaff: 'isStaff',
+            }),
+        },
         mounted() {
             this.$nextTick(function () {
+                if(this.isAdmin){
+                    this.table.headers.push({text: 'Thao tác', sortable: false});
+                }
                 this.refresh();
             })
         },

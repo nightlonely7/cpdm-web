@@ -76,6 +76,7 @@
 <script>
     import axios from "axios";
     import moment from "moment";
+    import {mapState, mapGetters} from 'vuex';
 
     export default {
         name: "ViewLeaveCalendarPage",
@@ -101,6 +102,19 @@
                 },
             }
         },
+        computed: {
+            ...mapState('AUTHENTICATION', {
+                role: state => state.role,
+                displayName: state => state.displayName,
+            }),
+            ...mapGetters('AUTHENTICATION', {
+                isInit: 'isInit',
+                isLoggedIn: 'isLoggedIn',
+                isAdmin: 'isAdmin',
+                isManager: 'isManager',
+                isStaff: 'isStaff',
+            }),
+        },
         mounted() {
             this.$nextTick()
             {
@@ -122,8 +136,8 @@
             },
             getViewLeaves: function () {
                 this.table.loading = true;
-                this.fromDate = moment(this.date).isoWeekday(1).toISOString().substr(0,10);
-                this.toDate = moment(this.date).isoWeekday(7).toISOString().substr(0,10);
+                this.fromDate = moment(this.date).isoWeekday(1).toISOString().substr(0, 10);
+                this.toDate = moment(this.date).isoWeekday(7).toISOString().substr(0, 10);
                 this.enumerateDaysBetweenDates(this.fromDate, this.toDate);
                 this.table.headers = [];
                 this.table.headers.push({text: 'Tên', value: 'displayName'});
@@ -132,7 +146,12 @@
                     var date = moment(this.dates.pop()).format('DD/MM/YYYY');
                     this.table.headers.push({text: date, sortable: false});
                 }
-                axios.get(`http://localhost:8080/leaveRequests/search/viewLeaves`,
+
+                var url = `http://localhost:8080/leaveRequests/search/view-leaves-for-admin`;
+                if (this.isManager) {
+                    url = 'http://localhost:8080/leaveRequests/search/view-leaves-for-manager';
+                }
+                axios.get(url,
                     {
                         params: {
                             page: this.pagination.page - 1,
