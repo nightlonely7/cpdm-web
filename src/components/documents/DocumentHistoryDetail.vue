@@ -9,28 +9,28 @@
             <v-container>
                 <v-card-text>
                     <p>
-                        <span style="width: 25%; float: left">Tên tài liệu</span>
+                        <span style="width: 25%; float: left"><b>Tên tài liệu</b></span>
                         <span style="width: 75%; float: left"><b>{{documentHistory.data.title || 'Chưa xác định'}}</b></span>
                     </p>
                     <br><v-divider></v-divider><br>
                     <p>
                         <span style="width: 25%; float: left">Tóm tắt tài liệu</span>
-                        <span style="width: 75%; float: left"><b>{{documentHistory.data.summary || 'Chưa xác định'}}</b></span>
+                        <span style="width: 75%; float: left">{{documentHistory.data.summary || 'Chưa xác định'}}</span>
                     </p>
                     <br><v-divider></v-divider><br>
                     <p>
                         <span style="width: 25%; float: left">Thời gian tạo</span>
-                        <span style="width: 75%; float: left"><b>{{moment(documentHistory.data.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</b></span>
+                        <span style="width: 75%; float: left">{{moment(documentHistory.data.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</span>
                     </p>
                     <br><v-divider></v-divider><br>
                     <p>
-                        <span style="width: 25%; float: left">Thời gian hiệu lựcu</span>
-                        <span style="width: 75%; float: left"><b>{{moment(documentHistory.data.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</b></span>
+                        <span style="width: 25%; float: left">Thời gian hiệu lực</span>
+                        <span style="width: 75%; float: left">{{moment(documentHistory.data.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</span>
                     </p>
                     <br><v-divider></v-divider><br>
                     <p>
                         <span style="width: 25%; float: left">Thời gian hết hạn</span>
-                        <span style="width: 75%; float: left"><b>{{moment(documentHistory.data.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</b></span>
+                        <span style="width: 75%; float: left">{{moment(documentHistory.data.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</span>
                     </p>
                 </v-card-text>
                 <br/>

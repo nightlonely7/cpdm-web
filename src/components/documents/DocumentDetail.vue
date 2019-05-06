@@ -8,7 +8,7 @@
         <template v-if="loaded">
             <v-card-text>
                 <p>
-                    <span style="width: 25%; float: left">Tên tài liệu</span>
+                    <span style="width: 25%; float: left"><b>Tên tài liệu</b></span>
                     <span style="width: 75%; float: left"><b>{{document.title || 'Chưa xác định'}}</b></span>
                 </p>
                 <br>
@@ -16,28 +16,43 @@
                 <br>
                 <p>
                     <span style="width: 25%; float: left">Tóm tắt tài liệu</span>
-                    <span style="width: 75%; float: left"><b>{{document.summary || 'Chưa xác định'}}</b></span>
+                    <span style="width: 75%; float: left">{{document.summary || 'Chưa xác định'}}</span>
                 </p>
                 <br>
                 <v-divider></v-divider>
                 <br>
                 <p>
                     <span style="width: 25%; float: left">Thời gian tạo</span>
-                    <span style="width: 75%; float: left"><b>{{moment(document.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</b></span>
+                    <span style="width: 75%; float: left">{{moment(document.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</span>
                 </p>
                 <br>
                 <v-divider></v-divider>
                 <br>
                 <p>
                     <span style="width: 25%; float: left">Thời gian hiệu lực</span>
-                    <span style="width: 75%; float: left"><b>{{moment(document.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</b></span>
+                    <span style="width: 75%; float: left">{{moment(document.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</span>
                 </p>
                 <br>
                 <v-divider></v-divider>
                 <br>
                 <p>
                     <span style="width: 25%; float: left">Thời gian hết hạn</span>
-                    <span style="width: 75%; float: left"><b>{{moment(document.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</b></span>
+                    <span style="width: 75%; float: left">{{moment(document.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</span>
+                </p>
+                <br>
+                <v-divider></v-divider>
+                <br>
+                <p>
+                    <span style="width: 25%; float: left">Thời gian chỉnh sửa gần nhất</span>
+                    <span style="width: 75%; float: left; position: relative; bottom: 15px">
+                        {{moment(document.lastModifiedTime,'DD-MM-YYYY HH:mm:ss')
+                            .format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
+                        <DocumentHistory :document="document" ref="documentHistory">
+                            <template #activator="{ on }">
+                                <v-btn v-on="on" color="primary">Xem lịch sử chỉnh sửa</v-btn>
+                            </template>
+                        </DocumentHistory>
+                    </span>
                 </p>
                 <br>
                 <v-divider></v-divider>
@@ -57,6 +72,7 @@
                 <br>
                 <v-divider></v-divider>
             </v-card-text>
+
             <br/>
             <v-card>
                 <v-card-title>Nội dung chi tiết</v-card-title>
@@ -66,6 +82,7 @@
                 </v-card-text>
             </v-card>
             <br/>
+
             <v-layout row>
                 <DocumentForm :form="{...form}" @refresh="getDocumentDetail(id)" :document-title="`${document.title}`">
                     <template #activator="{on}">
@@ -80,6 +97,29 @@
             <h3 style="color:red;">Không tìm thấy tài liệu cần tìm!</h3>
         </template>
         <br>
+
+
+        <v-expansion-panel>
+            <v-expansion-panel-content>
+                <template #header>
+                    <span><v-icon left>mdi-file-document</v-icon>Danh sách tác vụ liên quan</span>
+                </template>
+                <div class="text-xs-center" v-if="!tasks || (!!tasks && !tasks.length)">
+                    <span>Không có tác vụ nào</span>
+                </div>
+                <v-list three-line>
+                    <v-list-tile v-for="task in tasks" :key="task.id">
+                        <v-list-tile-content>
+                            <v-list-tile-title>Tiêu đề: {{ task.title }}</v-list-tile-title>
+                            <v-list-tile-sub-title>Tổng quát: {{ task.summary }}</v-list-tile-sub-title>
+                            <v-list-tile-sub-title>
+                                <router-link :to="`/tasks/${task.id}`">Đường dẫn tới tác vụ</router-link>
+                            </v-list-tile-sub-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list>
+            </v-expansion-panel-content>
+        </v-expansion-panel>
     </div>
 </template>
 
@@ -105,8 +145,9 @@
                     createdTime: '',
                     startTime: '',
                     endTime: '',
-                    lastModifiedTime: ''
+                    lastModifiedTime: '',
                 },
+                tasks: [],
                 loaded: false,
                 isServerError: false
             }
@@ -134,6 +175,7 @@
                     .then(
                         response => {
                             this.document = response.data;
+                            this.getTaskDocuments();
                             this.loaded = true;
                         }
                     )
@@ -157,6 +199,12 @@
                         }
                     )
                 }
+            },
+            getTaskDocuments: function () {
+                axios.get(`http://localhost:8080/documents/${this.id}/tasks`)
+                    .then(response => {
+                        this.tasks = response.data;
+                    })
             },
             goBack: function () {
                 this.$router.back();

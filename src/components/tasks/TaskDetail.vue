@@ -46,9 +46,9 @@
                 </router-link>
             </p>
 
-            <br v-if="isChild">
-            <v-divider v-if="isChild"></v-divider>
-            <br v-if="isChild">
+            <br v-if="(isAdmin || isManager) && isChild">
+            <v-divider v-if="(isAdmin || isManager) && isChild"></v-divider>
+            <br v-if="(isAdmin || isManager) && isChild">
 
 
             <p>
@@ -86,7 +86,7 @@
                 <span style="width: 75%; float: left">
                     <v-progress-circular :value="completionRate * 100" size="58" rotate="270" width="8"
                                          color="primary" style="position: relative; bottom: 20px">
-                    <span style="color: black; font-size: 12px;">{{(completionRate * 100).toFixed(2) || 'Chưa xác định'}}%</span>
+                    <span style="color: black; font-size: 12px;">{{(completionRate * 100).toFixed(0) || 'Chưa xác định'}}%</span>
                 </v-progress-circular>
                 </span>
             </p>
@@ -334,9 +334,6 @@
 
             <TaskFile :task="{...task}"></TaskFile>
 
-            <br>
-            <v-divider></v-divider>
-            <br>
 
         </div>
     </div>
