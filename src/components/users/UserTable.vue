@@ -15,7 +15,7 @@
             <br>
             <v-btn color="primary" @click="refresh">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <UserForm @refresh="refresh">
+            <UserForm @refresh="refresh" creating>
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary">Tạo mới nhân viên</v-btn>
                 </template>

@@ -5,7 +5,7 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <DepartmentForm :creating="false" @refresh="getDepartments">
+            <DepartmentForm creating @refresh="getDepartments">
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary">Tạo mới phòng ban</v-btn>
                 </template>

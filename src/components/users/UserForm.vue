@@ -16,7 +16,7 @@
                                 <v-text-field v-model="userForm.email"
                                               label="Email"
                                               name="email"
-                                              v-validate="{emailValidator: true}"
+                                              v-validate="{emailValidator: [currentEmail, creating]}"
                                               :rules="emailRule"
                                               validate-on-blur
                                 ></v-text-field>
@@ -78,6 +78,7 @@
     import {mapState} from 'vuex'
     import {mapGetters} from 'vuex'
     import moment from 'moment'
+    import 'vee-validate'
 
     export default {
         name: "UserForm",
@@ -92,7 +93,7 @@
                 ],
                 passwordRule: [
                     val => !!val || "Không được để trống mục này! Xin hãy điền vào mục này!"
-                ],
+                ]
             }
         },
         computed: {
@@ -126,7 +127,19 @@
                         },
                     }
                 }
-            }
+            },
+            creating: {
+                type: Boolean,
+                default: function () {
+                    return false;
+                }
+            },
+            currentEmail: {
+                type: String,
+                default: function () {
+                    return '';
+                }
+            },
         },
         methods: {
             save: function () {
