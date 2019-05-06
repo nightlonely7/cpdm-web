@@ -2,27 +2,86 @@
     <div>
         <h2>Tên hiển thị: {{user.displayName}}</h2>
         <v-divider></v-divider>
-        <br>
-        <h4>Tên đầy đủ: {{user.fullName || 'Chưa xác định'}}</h4>
-        <br>
-        <h4>Email: <span style="color: red">{{user.email}}</span></h4>
-        <br>
-        <p style="color: blue">Ngày tạo: {{user.createdTime}}</p>
-        <p style="color: blue">Số điện thoại: {{user.phone || 'Chưa xác định'}}</p>
-        <p style="color: blue">Địa chỉ: {{user.address || 'Chưa xác định'}}</p>
-        <p style="color: blue">Ngày sinh: {{user.birthday || 'Chưa xác định'}}</p>
-        <p style="color: blue">Giới tính: {{user.gender ? 'Nam' : 'Nữ' || 'Chưa xác định'}}</p>
-        <p style="color: blue">Tuổi: {{user.age || 'Chưa xác định'}}</p>
-        <p style="color: blue">Phòng ban: {{user.department.name}}</p>
-        <p style="color: blue">Chức vụ: {{user.role.name}}</p>
+        <v-card-text>
+            <p>
+                <span style="width: 25%; float: left">Tên đầy đủ</span>
+                <span style="width: 75%; float: left"><b>{{user.fullName || 'Chưa xác định'}}</b></span>
+            </p>
+            <br>
+            <v-divider></v-divider>
+            <br>
+            <p>
+                <span style="width: 25%; float: left">Email</span>
+                <span style="width: 75%; float: left"><b>{{user.email || 'Chưa xác định'}}</b></span>
+            </p>
+            <br>
+            <v-divider></v-divider>
+            <br>
+            <p>
+                <span style="width: 25%; float: left">Ngày tạo</span>
+                <span style="width: 75%; float: left"><b>{{user.createdTime || 'Chưa xác định'}}</b></span>
+            </p>
+            <br>
+            <v-divider></v-divider>
+            <br>
+            <p>
+                <span style="width: 25%; float: left">Số điện thoại</span>
+                <span style="width: 75%; float: left"><b>{{user.phone || 'Chưa xác định'}}</b></span>
+            </p>
+            <br>
+            <v-divider></v-divider>
+            <br>
+            <p>
+                <span style="width: 25%; float: left">Địa chỉ</span>
+                <span style="width: 75%; float: left"><b>{{user.address || 'Chưa xác định'}}</b></span>
+            </p>
+            <br>
+            <v-divider></v-divider>
+            <br>
+            <p>
+                <span style="width: 25%; float: left">Ngày sinh</span>
+                <span style="width: 75%; float: left"><b>{{user.birthday || 'Chưa xác định'}}</b></span>
+            </p>
+            <br>
+            <v-divider></v-divider>
+            <br>
+            <p>
+                <span style="width: 25%; float: left">Giới tính</span>
+                <span style="width: 75%; float: left"><b>{{user.gender ? 'Nam' : 'Nữ' || 'Chưa xác định'}}</b></span>
+            </p>
+            <br>
+            <v-divider></v-divider>
+            <br>
+            <p>
+                <span style="width: 25%; float: left">Tuổi</span>
+                <span style="width: 75%; float: left"><b>{{user.age || 'Chưa xác định'}}</b></span>
+            </p>
+            <br>
+            <v-divider></v-divider>
+            <br>
+            <p>
+                <span style="width: 25%; float: left">Phòng ban</span>
+                <span style="width: 75%; float: left"><b>{{user.department.name || 'Chưa xác định'}}</b></span>
+            </p>
+            <br>
+            <v-divider></v-divider>
+            <br>
+            <p>
+                <span style="width: 25%; float: left">Chức vụ</span>
+                <span style="width: 75%; float: left"><b>{{user.role.name || 'Chưa xác định'}}</b></span>
+            </p>
+        </v-card-text>
+        <br/>
         <br>
         <v-divider></v-divider>
-        <UserForm :userForm="{...user}">
-            <template #activator="{on}">
-                <v-btn v-on="on" color="primary">Sửa</v-btn>
-            </template>
-        </UserForm>
-        <v-btn @click="deleteUser" color="error">Xóa</v-btn>
+        <v-layout row>
+            <UserForm :userForm="{...user}">
+                <template #activator="{on}">
+                    <v-btn v-on="on" color="primary">Chỉnh Sửa</v-btn>
+                </template>
+            </UserForm>
+            <v-btn @click="deleteUser" color="error">Xóa</v-btn>
+        </v-layout>
         <UserForm @refresh="getUser"></UserForm>
     </div>
 </template>

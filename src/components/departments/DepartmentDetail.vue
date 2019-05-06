@@ -94,7 +94,7 @@
             <DepartmentForm :department-form="{...department}" @refresh="getDepartmentDetail(id)"
                             :department-name="department.name" :department-alias="department.alias">
                 <template #activator="{on}">
-                    <v-btn v-on="on" color="primary">Sửa</v-btn>
+                    <v-btn v-on="on" color="primary">Chỉnh Sửa</v-btn>
                 </template>
             </DepartmentForm>
             <v-btn @click="deleteDepartment" color="error">Xóa</v-btn>

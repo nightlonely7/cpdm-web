@@ -66,11 +66,11 @@
                 </DocumentForm>
                 <v-btn @click="deleteDocument" color="error">Xóa</v-btn>
             </v-layout>
+            <DocumentFile :document="{...document}"></DocumentFile>
         </template>
-        <template v-else>
+        <template v-if="isServerError">
             <h3 style="color:red;">Không tìm thấy tài liệu cần tìm!</h3>
         </template>
-        <DocumentFile :document="{...document}"></DocumentFile>
         <br>
     </div>
 </template>
@@ -97,9 +97,10 @@
                     createdTime: '',
                     startTime: '',
                     endTime: '',
-                    lastModifiedTime: '',
+                    lastModifiedTime: ''
                 },
                 loaded: false,
+                isServerError: false
             }
         },
         computed: {
@@ -131,6 +132,7 @@
                     .catch(
                         err => {
                             console.log(err);
+                            this.isServerError = true;
                         }
                     );
             },

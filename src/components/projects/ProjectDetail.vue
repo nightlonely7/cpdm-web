@@ -90,7 +90,7 @@
             <ProjectForm :project-form="{...project}" @refresh="getProjectDetail(id)"
                          :project-name="project.name" :project-alias="project.alias">
                 <template #activator="{on}">
-                    <v-btn v-on="on" color="primary">Sửa</v-btn>
+                    <v-btn v-on="on" color="primary">Chỉnh Sửa</v-btn>
                 </template>
             </ProjectForm>
             <v-btn @click="deleteProject" color="error">Xóa</v-btn>
