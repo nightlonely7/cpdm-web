@@ -8,7 +8,7 @@
         <template v-if="loaded">
             <v-card-text>
                 <p>
-                    <span style="width: 25%; float: left">Tên tài liệu</span>
+                    <span style="width: 25%; float: left"><b>Tên tài liệu</b></span>
                     <span style="width: 75%; float: left"><b>{{document.title || 'Chưa xác định'}}</b></span>
                 </p>
                 <br>
@@ -16,30 +16,46 @@
                 <br>
                 <p>
                     <span style="width: 25%; float: left">Tóm tắt tài liệu</span>
-                    <span style="width: 75%; float: left"><b>{{document.summary || 'Chưa xác định'}}</b></span>
+                    <span style="width: 75%; float: left">{{document.summary || 'Chưa xác định'}}</span>
                 </p>
                 <br>
                 <v-divider></v-divider>
                 <br>
                 <p>
                     <span style="width: 25%; float: left">Thời gian tạo</span>
-                    <span style="width: 75%; float: left"><b>{{moment(document.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</b></span>
+                    <span style="width: 75%; float: left">{{moment(document.createdTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</span>
                 </p>
                 <br>
                 <v-divider></v-divider>
                 <br>
                 <p>
                     <span style="width: 25%; float: left">Thời gian hiệu lực</span>
-                    <span style="width: 75%; float: left"><b>{{moment(document.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</b></span>
+                    <span style="width: 75%; float: left">{{moment(document.startTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</span>
                 </p>
                 <br>
                 <v-divider></v-divider>
                 <br>
                 <p>
                     <span style="width: 25%; float: left">Thời gian hết hạn</span>
-                    <span style="width: 75%; float: left"><b>{{moment(document.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</b></span>
+                    <span style="width: 75%; float: left">{{moment(document.endTime).format('DD-MM-YYYY HH:mm:ss') || 'Chưa xác định'}}</span>
+                </p>
+                <br>
+                <v-divider></v-divider>
+                <br>
+                <p>
+                    <span style="width: 25%; float: left">Thời gian chỉnh sửa gần nhất</span>
+                    <span style="width: 75%; float: left; position: relative; bottom: 15px">
+                        {{moment(document.lastModifiedTime,'DD-MM-YYYY HH:mm:ss')
+                            .format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
+                        <DocumentHistory :document="document" ref="documentHistory">
+                            <template #activator="{ on }">
+                                <v-btn v-on="on" color="primary">Xem lịch sử chỉnh sửa</v-btn>
+                            </template>
+                        </DocumentHistory>
+                    </span>
                 </p>
             </v-card-text>
+
             <br/>
             <v-card>
                 <v-card-title>Nội dung chi tiết</v-card-title>
@@ -49,15 +65,7 @@
                 </v-card-text>
             </v-card>
             <br/>
-            <p>Thời gian chỉnh sửa gần nhất:
-                {{moment(document.lastModifiedTime,'DD-MM-YYYY HH:mm:ss' )
-                .format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
-                <DocumentHistory :document="document" ref="documentHistory">
-                    <template #activator="{ on }">
-                        <v-btn v-on="on" color="primary">Xem lịch sử chỉnh sửa</v-btn>
-                    </template>
-                </DocumentHistory>
-            </p>
+
             <v-layout row>
                 <DocumentForm :form="{...form}" @refresh="getDocumentDetail(id)" :document-title="`${document.title}`">
                     <template #activator="{on}">
@@ -72,7 +80,6 @@
             <h3 style="color:red;">Không tìm thấy tài liệu cần tìm!</h3>
         </template>
         <br>
-
 
 
         <v-expansion-panel>
