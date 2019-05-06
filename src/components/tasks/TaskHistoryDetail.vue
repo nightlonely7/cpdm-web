@@ -7,53 +7,132 @@
         </div>
         <div v-if="taskHistoryLoaded">
             <v-container>
-                <h2>Tiêu đề : {{taskHistory.data.title || 'Chưa xác định'}}</h2>
+
+                <p>
+                    <span style="width: 25%; float: left"><b>Tiêu đề</b></span>
+                    <span style="width: 75%; float: left"><b>{{taskHistory.data.title || 'Chưa xác định'}}</b></span>
+                </p>
+
+                <br>
                 <v-divider></v-divider>
                 <br>
-                <h4>Nội dung tổng quát: </h4>
-                <p>{{taskHistory.data.summary || 'Chưa xác định'}}</p>
+
+                <p>
+                    <span style="width: 25%; float: left">Nội dung tổng quát</span>
+                    <span style="width: 75%; float: left">{{taskHistory.data.summary || 'Chưa xác định'}}</span>
+                </p>
+
                 <br>
-                <p>Thuộc dự án: {{taskHistory.data.project.name || 'Chưa xác định'}}</p>
+                <v-divider></v-divider>
                 <br>
-                <p v-if="(isAdmin || isManager) && isChild">Thuộc tác vụ tổng:
+
+                <p>
+                    <span style="width: 25%; float: left">Thuộc dự án</span>
+                    <span style="width: 75%; float: left">{{taskHistory.data.project.name || 'Chưa xác định'}}</span>
+                </p>
+
+                <br>
+                <v-divider></v-divider>
+                <br>
+
+                <p v-if="(isAdmin || isManager) && isChild">
+                    <span style="width: 25%; float: left">Thuộc tác vụ tổng</span>
                     <router-link :to="`/tasks/${taskHistory.data.parentTask.id}`">
+                        <span style="width: 75%; float: left">
                         {{taskHistory.data.parentTask.title || 'Chưa xác định'}}
+                    </span>
                     </router-link>
                 </p>
+
+                <br v-if="isChild">
+                <v-divider v-if="isChild"></v-divider>
                 <br v-if="isChild">
 
-                <p>Trạng thái:
-                    <v-chip v-if="taskHistory.data.status === 'Waiting'">Đang chờ</v-chip>
-                    <v-chip v-if="taskHistory.data.status === 'Working'" color="primary" text-color="white">Đang thực
-                        hiện
-                    </v-chip>
-                    <v-chip v-if="taskHistory.data.status === 'Completed'" color="success" text-color="white">Hoàn
-                        tất
-                    </v-chip>
-                    <v-chip v-if="taskHistory.data.status === 'Complete outdated'" color="error" text-color="white">
-                        Hoàn tất quá hạn
-                    </v-chip>
-                    <v-chip v-if="taskHistory.data.status === 'Outdated'" color="error" text-color="white">Quá hạn
-                    </v-chip>
-                    <v-chip v-if="taskHistory.data.status === 'Near deadline'" color="warning" text-color="white">Gần
-                        tới hạn
-                    </v-chip>
+                <p>
+                    <span style="width: 25%; float: left">Độ ưu tiên</span>
+                    <span style="width: 75%; float: left">{{taskHistory.data.priority || 'Chưa xác định'}}</span>
                 </p>
-                <p>Độ ưu tiên: {{taskHistory.data.priority || 'Chưa xác định'}}</p>
-                <p>Người tạo: {{taskHistory.data.creator.displayName || 'Chưa xác định'}}</p>
-                <p>Người xử lý: {{taskHistory.data.executor.displayName || 'Chưa xác định'}}</p>
-                <p>Thời gian tạo:
-                {{moment(taskHistory.data.createdTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
+
+                <br>
+                <v-divider></v-divider>
+                <br>
+
+                <p>
+                    <span style="width: 25%; float: left">Người tạo</span>
+                    <span style="width: 75%; float: left">{{taskHistory.data.creator.displayName || 'Chưa xác định'}}
+                    </span>
                 </p>
-                <p>Thời gian bắt đầu:
-                {{moment(taskHistory.data.startTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+
+                <br>
+                <v-divider></v-divider>
+                <br>
+
+                <p>
+                    <span style="width: 25%; float: left">Người xử lý</span>
+                    <span style="width: 75%; float: left">{{taskHistory.data.executor.displayName || 'Chưa xác định'}}
+                    </span>
                 </p>
-                <p>Thời gian kết thúc:
-                {{moment(taskHistory.data.endTime,'DD-MM-YYYY HH:mm:ss' ).format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+
+                <br>
+                <v-divider></v-divider>
+                <br>
+
+                <p>
+                    <span style="width: 25%; float: left">Thời gian tạo</span>
+                    <span style="width: 75%; float: left">
+                        {{moment(taskHistory.data.createdTime, 'DD-MM-YYYY HH:mm:ss')
+                            .format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
+                    </span>
                 </p>
-                <p v-if="taskHistory.data.status === 'Completed' || taskHistory.data.status === 'Complete outdated'">Thời gian hoàn thành:
-                {{moment(taskHistory.data.completedTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+
+                <br>
+                <v-divider></v-divider>
+                <br>
+
+                <p>
+                    <span style="width: 25%; float: left">Thời gian bắt đầu</span>
+                    <span style="width: 75%; float: left">
+                        {{moment(taskHistory.data.startTime, 'DD-MM-YYYY HH:mm:ss')
+                            .format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+                    </span>
                 </p>
+
+                <br>
+                <v-divider></v-divider>
+                <br>
+
+                <p>
+                    <span style="width: 25%; float: left">Thời gian kết thúc</span>
+                    <span style="width: 75%; float: left">
+                        {{moment(taskHistory.data.endTime,'DD-MM-YYYY HH:mm:ss' )
+                            .format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+                    </span>
+                </p>
+
+                <br>
+                <v-divider></v-divider>
+                <br>
+
+                <p v-if="taskHistory.data.status === 'Completed' || taskHistory.data.status === 'Complete outdated'">
+                    <span style="width: 25%; float: left">Thời gian hoàn thành</span>
+                    <span style="width: 75%; float: left">
+                        {{moment(taskHistory.data.completedTime, 'DD-MM-YYYY HH:mm:ss')
+                            .format('DD/MM/YYYY HH:mm') || 'Chưa xác định'}}
+                    </span>
+                </p>
+
+                <br v-if="taskHistory.data.status === 'Completed' || taskHistory.data.status === 'Complete outdated'">
+                <v-divider v-if="taskHistory.data.status === 'Completed' || taskHistory.data.status === 'Complete outdated'"></v-divider>
+                <br v-if="taskHistory.data.status === 'Completed' || taskHistory.data.status === 'Complete outdated'">
+
+                <v-card>
+                    <v-card-title>Nội dung chi tiết</v-card-title>
+                    <v-divider></v-divider>
+                    <v-card-text v-html="taskHistory.data.description">
+                        <span v-if="!taskHistory.data.description">Chưa xác định</span>
+                    </v-card-text>
+                </v-card>
+
             </v-container>
         </div>
     </div>

@@ -19,8 +19,8 @@
         <v-card>
             <v-card-title>Nội dung chi tiết</v-card-title>
             <v-divider></v-divider>
-            <v-card-text>
-                {{department.description || 'Chưa xác định'}}
+            <v-card-text v-html="department.description">
+                <span v-if="!department.description">Chưa xác định</span>
             </v-card-text>
         </v-card>
         <br/>
@@ -90,13 +90,15 @@
                 </v-list-tile-content>
             </v-list-tile>
         </v-list>
-        <DepartmentForm :department-form="{...department}" @refresh="getDepartmentDetail(id)"
-                        :department-name="department.name" :department-alias="department.alias">
-            <template #activator="{on}">
-                <v-btn v-on="on" color="primary">Sửa</v-btn>
-            </template>
-        </DepartmentForm>
-        <v-btn @click="deleteDepartment" color="error">Xóa</v-btn>
+        <v-layout row>
+            <DepartmentForm :department-form="{...department}" @refresh="getDepartmentDetail(id)"
+                            :department-name="department.name" :department-alias="department.alias">
+                <template #activator="{on}">
+                    <v-btn v-on="on" color="primary">Chỉnh Sửa</v-btn>
+                </template>
+            </DepartmentForm>
+            <v-btn @click="deleteDepartment" color="error">Xóa</v-btn>
+        </v-layout>
         <br/>
     </div>
 </template>

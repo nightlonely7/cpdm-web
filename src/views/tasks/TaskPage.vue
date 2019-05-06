@@ -12,13 +12,13 @@
                         color="transparent"
                 >
                     <v-tab v-if="isStaff || isManager">
-                        TÁC VỤ ĐƯỢC GIAO
+                        <v-icon color="primary">mdi-arrow-collapse-down</v-icon>&nbsp;TÁC VỤ ĐƯỢC NHẬN
                     </v-tab>
                     <v-tab v-if="isAdmin || isManager">
-                        TÁC VỤ ĐÃ GIAO
+                        <v-icon color="primary">mdi-share</v-icon>&nbsp;TÁC VỤ ĐÃ GIAO
                     </v-tab>
                     <v-tab v-if="isManager || isStaff">
-                        TÁC VỤ THEO DÕI
+                        <v-icon color="primary">mdi-eye</v-icon>&nbsp;TÁC VỤ THEO DÕI
                     </v-tab>
                 </v-tabs>
             </template>
@@ -27,7 +27,7 @@
         <v-divider></v-divider>
         <v-tabs-items v-model="tabs">
             <v-tab-item v-if="isManager || isStaff">
-                <TaskTable title="TÁC VỤ ĐƯỢC GIAO" getTasksURL="search/executes"></TaskTable>
+                <TaskTable title="TÁC VỤ ĐƯỢC NHẬN" getTasksURL="search/executes"></TaskTable>
             </v-tab-item>
             <v-tab-item v-if="isManager || isAdmin">
                 <TaskTable title="TÁC VỤ ĐÃ GIAO" getTasksURL="search/creates"></TaskTable>

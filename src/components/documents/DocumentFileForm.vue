@@ -113,7 +113,7 @@
                     this.close();
                     this.$emit('refresh');
                 }).catch((error) => {
-                    console.log(error.response);
+                    console.log(error);
                     this.documentFileAlert = true;
                 }).finally(() => {
                     this.documentFileLoading = false;

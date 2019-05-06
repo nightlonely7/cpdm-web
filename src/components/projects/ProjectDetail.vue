@@ -19,10 +19,11 @@
         <v-card>
             <v-card-title>Nội dung chi tiết</v-card-title>
             <v-divider></v-divider>
-            <v-card-text>
-                {{project.description || 'Chưa xác định'}}
+            <v-card-text v-html="project.description">
+                <span v-if="!project.description">Chưa xác định</span>
             </v-card-text>
-        </v-card><br/>
+        </v-card>
+        <br/>
         <v-list three-line class="elevation-1">
             <v-subheader>
                 <h4>Danh sách tác vụ</h4>
@@ -85,13 +86,15 @@
                 </v-list-tile-content>
             </v-list-tile>
         </v-list>
-        <ProjectForm :project-form="{...project}" @refresh="getProjectDetail(id)"
-                     :project-name="project.name" :project-alias="project.alias">
-            <template #activator="{on}">
-                <v-btn v-on="on" color="primary">Sửa</v-btn>
-            </template>
-        </ProjectForm>
-        <v-btn @click="deleteProject" color="error">Xóa</v-btn>
+        <v-layout row>
+            <ProjectForm :project-form="{...project}" @refresh="getProjectDetail(id)"
+                         :project-name="project.name" :project-alias="project.alias">
+                <template #activator="{on}">
+                    <v-btn v-on="on" color="primary">Chỉnh Sửa</v-btn>
+                </template>
+            </ProjectForm>
+            <v-btn @click="deleteProject" color="error">Xóa</v-btn>
+        </v-layout>
         <br>
     </div>
 </template>

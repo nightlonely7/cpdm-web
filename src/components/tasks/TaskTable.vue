@@ -1,7 +1,7 @@
 <template>
     <div class="elevation-1">
         <v-toolbar flat color="white">
-            <v-toolbar-title class="animated bounce delay-1s">{{title}}</v-toolbar-title>
+            <v-toolbar-title>{{title}}</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh()">
                 <v-icon left>cached</v-icon>
@@ -10,7 +10,7 @@
             <v-spacer></v-spacer>
             <TaskForm v-if="getTasksURL === 'search/creates'" @refresh="refresh" relative creating>
                 <template #activator="{on}">
-                    <v-btn v-on="on" color="primary">Tạo mới tác vụ</v-btn>
+                    <v-btn v-on="on" color="primary"><v-icon left>add</v-icon>Tạo mới tác vụ</v-btn>
                 </template>
             </TaskForm>
         </v-toolbar>

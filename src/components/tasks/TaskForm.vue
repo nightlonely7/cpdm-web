@@ -1,14 +1,17 @@
 <template>
     <div>
-        <v-dialog v-model="dialog" fullscreen persistent>
+        <v-dialog v-model="dialog" fullscreen persistent transition="dialog-bottom-transition">
             <template #activator="{on}">
                 <slot name="activator" :on="on"></slot>
             </template>
+            <v-toolbar dark color="primary">
+                <v-btn icon @click="dialog = false">
+                    <v-icon>close</v-icon>
+                </v-btn>
+                <v-toolbar-title>{{creating ? 'TẠO MỚI' : 'CHỈNH SỬA'}} TÁC VỤ</v-toolbar-title>
+            </v-toolbar>
             <v-form ref="formRef">
                 <v-card>
-                    <v-card-title>
-                        <span class="headline">{{creating ? 'TẠO MỚI' : 'CHỈNH SỬA'}} TÁC VỤ</span>
-                    </v-card-title>
 
                     <v-card-text>
                         <v-container grid-list-md>
@@ -47,7 +50,6 @@
                                                     readonly
                                                     clearable
                                                     v-on="on"
-                                                    :rules="dateRules"
                                                     validate-on-blur
                                             ></v-text-field>
                                         </template>
@@ -128,7 +130,6 @@
                                                     clearable
                                                     :disabled="startDate == null"
                                                     v-on="on"
-                                                    :rules="dateRules"
                                                     validate-on-blur
                                             ></v-text-field>
                                         </template>
@@ -194,17 +195,16 @@
                                     </v-dialog>
                                 </v-flex>
 
-                                <!--                                <v-flex md12 sm12>-->
-                                <!--                                    <span>Thời lượng: {{duration}} ngày</span>-->
-                                <!--                                </v-flex>-->
-
                                 <v-flex md12 sm12>
-                                    <v-textarea v-model="taskForm.description"
-                                                label="Nội dung chi tiết"
-                                                height="500"
-                                                outline
-                                                counter
-                                    ></v-textarea>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <span class="font-weight-bold">Nội dung chi tiết:</span>
+                                    <br>
+                                    <br>
+                                    <ckeditor style="height: 500px" :editor="editor" v-model="taskForm.description"
+                                              :config="editorConfig">
+                                    </ckeditor>
                                 </v-flex>
 
                                 <v-flex md6 sm12>
@@ -309,8 +309,9 @@
     import axios from 'axios';
     import _ from 'lodash';
     import {mapState, mapGetters} from "vuex";
-    import {pushNotif} from '@/firebase.js'
-    import moment from 'moment';
+    import {pushNotif} from '@/firebase.js';
+    import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+    import '@ckeditor/ckeditor5-build-classic/build/translations/vi';
 
     export default {
         name: "TaskForm",
@@ -343,7 +344,14 @@
                 ],
                 executorRules: [
                     val => !!val || "Không được để trống!",
-                ]
+                ],
+                editor: ClassicEditor,
+                editorConfig: {
+                    language: 'vi',
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList',
+                        'numberedList', 'blockQuote', 'undo', 'redo'],
+                    removePlugins: ['imageUpload'],
+                },
             }
         },
         computed: {
@@ -393,6 +401,9 @@
                     }),
                 };
                 data.startTime = `${this.startDate} ${this.startTime}:00`;
+                if (this.startDate == null) {
+                    data.startTime = null;
+                }
                 data.endTime = `${this.endDate} ${this.endTime}:00`;
                 if (this.isAdmin) {
                     data.parentTask = null;

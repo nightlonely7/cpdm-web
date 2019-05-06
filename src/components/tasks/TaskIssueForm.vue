@@ -4,21 +4,24 @@
             <slot name="activator" :on="on"></slot>
         </template>
         <v-card>
-            <v-card-title>
-                <span class="headline">FORM VẤN ĐỀ</span>
-            </v-card-title>
+            <v-toolbar dark color="primary">
+                <v-btn icon @click="dialog = false">
+                    <v-icon>close</v-icon>
+                </v-btn>
+                <v-toolbar-title>{{creating ? 'TẠO MỚI' : 'CHỈNH SỬA'}} VẤN ĐỀ</v-toolbar-title>
+            </v-toolbar>
 
             <v-card-text>
                 <v-container grid-list-md>
                     <v-layout wrap>
-                        <v-flex md12>
+                        <v-flex xs12>
                             <v-text-field v-model="form.summary"
                                           label="Nội dung tóm tắt"
                                           :rules="summaryRules"
                                           validate-on-blur
                             ></v-text-field>
                         </v-flex>
-                        <v-flex md12>
+                        <v-flex xs12>
                             <v-textarea v-model="form.description"
                                           label="Mô tả"
                             ></v-textarea>
