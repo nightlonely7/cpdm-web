@@ -98,14 +98,11 @@
                         var title = this.creating ? 'Một vấn đề đã được thêm bởi ' + this.displayName : 'Một vấn đề đã được sửa bởi ' + this.displayName;
                         var detail = this.task.title;
                         var url = '/tasks/' + this.task.id;
-                        var users = [];
+                        var user = this.task.executor;
                         if(this.displayName === this.task.executor.displayName){
-                            users.push(this.task.creator);
+                            user = this.task.creator;
                         }
-                        else{
-                            users.push(this.task.executor);
-                        }
-                        pushNotif(title,detail,url,users);
+                        pushNotif(title,detail,url,user);
                         this.dialog = false;
                         this.$emit("refresh");
                     })

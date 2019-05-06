@@ -351,9 +351,8 @@
                                 var title = "Một yêu cầu chỉ đạo đã xóa bởi " + this.displayName;
                                 var detail = this.editItem.content;
                                 var url = "/receiverAskingRequests";
-                                var users = [];
-                                users.push(this.receivers[0]);
-                                pushNotif(title, detail, url, users);
+                                var user = this.receivers[0];
+                                pushNotif(title, detail, url, user);
                                 //refresh and dialog
                                 this.refresh();
                                 this.snackbar = true;
@@ -443,9 +442,8 @@
                 }
                 var url = "/receiverAskingRequests";
                 var detail = item.content;
-                var users = [];
-                users.push(item.receiver);
-                pushNotif(title, detail, url, users);
+                var user =item.receiver;
+                pushNotif(title, detail, url, user);
             }
         },
         watch: {

@@ -490,9 +490,8 @@
                                 var title = 'Một tác vụ đã hủy ' + this.displayName;
                                 var detail = this.task.title;
                                 var url = '/tasks/' + this.id;
-                                var users = [];
-                                users.push(this.task.executor);
-                                pushNotif(title, detail, url, users);
+                                var user = this.task.executor;
+                                pushNotif(title, detail, url, user);
                                 this.$router.push("/tasks");
                             }
                         )
@@ -505,9 +504,8 @@
                             var title = 'Một tác vụ đã hoàn thành bởi ' + this.displayName;
                             var detail = this.task.title;
                             var url = '/tasks/' + this.id;
-                            var users = [];
-                            users.push(this.task.creator);
-                            pushNotif(title, detail, url, users);
+                            var user = this.task.creator;
+                            pushNotif(title, detail, url, user);
                             this.getTask();
                         })
                         .catch(error => {
@@ -526,13 +524,11 @@
                             var title = 'Một vấn đề đã hủy bởi ' + this.displayName;
                             var detail = this.task.title;
                             var url = '/tasks/' + this.id;
-                            var users = [];
+                            var user = this.task.executor;
                             if (this.displayName === this.task.executor.displayName) {
-                                users.push(this.task.cretor);
-                            } else {
-                                users.push(this.task.executor);
+                                user = this.task.cretor;
                             }
-                            pushNotif(title, detail, url, users);
+                            pushNotif(title, detail, url, user);
                             this.refreshIssues();
                         })
                         .catch(error => {
@@ -551,9 +547,8 @@
                             var title = 'Một vấn đề đã hoàn thành bởi ' + this.displayName;
                             var detail = this.task.title;
                             var url = '/tasks/' + this.id;
-                            var users = [];
-                            users.push(this.task.cretor);
-                            pushNotif(title, detail, url, users);
+                            var user = this.task.cretor;
+                            pushNotif(title, detail, url, user);
                             this.refreshIssues();
                         })
                         .catch(error => {
@@ -587,9 +582,8 @@
                             var title = 'Tài liệu đã bị loại bỏ bởi ' + this.displayName;
                             var detail = this.task.title;
                             var url = '/tasks/' + this.id;
-                            var users = [];
-                            users.push(this.task.executor);
-                            pushNotif(title, detail, url, users);
+                            var user = this.task.executor;
+                            pushNotif(title, detail, url, user);
                             this.getTaskDocuments();
                         })
                         .catch(error => {

@@ -480,9 +480,8 @@
                 var title = "Đơn xin ủy quyền mới từ " + this.displayName;
                 var detail = item.content;
                 var url = "/approverAssignRequests";
-                var users = [];
-                users.push(item.approver);
-                pushNotif(title,detail,url,users);
+                var user = item.approver;
+                pushNotif(title,detail,url,user);
             },
             storeSelectedTasks() {
                 this.$store.commit('ASSIGN_REQUEST_STORE/SET_SELECTED_TASK', this.selected);

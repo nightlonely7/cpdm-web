@@ -293,6 +293,7 @@
     import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
     import '@ckeditor/ckeditor5-build-classic/build/translations/vi';
     import moment from 'moment';
+    import {pushNotif} from '@/firebase.js';
 
     export default {
         name: "DocumentForm",
@@ -399,6 +400,11 @@
                     }
                 })
                     .then(() => {
+                        var title = data.id === 0 ? 'Bạn nhận được một tại liệu mới' : 'Tài liệu được chỉnh sửa';
+                        var detail = data.title;
+                        var url = '/documents';
+                        var users = data.relatives;
+                        pushNotif(title,detail,url,users);
                         this.dialog = false;
                         this.$emit('refresh');
                     })

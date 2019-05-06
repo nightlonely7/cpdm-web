@@ -88,9 +88,8 @@
                         var title = 'Tài liệu đã được bổ sung bởi ' + this.displayName;
                         var detail = this.task.title;
                         var url = '/tasks/' + this.taskId;
-                        var users = [];
-                        users.push(this.task.executor);
-                        pushNotif(title,detail,url,users);
+                        var user = this.task.executor;
+                        pushNotif(title,detail,url,user);
                         this.close();
                         this.$emit("refresh");
                     })

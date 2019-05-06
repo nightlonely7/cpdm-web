@@ -46,7 +46,7 @@
                              onmouseout="this.style.cursor='none'"
                 >
                     <td class="text-xs-left">{{item.title}}</td>
-                    <td class="text-xs-left">{{item.summary}}</td>
+                    <td class="text-xs-left">{{item.summary | truncate(30)}}</td>
                     <td class="text-xs-left">{{item.project.name}}</td>
                     <td class="text-xs-left">{{moment(item.createdTime).format('DD-MM-YYYY HH:mm:ss')}}</td>
                     <td class="text-xs-left">{{moment(item.startTime).format('DD-MM-YYYY HH:mm:ss')}}</td>

@@ -43,7 +43,7 @@
                              onmouseout="this.style.cursor='none'"
                 >
                     <td class="text-xs-left" v-if="showColumn('title')">{{item.title}}</td>
-                    <td class="text-xs-left" v-if="showColumn('summary')">{{item.summary}}</td>
+                    <td class="text-xs-left" v-if="showColumn('summary')">{{item.summary | truncate(30)}}</td>
                     <td class="text-xs-left" v-if="showColumn('project.name')">{{item.project.name}}</td>
                     <td class="text-xs-left" v-if="showColumn('createdTime')">{{
                         moment(item.createdTime, 'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm')}}

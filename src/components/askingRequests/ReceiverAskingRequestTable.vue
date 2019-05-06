@@ -371,9 +371,8 @@
                 var title = "Yêu cầu đã xử lý bởi " + this.displayName;
                 var url = "/senderAskingRequests";
                 var detail = item.response;
-                var users = [];
-                users.push(item.user);
-                pushNotif(title,detail,url,users);
+                var user = item.user;
+                pushNotif(title,detail,url,user);
             }
         },
         watch: {
