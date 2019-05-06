@@ -8,6 +8,7 @@ const documentStoreDefaultState = () => {
         startTimeToSearchValue: null,
         endTimeFromSearchValue: null,
         endTimeToSearchValue: null,
+        projectId: null
     }
 };
 
@@ -38,6 +39,9 @@ export default {
         },
         SET_END_TIME_TO_SEARCH_VALUE(state, endTimeToSearchValue) {
             state.endTimeToSearchValue = endTimeToSearchValue
+        },
+        SET_PROJECT_ID_VALUE(state, projectId) {
+            state.projectId = projectId;
         },
         RESET(state) {
             state = Object.assign(state, documentStoreDefaultState());

@@ -70,7 +70,7 @@
         computed: {
             ...mapState('DEPARTMENT_STORE', {
                 nameSearchValue: state => state.nameSearchValue,
-                aliasSearchValue: state => state.aliasSearchValue,
+                aliasSearchValue: state => state.aliasSearchValue
             })
         },
         methods: {

@@ -11,11 +11,17 @@
         <v-toolbar flat color="white">
             <v-toolbar-title class="animated bounce delay-1s">Quản lý tài liệu</v-toolbar-title>
             <v-divider class="mx-2" inset vertical></v-divider>
-            <v-btn color="primary" @click="refresh()"><v-icon left>mdi-cached</v-icon>Tải lại</v-btn>
+            <v-btn color="primary" @click="refresh()">
+                <v-icon left>mdi-cached</v-icon>
+                Tải lại
+            </v-btn>
             <v-spacer></v-spacer>
             <DocumentForm @refresh="refresh" v-if="isAdmin" document-title="" creating>
                 <template #activator="{on}">
-                    <v-btn v-on="on" color="primary"><v-icon left>add</v-icon>Tạo mới tài liệu</v-btn>
+                    <v-btn v-on="on" color="primary">
+                        <v-icon left>add</v-icon>
+                        Tạo mới tài liệu
+                    </v-btn>
                 </template>
             </DocumentForm>
         </v-toolbar>
@@ -99,6 +105,7 @@
                 startTimeToSearchValue: state => state.startTimeToSearchValue,
                 endTimeFromSearchValue: state => state.endTimeFromSearchValue,
                 endTimeToSearchValue: state => state.endTimeToSearchValue,
+                projectId: state => state.projectId
             }),
         },
         mounted() {
@@ -130,6 +137,7 @@
                     startTimeTo: this.startTimeToSearchValue,
                     endTimeFrom: this.endTimeFromSearchValue,
                     endTimeTo: this.endTimeToSearchValue,
+                    projectId: this.projectId
                 };
                 axios({url, method, params})
                     .then(response => {
@@ -181,6 +189,10 @@
                 this.debouncedGetDocuments();
             },
             endTimeToSearchValue: function () {
+                this.pagination.page = 1;
+                this.debouncedGetDocuments();
+            },
+            projectId: function () {
                 this.pagination.page = 1;
                 this.debouncedGetDocuments();
             },

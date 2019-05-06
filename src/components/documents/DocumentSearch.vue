@@ -15,6 +15,10 @@
                                   validation-on-blur
                                   clearable
                     ></v-text-field>
+                    <v-select :items="projects" item-text="name" v-model="projectId"
+                              :item-value="project => project.id" label="Danh sách dự án"
+                              validate-on-blur
+                    ></v-select>
                     <DocumentSearchCreatedTime ref="documentSearchCreatedTime"></DocumentSearchCreatedTime>
                     <DocumentSearchStartTime ref="documentSearchStartTime"></DocumentSearchStartTime>
                     <DocumentSearchEndTime ref="documentSearchEndTime"></DocumentSearchEndTime>
@@ -28,6 +32,7 @@
     import DocumentSearchCreatedTime from "./DocumentSearchCreatedTime";
     import DocumentSearchStartTime from "./DocumentSearchStartTime";
     import DocumentSearchEndTime from "./DocumentSearchEndTime";
+    import axios from 'axios';
 
     export default {
         name: "DocumentSearch",
@@ -44,6 +49,7 @@
                     val => (val !== null && (val === '' || (val.match(this.charNumberRegex) !== null)))
                         || "Chỉ được điền kí tự chữ cái và chữ số, không được điền các dấu câu hay kí tự khác!"
                 ],
+                projects: []
             }
         },
         computed: {
@@ -77,6 +83,18 @@
                     }
                 }
             },
+            projectId: {
+                get() {
+                    return this.$store.state.DOCUMENT_STORE.projectId;
+                },
+                set(value) {
+                    this.$store.commit('DOCUMENT_STORE/SET_PROJECT_ID_VALUE', value)
+                }
+            },
+        },
+        mounted(){
+            this.getProjects();
+            this.projectId = 1;
         },
         methods: {
             reset() {
@@ -84,6 +102,19 @@
                 this.$refs.taskSearchCreatedTime.reset();
                 this.$refs.taskSearchEndTime.reset();
                 this.$store.commit('DOCUMENT_STORE/RESET_SEARCH');
+            },
+            getProjects: function () {
+                axios.get('http://localhost:8080/projects')
+                    .then(
+                        response => {
+                            this.projects = response.data.content;
+                        }
+                    )
+                    .catch(
+                        err => {
+                            console.log(err);
+                        }
+                    );
             },
         }
     }
