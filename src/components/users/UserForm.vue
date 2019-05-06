@@ -112,7 +112,7 @@
                         email: '',
                         password: '',
                         gender: false,
-                        birthDay: moment().format("YYYY-MM-DD"),
+                        birthday: null,
                         phone: '',
                         address: '',
                         role: {
@@ -145,10 +145,12 @@
             save: function () {
                 console.log(this.userForm);
                 const userForm = {...this.userForm};
-                userForm.displayName = this.userForm.email;
-                userForm.fullName = this.userForm.email;
                 userForm.phone = "0123456789";
                 userForm.password = '12345678';
+                if(userForm.id === 0){
+                    userForm.displayName = this.userForm.email;
+                    userForm.fullName = this.userForm.email;
+                }
 
                 const url = `http://localhost:8080/users/${userForm.id === 0 ? '' : userForm.id}`;
                 const method = `${userForm.id === 0 ? 'POST' : 'PUT'}`;

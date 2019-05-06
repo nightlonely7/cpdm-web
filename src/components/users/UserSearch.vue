@@ -5,8 +5,6 @@
                 <v-form ref="form">
                     <v-text-field v-model="emailSearchValue"
                                   label="Tìm theo email"
-                                  :rules="emailSearchRules"
-                                  validation-on-blur
                                   clearable
                     ></v-text-field>
                     <v-text-field v-model="displayNameSearchValue"
@@ -67,10 +65,6 @@
                 charNumberRegex: /^[a-zA-Z0-9_.-]*$/,
                 emailRegex: /^[a-zA-Z0-9]+@[a-zA-Z]+.[a-zA-Z]+$/,
                 // specialCharRegex: "!@#$^&%*()+=-[]/{}|:<>?,.",
-                emailSearchRules: [
-                    val => (val !== null && (val === '' || (val.match(this.emailRegex) !== null)))
-                        || "Sai định dạng email!"
-                ],
                 displayNameSearchRules: [
                     val => (val !== null && (val === '' || (val.match(this.charNumberRegex) !== null)))
                         || "Chỉ được điền kí tự chữ cái và chữ số, không được điền các dấu câu hay kí tự khác!"
@@ -87,15 +81,7 @@
                     return this.$store.state.USER_STORE.emailSearchValue;
                 },
                 set(value) {
-                    // this.$store.commit('USER_STORE/SET_DISPLAY_NAME_SEARCH_VALUE', value === null ? '' : value);
-                    if (value !== null) {
-                        if (value === '' || value.match(this.emailRegex)) {
-                            this.$store.commit('USER_STORE/SET_EMAIL_SEARCH_VALUE', value);
-                        }
-                    } else {
-                        this.$store.commit('USER_STORE/SET_EMAIL_SEARCH_VALUE', '');
-                        this.$refs.form.resetValidation();
-                    }
+                    this.$store.commit('USER_STORE/SET_EMAIL_SEARCH_VALUE', value === null ? '' : value);
                 }
             },
             displayNameSearchValue: {

@@ -14,8 +14,6 @@ async function checkEmailExisted(value, obj) {
     let isEmailExisted = true;
     let currentEmail = obj[0];
     let isEdit = obj[1];
-    console.log("Current Email: " + currentEmail);
-    console.log("Is Edit: " + isEdit);
     if(!isEdit && currentEmail !== '' && currentEmail === value){
         return true;
     }
