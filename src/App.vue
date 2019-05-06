@@ -35,7 +35,6 @@
                         <v-list-tile-title>Quản lý tài liệu</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
-
                 <v-list-tile to="/tasks">
                     <v-list-tile-action>
                         <v-icon>account_circle</v-icon>
@@ -44,6 +43,102 @@
                         <v-list-tile-title>Quản lý tác vụ</v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>
+                <v-list-group>
+                    <template v-slot:activator>
+                        <v-list-tile>
+                            <v-list-tile-action>
+                                <v-icon>question_answer</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Xin ý kiến lãnh đạo</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </template>
+                    <v-list-tile to="/createAskingRequests" v-if="isManager || isStaff">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Xin ý kiến</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile to="/senderAskingRequests" v-if="isManager || isStaff">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Theo dõi</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile to="/receiverAskingRequests" v-if="isManager || isAdmin">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Phản hồi</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list-group>
+                <v-list-tile to="/users" v-if="isManager || isAdmin">
+                    <v-list-tile-action>
+                        <v-icon>mdi-file-document</v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title>Quản lý nhân viên</v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+                <v-list-group>
+                    <template v-slot:activator>
+                        <v-list-tile>
+                            <v-list-tile-action>
+                                <v-icon>mdi-calendar-blank</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Quản lí nghỉ phép</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </template>
+                    <v-list-tile v-if="isAdmin || isManager" to="/viewLeaveCalendar">
+                    <v-list-tile-action>
+                    <v-icon></v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                    <v-list-tile-title>Lịch nghỉ phép tuần</v-list-tile-title>
+                    </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile v-if="isAdmin || isManager" to="/viewUserLeaves">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Theo dõi nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile to="/policyForLeave">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Chính sách nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile v-if="isAdmin || isManager" to="/approverLeaveRequests">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Duyệt nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile v-if="isStaff || isManager" to="/userLeaveRequests">
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Xin nghỉ phép</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list-group>
                 <v-list-group>
                     <template #activator>
                         <v-list-tile>
@@ -78,103 +173,6 @@
                         </v-list-tile-action>
                         <v-list-tile-content>
                             <v-list-tile-title>Đơn ủy quyền</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
-                </v-list-group>
-                <v-list-group>
-                    <template v-slot:activator>
-                        <v-list-tile>
-                            <v-list-tile-action>
-                                <v-icon>question_answer</v-icon>
-                            </v-list-tile-action>
-                            <v-list-tile-content>
-                                <v-list-tile-title>Xin ý kiến lãnh đạo</v-list-tile-title>
-                            </v-list-tile-content>
-                        </v-list-tile>
-                    </template>
-
-                    <v-list-tile to="/receiverAskingRequests" v-if="isManager || isAdmin">
-                        <v-list-tile-action>
-                            <v-icon></v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Phản hồi</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
-                    <v-list-tile to="/createAskingRequests" v-if="isManager || isStaff">
-                        <v-list-tile-action>
-                            <v-icon></v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Xin ý kiến</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
-                    <v-list-tile to="/senderAskingRequests" v-if="isManager || isStaff">
-                        <v-list-tile-action>
-                            <v-icon></v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Theo dõi</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
-                </v-list-group>
-                <v-list-tile to="/users" v-if="isManager || isAdmin">
-                    <v-list-tile-action>
-                        <v-icon>mdi-file-document</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>Quản lý nhân viên</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
-                <v-list-group>
-                    <template v-slot:activator>
-                        <v-list-tile>
-                            <v-list-tile-action>
-                                <v-icon>mdi-calendar-blank</v-icon>
-                            </v-list-tile-action>
-                            <v-list-tile-content>
-                                <v-list-tile-title>Quản lí nghỉ phép</v-list-tile-title>
-                            </v-list-tile-content>
-                        </v-list-tile>
-                    </template>
-                    <v-list-tile v-if="isAdmin" to="/viewLeaveCalendar">
-                    <v-list-tile-action>
-                    <v-icon></v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                    <v-list-tile-title>Lịch nghỉ phép tuần</v-list-tile-title>
-                    </v-list-tile-content>
-                    </v-list-tile>
-                    <v-list-tile v-if="isAdmin || isManager" to="/viewUserLeaves">
-                        <v-list-tile-action>
-                            <v-icon></v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Theo dõi nghỉ phép</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
-                    <v-list-tile v-if="isAdmin" to="/managePolicyForLeave">
-                        <v-list-tile-action>
-                            <v-icon></v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Chính sách nghỉ phép</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
-                    <v-list-tile v-if="isAdmin || isManager" to="/approverLeaveRequests">
-                        <v-list-tile-action>
-                            <v-icon></v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Duyệt nghỉ phép</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
-                    <v-list-tile v-if="isStaff || isManager" to="/userLeaveRequests">
-                        <v-list-tile-action>
-                            <v-icon></v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Xin nghỉ phép</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
                 </v-list-group>
@@ -264,7 +262,7 @@
                 </v-card>
             </v-menu>
         </v-toolbar>
-        <v-content>
+        <v-content @refresh="getNotifications">
             <v-container fluid>
                 <router-view :key="$route.fullPath"></router-view>
             </v-container>
@@ -273,12 +271,12 @@
             <span class="white--text">&copy; 2019</span>
         </v-footer>
         <!--Vue-notification-->
-        <notifications group="foo" position="top right">
+        <notifications group="foo" position="bottom right">
             <template slot="body" slot-scope="props">
                 <div style="background-color: yellow" @click="read(props.item.data.id, props.item.data.url)">
-                    <a class="caption" v-html="props.item.title"/>
+                    <a class="body-1 font-weight-bold" v-html="props.item.title"/>
                     <br/>
-                    <a class="title" v-html="props.item.text"/>
+                    <a class="caption" v-html="props.item.text"/>
                 </div>
             </template>
         </notifications>
@@ -324,9 +322,6 @@
             }),
         },
         methods: {
-            test(data) {
-                console.log(data);
-            },
             logout: function () {
                 this.$store.dispatch('AUTHENTICATION/LOGOUT')
                     .then(() => {
@@ -346,7 +341,6 @@
                             }
                         }
                     }
-                    console.log('getted');
                 }).catch(error => {
                     if (error.response) {
                         console.log(error.response.data);
@@ -401,8 +395,13 @@
         },
         watch: {
             '$route'(val) {
-                this.title = val.name
-            }
+                this.title = val.name;
+            },
+            isLoggedIn: function(){
+                if(this.isLoggedIn){
+                    this.getNotifications();
+                }
+            },
         },
     }
 </script>

@@ -122,9 +122,9 @@ const router = new Router({
             component: () => import('@/views/leaveRequests/ViewUserLeavePage.vue')
         },
         {
-            path: '/managePolicyForLeave',
-            name: 'Quản lý chính sách nghỉ phép',
-            component: () => import('@/views/leaveRequests/ManagePolicyForLeavePage.vue')
+            path: '/policyForLeave',
+            name: 'Chính sách nghỉ phép',
+            component: () => import('@/views/leaveRequests/PolicyForLeavePage.vue')
         },
         {
             path: '/createUserAssignRequests',
