@@ -13,7 +13,7 @@
             <v-divider class="mx-2" inset vertical></v-divider>
             <v-btn color="primary" @click="refresh">Làm mới</v-btn>
             <v-spacer></v-spacer>
-            <ProjectForm :creating="false" @refresh="getProjects">
+            <ProjectForm creating @refresh="getProjects">
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary">Tạo mới dự án</v-btn>
                 </template>

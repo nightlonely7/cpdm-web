@@ -1,8 +1,13 @@
 <template>
     <div>
-        <h2>Tên hiển thị: {{user.displayName}}</h2>
-        <v-divider></v-divider>
         <v-card-text>
+            <p>
+                <span style="width: 25%; float: left">Tên hiển thị</span>
+                <span style="width: 75%; float: left"><b>{{user.displayName || 'Chưa xác định'}}</b></span>
+            </p>
+            <br>
+            <v-divider></v-divider>
+            <br/>
             <p>
                 <span style="width: 25%; float: left">Tên đầy đủ</span>
                 <span style="width: 75%; float: left"><b>{{user.fullName || 'Chưa xác định'}}</b></span>
@@ -17,13 +22,13 @@
             <br>
             <v-divider></v-divider>
             <br>
-            <p>
-                <span style="width: 25%; float: left">Ngày tạo</span>
-                <span style="width: 75%; float: left"><b>{{user.createdTime || 'Chưa xác định'}}</b></span>
-            </p>
-            <br>
-            <v-divider></v-divider>
-            <br>
+            <!--<p>-->
+                <!--<span style="width: 25%; float: left">Ngày tạo</span>-->
+                <!--<span style="width: 75%; float: left"><b>{{user.createdTime || 'Chưa xác định'}}</b></span>-->
+            <!--</p>-->
+            <!--<br>-->
+            <!--<v-divider></v-divider>-->
+            <!--<br>-->
             <p>
                 <span style="width: 25%; float: left">Số điện thoại</span>
                 <span style="width: 75%; float: left"><b>{{user.phone || 'Chưa xác định'}}</b></span>
@@ -75,7 +80,7 @@
         <br>
         <v-divider></v-divider>
         <v-layout row>
-            <UserForm :userForm="{...user}">
+            <UserForm :userForm="{...user}" @refresh="getUser" :current-email="user.email">
                 <template #activator="{on}">
                     <v-btn v-on="on" color="primary">Chỉnh Sửa</v-btn>
                 </template>
@@ -96,13 +101,16 @@
         components: {UserForm},
         data() {
             return {
-                user: {department: {}, role: {}},
+                user: {
+                    email: '',
+                    department: {},
+                    role: {}
+                },
             }
         },
         props: {
             id: Number,
         },
-
         mounted() {
             this.$nextTick(function () {
                 this.getUser();

@@ -381,12 +381,13 @@
                         return {id: value};
                     }),
                 };
+                console.log(data.relatives);
                 data.startTime = `${this.startDate} ${this.startTime}:00`;
                 data.endTime = `${this.endDate} ${this.endTime}:00`;
                 console.log(data.startTime + "/" + data.endTime);
                 const method = data.id === 0 ? 'POST' : 'PUT';
                 const url = `http://localhost:8080/documents` + (data.id === 0 ? `` : `/${data.id}`);
-                console.log(data.id);
+                console.log(data.relatives);
                 // console.log(this.selectedDepartments.join(','));
                 axios({
                     url: url,
