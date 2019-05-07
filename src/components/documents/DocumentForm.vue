@@ -217,22 +217,6 @@
                                 </v-checkbox>
                             </v-flex>
                             <v-flex md12 sm12 v-if="selectAll">
-                                <span class="font-weight-bold">Danh sách phòng ban:</span>
-                                <div v-for="department in departments">
-                                    <v-checkbox v-model="selectedDepartments" :label="department.name"
-                                                :value="department.id" hide-details disabled color="blue">
-                                    </v-checkbox>
-                                </div>
-                            </v-flex>
-                            <v-flex md12 sm12 v-else>
-                                <span class="font-weight-bold">Danh sách phòng ban:</span>
-                                <div v-for="department in departments">
-                                    <v-checkbox v-model="selectedDepartments" :label="department.name"
-                                                :value="department.id" hide-details color="blue">
-                                    </v-checkbox>
-                                </div>
-                            </v-flex>
-                            <v-flex md12 sm12 v-if="selectAll">
                                 <span class="font-weight-bold">Danh sách quản lý:</span>
                                 <v-checkbox label="Chọn tất cả quản lý" color="blue" disabled hide-details>
                                 </v-checkbox>
@@ -243,7 +227,24 @@
                                             hide-details>
                                 </v-checkbox>
                             </v-flex>
+                            <v-flex md12 sm12 v-if="selectAll">
+                                <span class="font-weight-bold">Chọn theo phòng ban:</span>
+                                <div v-for="department in departments">
+                                    <v-checkbox v-model="selectedDepartments" :label="department.name"
+                                                :value="department.id" hide-details disabled color="blue">
+                                    </v-checkbox>
+                                </div>
+                            </v-flex>
+                            <v-flex md12 sm12 v-else>
+                                <span class="font-weight-bold">Chọn theo phòng ban:</span>
+                                <div v-for="department in departments">
+                                    <v-checkbox v-model="selectedDepartments" :label="department.name"
+                                                :value="department.id" hide-details color="blue">
+                                    </v-checkbox>
+                                </div>
+                            </v-flex>
                             <v-flex md12 sm12>
+                                <span class="font-weight-bold">Danh sách nhân viên:</span>
                                 <v-autocomplete label="Người liên quan"
                                                 hide-no-data
                                                 disabled
