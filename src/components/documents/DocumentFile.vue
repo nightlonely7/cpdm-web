@@ -123,23 +123,29 @@
                                 <v-divider></v-divider>
                             </v-card-text>
                             <v-card-actions>
-                                <v-btn color="success" @click="downloadFile(documentFile.detailFilename)">
-                                    <v-icon left>mdi-download</v-icon>
-                                    <span>Tải về</span>
-                                </v-btn>
-                                <DocumentFileForm :document="{...document}" :form="{...documentFile}"
-                                                  @refresh="getDocumentFiles">
-                                    <template #activator="{ on }">
-                                        <v-btn color="primary" v-on="on">
-                                            <v-icon left>mdi-pencil</v-icon>
-                                            <span>Sửa</span>
-                                        </v-btn>
-                                    </template>
-                                </DocumentFileForm>
-                                <v-btn color="error" @click="deleteFile(documentFile.id)">
-                                    <v-icon left>mdi-delete</v-icon>
-                                    <span>Xóa</span>
-                                </v-btn>
+                                <v-flex>
+                                    <v-btn color="success" @click="downloadFile(documentFile.detailFilename)">
+                                        <v-icon left>mdi-download</v-icon>
+                                        <span>Tải về</span>
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex>
+                                    <DocumentFileForm :document="{...document}" :form="{...documentFile}"
+                                                      @refresh="getDocumentFiles">
+                                        <template #activator="{ on }">
+                                            <v-btn color="primary" v-on="on">
+                                                <v-icon left>mdi-pencil</v-icon>
+                                                <span>Sửa</span>
+                                            </v-btn>
+                                        </template>
+                                    </DocumentFileForm>
+                                </v-flex>
+                                <v-flex>
+                                    <v-btn color="error" @click="deleteFile(documentFile.id)">
+                                        <v-icon left>mdi-delete</v-icon>
+                                        <span>Xóa</span>
+                                    </v-btn>
+                                </v-flex>
                             </v-card-actions>
                         </v-card>
                         <br>

@@ -21,7 +21,7 @@
                 </v-list-tile>
                 <v-list-tile to="/projects" v-if="isAdmin || isManager">
                     <v-list-tile-action>
-                        <v-icon>mdi-file-document</v-icon>
+                        <v-icon>ballot</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title>Quản lý dự án</v-list-tile-title>
@@ -29,7 +29,7 @@
                 </v-list-tile>
                 <v-list-tile to="/documents">
                     <v-list-tile-action>
-                        <v-icon>account_circle</v-icon>
+                        <v-icon>mdi-file-document</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title>Quản lý tài liệu</v-list-tile-title>
@@ -37,7 +37,7 @@
                 </v-list-tile>
                 <v-list-tile to="/tasks">
                     <v-list-tile-action>
-                        <v-icon>account_circle</v-icon>
+                        <v-icon>dvr</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title>Quản lý tác vụ</v-list-tile-title>
@@ -81,7 +81,7 @@
                 </v-list-group>
                 <v-list-tile to="/users" v-if="isManager || isAdmin">
                     <v-list-tile-action>
-                        <v-icon>mdi-file-document</v-icon>
+                        <v-icon>account_circle</v-icon>
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title>Quản lý nhân viên</v-list-tile-title>
