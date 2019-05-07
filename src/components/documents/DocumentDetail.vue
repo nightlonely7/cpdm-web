@@ -45,21 +45,6 @@
                 <p>
                     <span style="width: 25%; float: left">Thời gian chỉnh sửa gần nhất</span>
                     <span style="width: 75%; float: left; position: relative; bottom: 15px">
-                        {{moment(document.lastModifiedTime,'DD-MM-YYYY HH:mm:ss')
-                            .format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
-                        <DocumentHistory :document="document" ref="documentHistory">
-                            <template #activator="{ on }">
-                                <v-btn v-on="on" color="primary">Xem lịch sử chỉnh sửa</v-btn>
-                            </template>
-                        </DocumentHistory>
-                    </span>
-                </p>
-                <br>
-                <v-divider></v-divider>
-                <br>
-                <p>
-                    <span style="width: 25%; float: left">Thời gian chỉnh sửa gần nhất</span>
-                    <span style="width: 75%; float: left; position: relative; bottom: 15px">
                         <b>{{moment(document.lastModifiedTime,'DD-MM-YYYY HH:mm:ss').format('DD/MM/YYYY HH:mm:ss') || 'Chưa xác định'}}
                         <DocumentHistory :document="document" ref="documentHistory">
                             <template #activator="{ on }">
